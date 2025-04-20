@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using UnityEngine;
 
 public class Cursor : MonoBehaviour
@@ -15,6 +16,19 @@ public class Cursor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        Vector3 cursorWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        this.transform.position = new Vector3(cursorWorldPosition.x, cursorWorldPosition.y,0);
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (numOfCoins > 0)
+            {
+                GameObject placedCoins;
+                placedCoins=Instantiate(coins);
+                placedCoins.transform.position=this.transform.position;
+                numOfCoins--;
+            }
+        }
+
     }
 }
