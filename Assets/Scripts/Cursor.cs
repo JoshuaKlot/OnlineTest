@@ -25,10 +25,15 @@ public class Cursor : MonoBehaviour
             {
                 GameObject placedCoins;
                 placedCoins=Instantiate(coins);
+                placedCoins.transform.parent = GameObject.Find("MainLevel").transform;
                 placedCoins.transform.position=this.transform.position;
                 numOfCoins--;
             }
         }
 
+        if (numOfCoins > 0)
+        {
+            MainLevel.playerPhase = true;
+        }
     }
 }
