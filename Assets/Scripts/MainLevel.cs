@@ -16,8 +16,8 @@ public class MainLevel : MonoBehaviour
     {
         if (playerPhase)
         {
-            Destroy(Cursor);
-            Instantiate(Player);
+            Cursor.SetActive(false);
+            Player.SetActive(true);
         }
 
         if (playerPhase && transform.childCount == 0)

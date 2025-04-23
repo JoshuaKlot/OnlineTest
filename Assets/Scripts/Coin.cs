@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    void onTriggerEnter2D(Collider2D col)
+    private void OnTriggerEnter2D(Collider2D col)
     {
+        Debug.Log(col.gameObject.name + " : " + gameObject.name + " : " + Time.time);
         Destroy(this.gameObject);
     }
 }

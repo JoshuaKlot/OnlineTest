@@ -31,7 +31,7 @@ public class Cursor : MonoBehaviour
             }
         }
 
-        if (numOfCoins > 0)
+        if (numOfCoins == 0)
         {
             MainLevel.playerPhase = true;
         }
