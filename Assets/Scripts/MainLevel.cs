@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine;
 
 
@@ -22,6 +21,7 @@ public class MainLevel : MonoBehaviour
 
         if (playerPhase && transform.childCount == 0)
         {
+            Debug.Log("All coins collected");
             Application.Quit();
         }
     }
