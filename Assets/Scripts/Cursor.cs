@@ -7,11 +7,8 @@ public class Cursor : MonoBehaviour
 {
     [SerializeField] private GameObject coins;
     [SerializeField] private int numOfCoins;
+    [SerializeField] private GameObject mainLevel;
     // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -25,7 +22,7 @@ public class Cursor : MonoBehaviour
             {
                 GameObject placedCoins;
                 placedCoins=Instantiate(coins);
-                placedCoins.transform.parent = GameObject.Find("MainLevel").transform;
+                placedCoins.transform.parent=mainLevel.transform;
                 placedCoins.transform.position=this.transform.position;
                 numOfCoins--;
             }
