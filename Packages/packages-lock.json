@@ -116,10 +116,10 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.entities": "1.3.2",
         "com.unity.physics": "1.3.2",
-        "com.unity.modules.uielements": "1.0.0",
-        "com.unity.modules.physics": "1.0.0"
+        "com.unity.entities": "1.3.2",
+        "com.unity.modules.physics": "1.0.0",
+        "com.unity.modules.uielements": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
@@ -140,6 +140,13 @@
         "com.unity.nuget.mono-cecil": "1.11.4",
         "com.unity.test-framework.performance": "3.0.3"
       },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.editorcoroutines": {
+      "version": "1.0.0",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.entities": {
@@ -210,6 +217,16 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.learn.iet-framework": {
+      "version": "4.0.4",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.editorcoroutines": "1.0.0",
+        "com.unity.settings-manager": "1.0.3"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.mathematics": {
       "version": "1.3.2",
       "depth": 1,
@@ -243,6 +260,18 @@
         "com.unity.nuget.newtonsoft-json": "2.0.2"
       },
       "url": "https://packages.unity.com"
+    },
+    "com.unity.multiplayer.samples.coop": {
+      "version": "https://github.com/Unity-Technologies/com.unity.multiplayer.samples.coop.git?path=/Packages/com.unity.multiplayer.samples.coop#main",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.learn.iet-framework": "3.1.3",
+        "com.unity.multiplayer.tools": "1.1.0",
+        "com.unity.netcode.gameobjects": "1.8.1",
+        "com.unity.services.relay": "1.0.5"
+      },
+      "hash": "a14efdf83d0290b7a4dd50ef667063a443d27429"
     },
     "com.unity.multiplayer.tools": {
       "version": "2.2.3",
@@ -326,8 +355,8 @@
       "depth": 2,
       "source": "registry",
       "dependencies": {
-        "com.unity.collections": "2.4.2",
-        "com.unity.burst": "1.7.2"
+        "com.unity.burst": "1.7.2",
+        "com.unity.collections": "2.4.2"
       },
       "url": "https://packages.unity.com"
     },
@@ -401,6 +430,24 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.services.relay": {
+      "version": "1.0.5",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.transport": "1.3.0",
+        "com.unity.services.qos": "1.1.0",
+        "com.unity.services.core": "1.4.0",
+        "com.unity.nuget.newtonsoft-json": "3.0.2",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.services.authentication": "2.0.0",
+        "com.unity.modules.unitywebrequestwww": "1.0.0",
+        "com.unity.modules.unitywebrequestaudio": "1.0.0",
+        "com.unity.modules.unitywebrequesttexture": "1.0.0",
+        "com.unity.modules.unitywebrequestassetbundle": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.services.wire": {
       "version": "1.3.0",
       "depth": 1,
@@ -410,6 +457,13 @@
         "com.unity.nuget.newtonsoft-json": "3.2.1",
         "com.unity.services.authentication": "2.7.4"
       },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.settings-manager": {
+      "version": "2.1.0",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
@@ -473,6 +527,13 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
+    },
+    "com.veriorpies.parrelsync": {
+      "version": "https://github.com/VeriorPies/ParrelSync.git?path=/ParrelSync",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "610157ad762084380380148ba8ce14e266a6da97"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",

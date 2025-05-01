@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 1538255848151728156}
   - component: {fileID: -7089878237379322381}
   - component: {fileID: 2208251812943172942}
-  - component: {fileID: 1947778926460048972}
   - component: {fileID: 6541877455040914488}
+  - component: {fileID: 1947778926460048972}
   - component: {fileID: 8875884145017150957}
   - component: {fileID: 6248890593436129983}
   - component: {fileID: 855340286414691023}
@@ -167,20 +167,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &1947778926460048972
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1538255848151728157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ac8ebee05d8a2547857bb5940e3e97c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vSpeed: 2
-  hSpeed: 2
 --- !u!114 &6541877455040914488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,6 +192,21 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &1947778926460048972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1538255848151728157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ac8ebee05d8a2547857bb5940e3e97c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  vSpeed: 2
+  hSpeed: 2
 --- !u!114 &8875884145017150957
 MonoBehaviour:
   m_ObjectHideFlags: 0

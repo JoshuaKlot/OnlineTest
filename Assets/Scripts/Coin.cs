@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class Coin : MonoBehaviour
+using Unity.Netcode;
+public class Coin : NetworkBehaviour
 {
     void Start()
     {

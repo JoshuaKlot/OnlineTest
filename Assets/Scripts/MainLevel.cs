@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-
-public class MainLevel : MonoBehaviour
+public class MainLevel : NetworkBehaviour
 {
     public static bool playerPhase = false;
     [SerializeField] private GameObject Cursor;
