@@ -10,8 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 85167234241281369}
   - component: {fileID: 85167234241281370}
-  - component: {fileID: 2215336168610801914}
   - component: {fileID: 5545001226366798342}
+  - component: {fileID: 3912595433295310805}
+  - component: {fileID: 2215336168610801914}
+  - component: {fileID: 2336727080217863520}
   m_Layer: 0
   m_Name: Cursor
   m_TagString: Untagged
@@ -89,21 +91,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2215336168610801914
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 85167234241281364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f2edf6362ab9dc43a1f95bf8a7562d0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  coins: {fileID: 5467673333300652890, guid: fd83f38dec405f24b8f6121a28a094c7, type: 3}
-  numOfCoins: 0
-  mainLevel: {fileID: 0}
 --- !u!114 &5545001226366798342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -129,3 +116,47 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &3912595433295310805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85167234241281364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d78be78e600fd7848865a7014e560ed1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  playerPrefabA: {fileID: 0}
+  playerPrefabB: {fileID: 0}
+--- !u!114 &2215336168610801914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85167234241281364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f2edf6362ab9dc43a1f95bf8a7562d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  coins: {fileID: 5467673333300652890, guid: fd83f38dec405f24b8f6121a28a094c7, type: 3}
+  numOfCoins: 6
+  mainLevel: {fileID: 7504435737895596042, guid: 3b63e1386e8cc7541a8bc963924cac07, type: 3}
+--- !u!114 &2336727080217863520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85167234241281364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac35373b42abe46ea8f7cab1a1c353f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
