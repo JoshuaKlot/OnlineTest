@@ -1,29 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using UnityEngine;
 using Unity.Netcode;
+
 public class Cursor : NetworkBehaviour
 {
     [SerializeField] private GameObject coins;
     [SerializeField] private int numOfCoins;
-    [SerializeField] private GameObject mainLevel;
-    // Start is called before the first frame update
+    //[SerializeField] private GameObject mainLevel;
 
-    // Update is called once per frame
     void Update()
     {
+        if (!IsOwner) return; // Only the owner should control the cursor
+
         Vector3 cursorWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        this.transform.position = new Vector3(cursorWorldPosition.x, cursorWorldPosition.y,0);
+        this.transform.position = new Vector3(cursorWorldPosition.x, cursorWorldPosition.y, 0);
 
         if (Input.GetMouseButtonDown(0))
         {
             if (numOfCoins > 0)
             {
-                GameObject placedCoins;
-                placedCoins=Instantiate(coins);
-                placedCoins.transform.parent=mainLevel.transform;
-                placedCoins.transform.position=this.transform.position;
+                SpawnCoinServerRpc(this.transform.position);
                 numOfCoins--;
             }
         }
@@ -31,6 +26,19 @@ public class Cursor : NetworkBehaviour
         if (numOfCoins == 0)
         {
             MainLevel.playerPhase = true;
+        }
+    }
+
+    [ServerRpc]
+    private void SpawnCoinServerRpc(Vector3 spawnPosition)
+    {
+        GameObject placedCoins = Instantiate(coins, spawnPosition, Quaternion.identity);
+        //placedCoins.transform.parent = mainLevel.transform;
+
+        NetworkObject networkObject = placedCoins.GetComponent<NetworkObject>();
+        if (networkObject != null)
+        {
+            networkObject.Spawn(true); // true if you want to spawn with ownership
         }
     }
 }
