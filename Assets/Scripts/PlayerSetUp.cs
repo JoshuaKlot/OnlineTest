@@ -6,28 +6,31 @@ public class PlayerSpawner : NetworkBehaviour
     [SerializeField] private GameObject playerPrefabA; //add prefab in inspector
     [SerializeField] private GameObject playerPrefabB; //add prefab in inspector
 
+    void Start()
+    {
+        if (IsOwner) // Make sure only the owning client calls this
+        {
+            SpawnPlayerServerRpc(NetworkManager.Singleton.LocalClientId);
+        }
+    }
+
     [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayerServerRpc(ulong clientId)
     {
-        Transform cursor = this.transform.Find("Cursor");
-        Transform player = this.transform.Find("Player");
-        Transform activeObject;
+        GameObject newPlayer;
 
         if (clientId == NetworkManager.Singleton.LocalClientId) // Host
         {
-            
-            cursor.gameObject.SetActive(true);
-            activeObject = cursor;
-            player.gameObject.SetActive(false);  
+            newPlayer = Instantiate(playerPrefabA);
         }
         else // Non-host client
         {
-            player.gameObject.SetActive(true);
-            activeObject = player;
-            cursor.gameObject.SetActive(false);
+            newPlayer = Instantiate(playerPrefabB);
         }
 
-        NetworkObject netObj = activeObject.GetComponent<NetworkObject>();
+        NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
+        newPlayer.SetActive(true);
         netObj.SpawnAsPlayerObject(clientId, true);
     }
+
 }
