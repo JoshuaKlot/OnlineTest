@@ -19,7 +19,7 @@ public class Cursor : NetworkBehaviour
             if (numOfCoins > 0)
             {
                 SpawnCoinServerRpc(this.transform.position);
-                numOfCoins--;
+                //numOfCoins--;
             }
         }
 
