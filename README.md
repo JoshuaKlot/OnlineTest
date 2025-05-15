@@ -2,13 +2,15 @@ Download Test:
 [Here
 ](https://drive.google.com/file/d/1NPNEjMMc-0OYRUJH1-mfxtO8YTg4FJd8/view?usp=sharing)
 
-Instructions: Grab the zip file with the project from the README in github
+**Instructions**: Grab the zip file with the project from the README in github
 
 Open two instances of OnlineTest.exe
 
 Start one as the Host first and then the other as the Client.
 
 It should work
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Unity Multiplayer
