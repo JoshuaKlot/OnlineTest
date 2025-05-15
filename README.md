@@ -15,7 +15,7 @@ It should work
 
 Unity Multiplayer
 
-An online multiplayer game using Unity’s built in plugins and RPC in order to facilitate a connection between 2 computers. The design of this game is very simple. One player can place coins around an area using the mouse and another player can pick up those coins, moving around using the arrow keys. If you want to run my project you will need to download Unity 6 or newer.
+An online multiplayer game using Unity’s built in plugins and RPC in order to facilitate a connection between 2 computers. The design of this game is very simple. One player can place coins around an area using the mouse and another player can pick up those coins, moving around using the arrow keys.
 
 Unity Packages used:
 
