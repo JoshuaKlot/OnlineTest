@@ -5,7 +5,7 @@ public class Cursor : NetworkBehaviour
 {
     [SerializeField] private GameObject coins;
     [SerializeField] private int numOfCoins;
-    //[SerializeField] private GameObject mainLevel;
+    [SerializeField] private GameObject mainLevel;
 
     void Update()
     {
@@ -19,7 +19,7 @@ public class Cursor : NetworkBehaviour
             if (numOfCoins > 0)
             {
                 SpawnCoinServerRpc(this.transform.position);
-                //numOfCoins--;
+                numOfCoins--;
             }
         }
 
@@ -33,7 +33,7 @@ public class Cursor : NetworkBehaviour
     private void SpawnCoinServerRpc(Vector3 spawnPosition)
     {
         GameObject placedCoins = Instantiate(coins, spawnPosition, Quaternion.identity);
-        //placedCoins.transform.parent = mainLevel.transform;
+        placedCoins.transform.parent = mainLevel.transform;
 
         NetworkObject networkObject = placedCoins.GetComponent<NetworkObject>();
         if (networkObject != null)
