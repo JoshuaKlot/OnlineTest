@@ -9,23 +9,23 @@ public class Cursor : NetworkBehaviour
 
     void Update()
     {
-        if (!IsOwner) return; // Only the owner should control the cursor
+        if (!IsOwner) return;
 
         Vector3 cursorWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        this.transform.position = new Vector3(cursorWorldPosition.x, cursorWorldPosition.y, 0);
+        transform.position = new Vector3(cursorWorldPosition.x, cursorWorldPosition.y, 0);
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && numOfCoins > 0)
         {
-            if (numOfCoins > 0)
-            {
-                SpawnCoinServerRpc(this.transform.position);
-                numOfCoins--;
-            }
+            SpawnCoinServerRpc(transform.position);
+            numOfCoins--;
         }
 
         if (numOfCoins == 0)
         {
-            MainLevel.playerPhase = true;
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SetPlayerPhaseServerRpc();
+            }
         }
     }
 

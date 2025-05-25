@@ -1,0 +1,58 @@
+using UnityEngine;
+using Unity.Netcode;
+using System.Collections.Generic;
+
+public class GameManager : NetworkBehaviour
+{
+    public static GameManager Instance;
+
+    private Dictionary<ulong, bool> playerReadyStatus = new Dictionary<ulong, bool>();
+    private bool playersSpawned = false;
+
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
+
+    public void RegisterPlayer(ulong clientId)
+    {
+        if (!playerReadyStatus.ContainsKey(clientId))
+            playerReadyStatus.Add(clientId, false);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SetPlayerPhaseServerRpc(ServerRpcParams rpcParams = default)
+    {
+        ulong clientId = rpcParams.Receive.SenderClientId;
+        Debug.Log($"Client {clientId} is ready.");
+        playerReadyStatus[clientId] = true;
+
+        if (AllPlayersReady() && !playersSpawned)
+        {
+            playersSpawned = true;
+            SpawnAllPlayerB();
+        }
+    }
+
+    private bool AllPlayersReady()
+    {
+        foreach (var ready in playerReadyStatus.Values)
+        {
+            if (!ready)
+                return false;
+        }
+        return true;
+    }
+
+    private void SpawnAllPlayerB()
+    {
+        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            ulong clientId = client.ClientId;
+            PlayerSpawner.Instance.SpawnPlayerBForClient(clientId);
+        }
+    }
+}

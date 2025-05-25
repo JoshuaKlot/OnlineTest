@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 using Unity.Netcode;
 
@@ -17,6 +16,7 @@ public class PlayerMovement : NetworkBehaviour
 
     void Update()
     {
+
         if (!IsOwner) return; // Only allow local player to move their character
 
         float hMovemnent = Input.GetAxisRaw("Horizontal");
