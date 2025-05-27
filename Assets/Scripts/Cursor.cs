@@ -1,11 +1,16 @@
 using UnityEngine;
 using Unity.Netcode;
 
+
 public class Cursor : NetworkBehaviour
 {
     [SerializeField] private GameObject coins;
     [SerializeField] private int numOfCoins;
     [SerializeField] private GameObject mainLevel;
+    void Awake()
+    {
+        Debug.Log("spawning cursor");
+    }
 
     void Update()
     {
@@ -22,6 +27,7 @@ public class Cursor : NetworkBehaviour
 
         if (numOfCoins == 0)
         {
+            Debug.Log("Despawning cursor");
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.SetPlayerPhaseServerRpc();

@@ -8,6 +8,24 @@ public class GameManager : NetworkBehaviour
 
     private Dictionary<ulong, bool> playerReadyStatus = new Dictionary<ulong, bool>();
     private bool playersSpawned = false;
+    private Dictionary<ulong, NetworkObject> cursors = new Dictionary<ulong, NetworkObject>();
+
+    public void RegisterCursor(ulong clientId, NetworkObject cursorObject)
+    {
+        if (!cursors.ContainsKey(clientId))
+        {
+            cursors.Add(clientId, cursorObject);
+        }
+    }
+
+    private void DespawnAllCursors()
+    {
+        foreach (var cursor in cursors.Values)
+        {
+            if (cursor.IsSpawned)
+                cursor.Despawn();
+        }
+    }
 
     private void Awake()
     {
@@ -41,6 +59,7 @@ public class GameManager : NetworkBehaviour
     {
         foreach (var ready in playerReadyStatus.Values)
         {
+            Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
             if (!ready)
                 return false;
         }
@@ -49,10 +68,13 @@ public class GameManager : NetworkBehaviour
 
     private void SpawnAllPlayerB()
     {
+        DespawnAllCursors(); // Despawn the cursor (playerPrefabA)
+
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
             ulong clientId = client.ClientId;
             PlayerSpawner.Instance.SpawnPlayerBForClient(clientId);
         }
     }
+
 }
