@@ -14,6 +14,7 @@ public class Cursor : NetworkBehaviour
 
     void Update()
     {
+        
         if (!IsOwner) return;
 
         Vector3 cursorWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);

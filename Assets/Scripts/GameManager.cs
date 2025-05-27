@@ -22,6 +22,7 @@ public class GameManager : NetworkBehaviour
     {
         foreach (var cursor in cursors.Values)
         {
+            Debug.Log("Despawning Cursor "+cursor);
             if (cursor.IsSpawned)
                 cursor.Despawn();
         }
@@ -59,7 +60,7 @@ public class GameManager : NetworkBehaviour
     {
         foreach (var ready in playerReadyStatus.Values)
         {
-            Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            
             if (!ready)
                 return false;
         }
