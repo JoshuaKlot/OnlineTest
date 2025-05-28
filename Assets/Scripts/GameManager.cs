@@ -56,8 +56,10 @@ public class GameManager : NetworkBehaviour
         if (AllPlayersReady() && !playersSpawned)
         {
             playersSpawned = true;
+            RevealCoinsToOtherPlayers();
             SpawnAllPlayerB();
         }
+
     }
 
     private bool AllPlayersReady()

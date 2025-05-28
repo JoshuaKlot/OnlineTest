@@ -26,11 +26,13 @@ public class Cursor : NetworkBehaviour
             numOfCoins--;
             if (numOfCoins == 0)
             {
+               
                 Debug.Log("Despawning cursor");
                 if (GameManager.Instance != null)
                 {
                     GameManager.Instance.SetPlayerPhaseServerRpc();
-                }
+                } 
+                this.gameObject.SetActive(false);
             }
         }
 
@@ -41,7 +43,7 @@ public class Cursor : NetworkBehaviour
     private void SpawnCoinServerRpc(Vector3 spawnPosition)
     {
         GameObject placedCoins = Instantiate(coins, spawnPosition, Quaternion.identity);
-        placedCoins.transform.parent = mainLevel.transform;
+        //placedCoins.transform.parent = mainLevel.transform;
 
         NetworkObject networkObject = placedCoins.GetComponent<NetworkObject>();
         if (networkObject != null)
