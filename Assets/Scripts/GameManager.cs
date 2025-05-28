@@ -15,6 +15,7 @@ public class GameManager : NetworkBehaviour
         if (!cursors.ContainsKey(clientId))
         {
             cursors.Add(clientId, cursorObject);
+            Debug.Log("Cursor Registered");
         }
     }
 
@@ -39,7 +40,10 @@ public class GameManager : NetworkBehaviour
     public void RegisterPlayer(ulong clientId)
     {
         if (!playerReadyStatus.ContainsKey(clientId))
+        {
             playerReadyStatus.Add(clientId, false);
+            Debug.Log("Player Registered");
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]

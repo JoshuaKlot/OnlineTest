@@ -32,11 +32,13 @@ public class PlayerSpawner : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayerACursorServerRpc(ulong clientId)
     {
-        GameObject newPlayer = Instantiate(playerPrefabA);
-        newPlayer.SetActive(true);
+        GameObject newPlayer;
+        newPlayer = Instantiate(playerPrefabA);
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
-        netObj.SpawnWithOwnership(clientId, true);
-        // Debug.Log("Register Cursor");
+        newPlayer.SetActive(true);
+        
+        netObj.SpawnAsPlayerObject(clientId, true); 
+        Debug.Log("Register Cursor");
         // Register cursor in GameManager
         GameManager.Instance.RegisterCursor(clientId, netObj);
     }

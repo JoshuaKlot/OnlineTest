@@ -24,16 +24,17 @@ public class Cursor : NetworkBehaviour
         {
             SpawnCoinServerRpc(transform.position);
             numOfCoins--;
-        }
-
-        if (numOfCoins == 0)
-        {
-            Debug.Log("Despawning cursor");
-            if (GameManager.Instance != null)
+            if (numOfCoins == 0)
             {
-                GameManager.Instance.SetPlayerPhaseServerRpc();
+                Debug.Log("Despawning cursor");
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.SetPlayerPhaseServerRpc();
+                }
             }
         }
+
+
     }
 
     [ServerRpc]
