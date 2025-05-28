@@ -56,7 +56,7 @@ public class GameManager : NetworkBehaviour
         if (AllPlayersReady() && !playersSpawned)
         {
             playersSpawned = true;
-            //RevealCoinsToOtherPlayers();
+            RevealCoinsToOtherPlayers();
             SpawnAllPlayerB();
         }
 
@@ -82,6 +82,30 @@ public class GameManager : NetworkBehaviour
             ulong clientId = client.ClientId;
             PlayerSpawner.Instance.SpawnPlayerBForClient(clientId);
         }
+    }
+
+    void RevealCoinsToOtherPlayers()
+    {
+        Coin[] allCoins = GameObject.FindObjectsOfType<Coin>();
+        List<ulong> clients = new List<ulong>(NetworkManager.Singleton.ConnectedClientsIds);
+
+
+        foreach (Coin coin in allCoins)
+        {
+            // Pick a random client other than original
+            ulong newClient = PickRandomOtherClient(clients, coin.visibleToClientId);
+
+            coin.NetworkObject.Despawn(false);
+            coin.visibleToClientId = newClient;
+            coin.NetworkObject.CheckObjectVisibility = coin.CheckVisibility;
+            coin.NetworkObject.Spawn(false);
+        }
+    }
+
+    ulong PickRandomOtherClient(List<ulong> clients, ulong exclude)
+    {
+        List<ulong> others = clients.FindAll(id => id != exclude);
+        return others[Random.Range(0, others.Count)];
     }
 
 }

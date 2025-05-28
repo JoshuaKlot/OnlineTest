@@ -40,15 +40,17 @@ public class Cursor : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void SpawnCoinServerRpc(Vector3 spawnPosition)
+    private void SpawnCoinServerRpc(Vector3 spawnPosition, ServerRpcParams rpcParams = default)
     {
-        GameObject placedCoins = Instantiate(coins, spawnPosition, Quaternion.identity);
-        //placedCoins.transform.parent = mainLevel.transform;
+        GameObject placedCoin = Instantiate(coins, spawnPosition, Quaternion.identity);
 
-        NetworkObject networkObject = placedCoins.GetComponent<NetworkObject>();
-        if (networkObject != null)
-        {
-            networkObject.Spawn(true); // true if you want to spawn with ownership
-        }
+        Coin coinComponent = placedCoin.GetComponent<Coin>();
+        coinComponent.visibleToClientId = rpcParams.Receive.SenderClientId;
+
+        NetworkObject netObj = placedCoin.GetComponent<NetworkObject>();
+        netObj.CheckObjectVisibility = coinComponent.CheckVisibility;
+
+        netObj.Spawn();  // do not pass ownership unless needed
     }
+
 }
