@@ -17,16 +17,17 @@ public class PlayerSpawner : NetworkBehaviour
     }
     void Start()
     {
-        //if (IsOwner)
-        //{
-        Debug.Log("I am a host");
-        GameManager.Instance.RegisterPlayer(NetworkManager.Singleton.LocalClientId);
-        SpawnPlayerACursorServerRpc(NetworkManager.Singleton.LocalClientId);
-        //}
-        //else
-        //{
-        //    Debug.Log("I am not a host");
-        //}
+        if (IsServer)
+        {
+            Debug.Log("This is a host and not player");
+            
+        }
+        else
+        {
+            Debug.Log("I am a player");
+            GameManager.Instance.RegisterPlayer(NetworkManager.Singleton.LocalClientId);
+            SpawnPlayerACursorServerRpc(NetworkManager.Singleton.LocalClientId);
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]
