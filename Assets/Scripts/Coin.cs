@@ -22,10 +22,16 @@ public class Coin : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (IsServer)
+        if (!IsServer) return;
+
+        ulong triggeringClientId = col.GetComponent<NetworkObject>()?.OwnerClientId ?? ulong.MaxValue;
+
+        // Only allow interaction if the player who touched it is the one assigned
+        if (triggeringClientId == visibleToClientId)
         {
-            Debug.Log(col.gameObject.name + " : " + gameObject.name + " : " + Time.time);
+            Debug.Log($"{col.gameObject.name} picked up coin {gameObject.name} at time {Time.time}");
             NetworkObject.Despawn(true);
         }
     }
+
 }
