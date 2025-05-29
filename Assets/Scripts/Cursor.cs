@@ -31,8 +31,9 @@ public class Cursor : NetworkBehaviour
                 if (GameManager.Instance != null)
                 {
                     GameManager.Instance.SetPlayerPhaseServerRpc();
-                } 
-                this.gameObject.SetActive(false);
+                }
+                DespawnCursorServerRpc();
+
             }
         }
 
@@ -51,6 +52,14 @@ public class Cursor : NetworkBehaviour
         netObj.CheckObjectVisibility = coinComponent.CheckVisibility;
 
         netObj.Spawn();  // do not pass ownership unless needed
+    }
+    [ServerRpc]
+    private void DespawnCursorServerRpc(ServerRpcParams rpcParams = default)
+    {
+        if (NetworkObject.IsSpawned)
+        {
+            NetworkObject.Despawn();
+        }
     }
 
 }

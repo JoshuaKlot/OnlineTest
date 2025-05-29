@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
+using System.Linq; // Add this at the top
 
 public class GameManager : NetworkBehaviour
 {
@@ -39,12 +40,19 @@ public class GameManager : NetworkBehaviour
 
     public void RegisterPlayer(ulong clientId)
     {
+        if (clientId == NetworkManager.ServerClientId)
+        {
+            Debug.Log("Host is not a player. Skipping registration.");
+            return;
+        }
+
         if (!playerReadyStatus.ContainsKey(clientId))
         {
             playerReadyStatus.Add(clientId, false);
-            Debug.Log("Player Registered");
+            Debug.Log($"Player {clientId} Registered");
         }
     }
+
 
     [ServerRpc(RequireOwnership = false)]
     public void SetPlayerPhaseServerRpc(ServerRpcParams rpcParams = default)
@@ -64,6 +72,7 @@ public class GameManager : NetworkBehaviour
 
     private bool AllPlayersReady()
     {
+        Debug.Log(playerReadyStatus.Count);
         foreach (var ready in playerReadyStatus.Values)
         {
             
@@ -89,18 +98,21 @@ public class GameManager : NetworkBehaviour
         Coin[] allCoins = GameObject.FindObjectsOfType<Coin>();
         List<ulong> clients = new List<ulong>(NetworkManager.Singleton.ConnectedClientsIds);
 
-
         foreach (Coin coin in allCoins)
         {
-            // Pick a random client other than original
-            ulong newClient = PickRandomOtherClient(clients, coin.visibleToClientId);
+            ulong originalClient = coin.visibleToClientId;
+            ulong newClient = PickRandomOtherClient(clients, originalClient);
 
-            coin.NetworkObject.Despawn(false);
+            if (coin.NetworkObject.IsSpawned)
+                coin.NetworkObject.Despawn(false); // Don’t destroy, reuse
+
             coin.visibleToClientId = newClient;
             coin.NetworkObject.CheckObjectVisibility = coin.CheckVisibility;
-            coin.NetworkObject.Spawn(false);
+
+            coin.NetworkObject.Spawn(false); // Re-spawn with updated visibility
         }
     }
+
 
     ulong PickRandomOtherClient(List<ulong> clients, ulong exclude)
     {
