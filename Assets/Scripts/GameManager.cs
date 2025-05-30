@@ -32,43 +32,73 @@ public class GameManager : NetworkBehaviour
 
     private void Awake()
     {
+        Debug.Log("FUCKEREKEREOIOIROOIRIOIORROIR");
         if (Instance == null)
             Instance = this;
         else
             Destroy(gameObject);
     }
 
-    public void RegisterPlayer(ulong clientId)
+    [ServerRpc(RequireOwnership = false)]
+    public void RegisterPlayerServerRpc(ServerRpcParams rpcParams = default)
     {
-        if (clientId == NetworkManager.ServerClientId)
-        {
-            Debug.Log("Host is not a player. Skipping registration.");
-            return;
-        }
-
+        ulong clientId = rpcParams.Receive.SenderClientId;
         if (!playerReadyStatus.ContainsKey(clientId))
         {
-            playerReadyStatus.Add(clientId, false);
-            Debug.Log($"Player {clientId} Registered");
+            Debug.Log($"[Server] Player {clientId} Registered");
+            playerReadyStatus[clientId] = false;
+        }
+        else
+        {
+            Debug.LogWarning($"[Server] Player {clientId} was already registered.");
         }
     }
 
 
     [ServerRpc(RequireOwnership = false)]
-    public void SetPlayerPhaseServerRpc(ServerRpcParams rpcParams = default)
+    public void MarkPlayerDonePlacingCoinsServerRpc(ServerRpcParams rpcParams = default)
     {
+        Debug.Log("This function was called corretlty");
         ulong clientId = rpcParams.Receive.SenderClientId;
-        Debug.Log($"Client {clientId} is ready.");
-        playerReadyStatus[clientId] = true;
-
-        if (AllPlayersReady() && !playersSpawned)
+        if (!playerReadyStatus.ContainsKey(clientId))
         {
+            Debug.LogWarning($"Client {clientId} was not registered but attempted to mark done.");
+            return;
+        }
+
+        playerReadyStatus[clientId] = true;
+        Debug.Log($"Client {clientId} marked as done placing coins.");
+
+        CheckIfAllPlayersAreDone(); // NEW: separate logic to advance phase
+    }
+
+    private void CheckIfAllPlayersAreDone()
+    {
+        Debug.Log("Checking if all players are done...");
+        foreach (var kvp in playerReadyStatus)
+        {
+            Debug.Log($"Player {kvp.Key}: ready = {kvp.Value}");
+        }
+
+        if (playersSpawned)
+        {
+            Debug.Log("Players already spawned. Skipping.");
+            return;
+        }
+
+        if (AllPlayersReady())
+        {
+            Debug.Log("All players ready! Advancing phase.");
             playersSpawned = true;
             RevealCoinsToOtherPlayers();
             SpawnAllPlayerB();
         }
-
+        else
+        {
+            Debug.Log("Not all players are ready yet.");
+        }
     }
+
 
     private bool AllPlayersReady()
     {

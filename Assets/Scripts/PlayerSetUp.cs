@@ -24,7 +24,7 @@ public class PlayerSpawner : NetworkBehaviour
         }
 
         Debug.Log("I am a client player");
-        GameManager.Instance.RegisterPlayer(NetworkManager.Singleton.LocalClientId);
+        GameManager.Instance.RegisterPlayerServerRpc();
         SpawnPlayerACursorServerRpc(NetworkManager.Singleton.LocalClientId);
     }
 

@@ -26,15 +26,18 @@ public class Cursor : NetworkBehaviour
             numOfCoins--;
             if (numOfCoins == 0)
             {
-               
-                Debug.Log("Despawning cursor");
+                Debug.Log("Player finished placing all coins.");
                 if (GameManager.Instance != null)
                 {
-                    GameManager.Instance.SetPlayerPhaseServerRpc();
+                    GameManager.Instance.MarkPlayerDonePlacingCoinsServerRpc();
                 }
-                DespawnCursorServerRpc();
-
+                else
+                {
+                    Debug.Log("Theres no game manager. Wierd");
+                }
+                    DespawnCursorServerRpc();
             }
+
         }
 
 
