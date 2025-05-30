@@ -72,7 +72,7 @@ public class GameManager : NetworkBehaviour
 
     private bool AllPlayersReady()
     {
-        Debug.Log(playerReadyStatus.Count);
+        Debug.Log("There are "+playerReadyStatus.Count);
         foreach (var ready in playerReadyStatus.Values)
         {
             
@@ -84,11 +84,19 @@ public class GameManager : NetworkBehaviour
 
     private void SpawnAllPlayerB()
     {
-        DespawnAllCursors(); // Despawn the cursor (playerPrefabA)
+        DespawnAllCursors(); // Despawn cursors
 
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
             ulong clientId = client.ClientId;
+
+            //Skip the host
+            if (clientId == NetworkManager.ServerClientId)
+            {
+                Debug.Log("Skipping host client when spawning Player B.");
+                continue;
+            }
+
             PlayerSpawner.Instance.SpawnPlayerBForClient(clientId);
         }
     }
