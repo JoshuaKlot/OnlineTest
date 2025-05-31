@@ -135,7 +135,7 @@ public class GameManager : NetworkBehaviour
     {
         Coin[] allCoins = GameObject.FindObjectsOfType<Coin>();
         List<ulong> clients = new List<ulong>(NetworkManager.Singleton.ConnectedClientsIds);
-
+        Debug.Log("Transfering "+allCoins.Length+" coins");
         foreach (Coin coin in allCoins)
         {
             ulong originalClient = coin.visibleToClientId;
@@ -155,7 +155,7 @@ public class GameManager : NetworkBehaviour
     ulong PickRandomOtherClient(List<ulong> clients, ulong exclude)
     {
         List<ulong> others = clients.FindAll(id => id != exclude);
-        return others[Random.Range(0, others.Count)];
+        return others[Random.Range(1, others.Count)];
     }
 
 }
