@@ -1,14 +1,14 @@
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Networking;
 
 public class NetworkUI : MonoBehaviour
 {
     public Button hostButton;
     public Button clientButton;
+    public Button startButton;
 
-    void Start()
+    private void Start()
     {
         hostButton.onClick.AddListener(() => {
             NetworkManager.Singleton.StartHost();
@@ -16,6 +16,15 @@ public class NetworkUI : MonoBehaviour
 
         clientButton.onClick.AddListener(() => {
             NetworkManager.Singleton.StartClient();
+        });
+
+        startButton.onClick.AddListener(() =>
+        {
+            if (NetworkManager.Singleton.IsHost)
+            {
+                GameManager.Instance.StartGame(); // Call host-side start logic
+                startButton.gameObject.SetActive(false); // Hide the button after pressing
+            }
         });
     }
 }

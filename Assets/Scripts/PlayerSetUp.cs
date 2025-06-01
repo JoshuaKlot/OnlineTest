@@ -17,15 +17,10 @@ public class PlayerSpawner : NetworkBehaviour
     }
     void Start()
     {
-        if (IsServer && IsHost)
+        if (!IsServer)
         {
-            Debug.Log("This is the host and should not spawn a player.");
-            return;
+            GameManager.Instance.RegisterPlayerServerRpc(); // Only register for approval
         }
-
-        Debug.Log("I am a client player");
-        GameManager.Instance.RegisterPlayerServerRpc();
-        SpawnPlayerACursorServerRpc(NetworkManager.Singleton.LocalClientId);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -34,6 +29,7 @@ public class PlayerSpawner : NetworkBehaviour
         GameObject newPlayer;
         newPlayer = Instantiate(playerPrefabA);
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
+
         newPlayer.SetActive(true);
         
         netObj.SpawnAsPlayerObject(clientId, true); 

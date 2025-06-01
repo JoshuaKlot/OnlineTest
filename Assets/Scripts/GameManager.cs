@@ -11,6 +11,25 @@ public class GameManager : NetworkBehaviour
     private bool playersSpawned = false;
     private Dictionary<ulong, NetworkObject> cursors = new Dictionary<ulong, NetworkObject>();
 
+    private bool gameStarted = false;
+
+    public void StartGame()
+    {
+        if (!IsServer) return;
+
+        Debug.Log("Host started the game.");
+        gameStarted = true;
+
+        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (clientId != NetworkManager.ServerClientId)
+            {
+                PlayerSpawner.Instance.SpawnPlayerACursorServerRpc(clientId);
+            }
+        }
+    }
+
+
     public void RegisterCursor(ulong clientId, NetworkObject cursorObject)
     {
         if (!cursors.ContainsKey(clientId))
@@ -43,6 +62,13 @@ public class GameManager : NetworkBehaviour
     public void RegisterPlayerServerRpc(ServerRpcParams rpcParams = default)
     {
         ulong clientId = rpcParams.Receive.SenderClientId;
+
+        if (gameStarted)
+        {
+            Debug.LogWarning($"[Server] Game already started. Rejecting new player {clientId}.");
+            return; // Prevent late joins
+        }
+
         if (!playerReadyStatus.ContainsKey(clientId))
         {
             Debug.Log($"[Server] Player {clientId} Registered");
@@ -133,24 +159,96 @@ public class GameManager : NetworkBehaviour
 
     void RevealCoinsToOtherPlayers()
     {
+        // Group coins by their original owner
+        Dictionary<ulong, List<Coin>> coinsByOwner = new Dictionary<ulong, List<Coin>>();
         Coin[] allCoins = GameObject.FindObjectsOfType<Coin>();
-        List<ulong> clients = new List<ulong>(NetworkManager.Singleton.ConnectedClientsIds);
-        Debug.Log("Transfering "+allCoins.Length+" coins");
+
         foreach (Coin coin in allCoins)
         {
-            ulong originalClient = coin.visibleToClientId;
-            ulong newClient = PickRandomOtherClient(clients, originalClient);
+            if (!coinsByOwner.ContainsKey(coin.visibleToClientId))
+            {
+                coinsByOwner[coin.visibleToClientId] = new List<Coin>();
+            }
+            coinsByOwner[coin.visibleToClientId].Add(coin);
+        }
 
-            if (coin.NetworkObject.IsSpawned)
-                coin.NetworkObject.Despawn(false); // Don’t destroy, reuse
+        List<ulong> allClients = new List<ulong>(playerReadyStatus.Keys);
+        if (allClients.Count < 2)
+        {
+            Debug.LogWarning("Not enough players to exchange coins.");
+            return;
+        }
 
-            coin.visibleToClientId = newClient;
-            coin.NetworkObject.CheckObjectVisibility = coin.CheckVisibility;
+        // Shuffle clients to avoid deterministic patterns
+        List<ulong> givers = new List<ulong>(allClients);
+        List<ulong> receivers = new List<ulong>(allClients);
+        ShuffleList(givers);
+        ShuffleList(receivers);
 
-            coin.NetworkObject.Spawn(false); // Re-spawn with updated visibility
+        // Try to build a fair mapping
+        Dictionary<ulong, ulong> giverToReceiver = new Dictionary<ulong, ulong>();
+        HashSet<ulong> assignedReceivers = new HashSet<ulong>();
+
+        foreach (ulong giver in givers)
+        {
+            ulong chosen = receivers
+                .Where(r => r != giver && !assignedReceivers.Contains(r))
+                .FirstOrDefault();
+
+            // If no unassigned receiver available, allow duplicates
+            if (chosen == 0 && receivers.Contains(0))
+            {
+                chosen = receivers.First(r => r != giver); // fallback
+            }
+
+            // Fallback: allow someone to receive multiple sets
+            if (chosen == 0 || chosen == giver)
+            {
+                foreach (ulong r in receivers)
+                {
+                    if (r != giver)
+                    {
+                        chosen = r;
+                        break;
+                    }
+                }
+            }
+
+            giverToReceiver[giver] = chosen;
+            assignedReceivers.Add(chosen);
+        }
+
+        // Apply coin transfer
+        foreach (var kvp in coinsByOwner)
+        {
+            ulong originalOwner = kvp.Key;
+            if (!giverToReceiver.ContainsKey(originalOwner)) continue;
+
+            ulong newOwner = giverToReceiver[originalOwner];
+            foreach (Coin coin in kvp.Value)
+            {
+                if (coin.NetworkObject.IsSpawned)
+                    coin.NetworkObject.Despawn(false);
+
+                coin.visibleToClientId = newOwner;
+                coin.NetworkObject.CheckObjectVisibility = coin.CheckVisibility;
+                coin.NetworkObject.Spawn(false);
+            }
+
+            Debug.Log($"Transferred {kvp.Value.Count} coins from player {originalOwner} to player {newOwner}");
         }
     }
 
+    void ShuffleList<T>(List<T> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int k = Random.Range(0, i + 1);
+            T temp = list[i];
+            list[i] = list[k];
+            list[k] = temp;
+        }
+    }
 
     ulong PickRandomOtherClient(List<ulong> clients, ulong exclude)
     {
