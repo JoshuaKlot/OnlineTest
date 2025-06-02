@@ -11,7 +11,7 @@ public class OwnerOnlyVisibility : NetworkBehaviour
         {
             NetworkObject netObject = GetComponent<NetworkObject>();
             
-            if (netObj != null)
+            if (netObject != null)
             {
                 netObject.NetworkShow(OwnerClientId);
                 Debug.Log($"[Server] Setting visibility callback for {netObj.name} | Owner: {OwnerClientId}");
