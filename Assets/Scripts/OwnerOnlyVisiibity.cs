@@ -1,4 +1,3 @@
-
 using Unity.Netcode;
 using UnityEngine;
 
@@ -6,23 +5,30 @@ public class OwnerOnlyVisibility : NetworkBehaviour
 {
     private NetworkObject netObj;
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        netObj = GetComponent<NetworkObject>();
-        if (netObj != null)
+        if (IsServer) // Only the server needs to set visibility callbacks
         {
-            Debug.Log("Owner "+OwnerClientId);
-            netObj.CheckObjectVisibility = IsVisibleToClient;
-        }
-        else
-        {
-            Debug.LogWarning("No NetworkObject found on object with OwnerOnlyVisibility.");
+            NetworkObject netObject = GetComponent<NetworkObject>();
+            
+            if (netObj != null)
+            {
+                netObject.NetworkShow(OwnerClientId);
+                Debug.Log($"[Server] Setting visibility callback for {netObj.name} | Owner: {OwnerClientId}");
+                //netObj.CheckObjectVisibility = IsVisibleToClient;
+            }
+            else
+            {
+                Debug.LogWarning("[Server] No NetworkObject found on object with OwnerOnlyVisibility.");
+            }
         }
     }
 
     private bool IsVisibleToClient(ulong clientId)
     {
-        Debug.Log("Client id:"+ clientId);
-        return clientId == OwnerClientId;
+        bool visible = clientId == OwnerClientId;
+        Debug.Log($"Visibility check for object {netObj.name} | clientId: {clientId} | ownerId: {OwnerClientId} => {visible}");
+        return visible;
     }
+
 }

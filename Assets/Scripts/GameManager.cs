@@ -51,7 +51,6 @@ public class GameManager : NetworkBehaviour
 
     private void Awake()
     {
-        Debug.Log("FUCKEREKEREOIOIROOIRIOIORROIR");
         if (Instance == null)
             Instance = this;
         else
