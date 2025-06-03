@@ -835,8 +835,8 @@ GameObject:
   - component: {fileID: 316565291}
   - component: {fileID: 316565290}
   - component: {fileID: 316565289}
-  - component: {fileID: 316565294}
   - component: {fileID: 316565293}
+  - component: {fileID: 316565294}
   - component: {fileID: 316565295}
   - component: {fileID: 316565296}
   m_Layer: 5
@@ -968,6 +968,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 288b1ea6a1acae04d9173703fef68912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   hostButton: {fileID: 484533231}
   clientButton: {fileID: 669081579}
   startButton: {fileID: 1697379452}
@@ -983,6 +984,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e68508bae5a0c8241b092579b1abcbff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   lobbyPanel: {fileID: 657524143}
   cursorPhasePanel: {fileID: 1737362224}
   playerPhasePanel: {fileID: 1541807404}
@@ -3972,7 +3974,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1737362225
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4028,8 +4030,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -361.2765, y: 210.84998}
+  m_SizeDelta: {x: -722.553, y: -421.6999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1965923675
 GameObject:
@@ -4065,9 +4067,9 @@ RectTransform:
   - {fileID: 1297886214}
   m_Father: {fileID: 1737362227}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -336.8, y: 206.21452}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 91.723495, y: -41.000015}
   m_SizeDelta: {x: 160, y: 50.971}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1965923677

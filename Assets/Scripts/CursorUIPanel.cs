@@ -17,6 +17,7 @@ public class CursorUIManager : NetworkBehaviour
 
                 readyButton.gameObject.SetActive(false);
             }
+
         });
     }
 }

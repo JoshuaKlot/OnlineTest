@@ -20,7 +20,7 @@ public class GameManager : NetworkBehaviour
         Debug.Log("Host started the game.");
         gameStarted = true;
 
-        PanelManager.Instance.ShowCursorPhase();
+        PanelManager.Instance.ShowCursorPhaseOnClients();
 
         foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {

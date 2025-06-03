@@ -1,6 +1,7 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class PanelManager : MonoBehaviour
+public class PanelManager : NetworkBehaviour
 {
     public static PanelManager Instance;
 
@@ -16,22 +17,40 @@ public class PanelManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    public void ShowLobby()
+    public void ShowLobbyOnClients()
     {
-        HideAll();
-        lobbyPanel.SetActive(true);
+        ShowLobbyClientRpc();
     }
 
-    public void ShowCursorPhase()
+    public void ShowCursorPhaseOnClients()
     {
-        HideAll();
-        cursorPhasePanel.SetActive(true);
+        ShowCursorPhaseClientRpc();
     }
 
-    public void ShowPlayerPhase()
+    public void ShowPlayerPhaseOnClients()
+    {
+        ShowPlayerPhaseClientRpc();
+    }
+
+    [ClientRpc]
+    private void ShowLobbyClientRpc()
     {
         HideAll();
-        playerPhasePanel.SetActive(true);
+        lobbyPanel?.SetActive(true);
+    }
+
+    [ClientRpc]
+    private void ShowCursorPhaseClientRpc()
+    {
+        HideAll();
+        cursorPhasePanel?.SetActive(true);
+    }
+
+    [ClientRpc]
+    private void ShowPlayerPhaseClientRpc()
+    {
+        HideAll();
+        playerPhasePanel?.SetActive(true);
     }
 
     private void HideAll()
