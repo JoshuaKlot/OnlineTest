@@ -1,46 +1,25 @@
 using UnityEngine;
 using Unity.Netcode;
-
+using UnityEngine.EventSystems;
 
 public class Cursor : NetworkBehaviour
 {
     [SerializeField] private GameObject coins;
     [SerializeField] private int numOfCoins;
-    [SerializeField] private GameObject mainLevel;
-    void Awake()
-    {
-        Debug.Log("spawning cursor");
-    }
 
     void Update()
     {
-        
         if (!IsOwner) return;
 
         Vector3 cursorWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         transform.position = new Vector3(cursorWorldPosition.x, cursorWorldPosition.y, 0);
 
-        if (Input.GetMouseButtonDown(0) && numOfCoins > 0)
+        // Prevent coin placement if clicking UI
+        if (Input.GetMouseButtonDown(0) && !IsPointerOverUI() && numOfCoins > 0)
         {
             SpawnCoinServerRpc(transform.position);
-            numOfCoins--;
-            if (numOfCoins == 0)
-            {
-                Debug.Log("Player finished placing all coins.");
-                if (GameManager.Instance != null)
-                {
-                    GameManager.Instance.MarkPlayerDonePlacingCoinsServerRpc();
-                }
-                else
-                {
-                    Debug.Log("Theres no game manager. Wierd");
-                }
-                    DespawnCursorServerRpc();
-            }
-
+            //numOfCoins--;
         }
-
-
     }
 
     [ServerRpc]
@@ -54,15 +33,11 @@ public class Cursor : NetworkBehaviour
         NetworkObject netObj = placedCoin.GetComponent<NetworkObject>();
         netObj.CheckObjectVisibility = coinComponent.CheckVisibility;
 
-        netObj.Spawn();  // do not pass ownership unless needed
-    }
-    [ServerRpc]
-    private void DespawnCursorServerRpc(ServerRpcParams rpcParams = default)
-    {
-        if (NetworkObject.IsSpawned)
-        {
-            NetworkObject.Despawn();
-        }
+        netObj.Spawn();
     }
 
+    private bool IsPointerOverUI()
+    {
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+    }
 }
