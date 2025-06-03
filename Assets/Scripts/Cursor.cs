@@ -18,7 +18,7 @@ public class Cursor : NetworkBehaviour
         if (Input.GetMouseButtonDown(0) && !IsPointerOverUI() && numOfCoins > 0)
         {
             SpawnCoinServerRpc(transform.position);
-            //numOfCoins--;
+            
         }
     }
 

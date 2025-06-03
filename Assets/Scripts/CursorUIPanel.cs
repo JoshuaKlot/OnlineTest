@@ -10,14 +10,11 @@ public class CursorUIManager : NetworkBehaviour
     {
         readyButton.onClick.AddListener(() =>
         {
-            if (IsOwner)
-            {
                 Debug.Log("Ready button pressed. Marking player as done.");
                 GameManager.Instance.MarkPlayerDonePlacingCoinsServerRpc();
 
                 readyButton.gameObject.SetActive(false);
-            }
-
+    
         });
     }
 }

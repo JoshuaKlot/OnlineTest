@@ -54,6 +54,7 @@ public class GameManager : NetworkBehaviour
 
     private void Awake()
     {
+        PanelManager.Instance.ShowLobbyOnClients();
         if (Instance == null)
             Instance = this;
         else
@@ -86,7 +87,7 @@ public class GameManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void MarkPlayerDonePlacingCoinsServerRpc(ServerRpcParams rpcParams = default)
     {
-        Debug.Log("This function was called corretlty");
+        
         ulong clientId = rpcParams.Receive.SenderClientId;
         if (!playerReadyStatus.ContainsKey(clientId))
         {
@@ -95,6 +96,7 @@ public class GameManager : NetworkBehaviour
         }
 
         playerReadyStatus[clientId] = true;
+        cursors[clientId].Despawn();
         Debug.Log($"Client {clientId} marked as done placing coins.");
 
         CheckIfAllPlayersAreDone(); // NEW: separate logic to advance phase
