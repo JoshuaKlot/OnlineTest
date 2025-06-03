@@ -20,6 +20,8 @@ public class GameManager : NetworkBehaviour
         Debug.Log("Host started the game.");
         gameStarted = true;
 
+        PanelManager.Instance.ShowCursorPhase();
+
         foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (clientId != NetworkManager.ServerClientId)
@@ -28,6 +30,7 @@ public class GameManager : NetworkBehaviour
             }
         }
     }
+
 
 
     public void RegisterCursor(ulong clientId, NetworkObject cursorObject)
