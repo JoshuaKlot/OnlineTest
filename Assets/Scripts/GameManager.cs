@@ -54,13 +54,18 @@ public class GameManager : NetworkBehaviour
 
     private void Awake()
     {
-        PanelManager.Instance.ShowLobbyOnClients();
+        
         if (Instance == null)
             Instance = this;
         else
             Destroy(gameObject);
+        
     }
 
+    private void Start()
+    {
+        PanelManager.Instance.ShowLobbyOnClients();
+    }
     [ServerRpc(RequireOwnership = false)]
     public void RegisterPlayerServerRpc(ServerRpcParams rpcParams = default)
     {
@@ -129,6 +134,10 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    public void SendCoinMsg(ServerRpcParams rpcParams = default)
+    {
+        SendMsg.Instance.CoinCollected(rpcParams.Receive.SenderClientId);
+    }
 
     private bool AllPlayersReady()
     {

@@ -15,6 +15,7 @@ public class PanelManager : NetworkBehaviour
             Instance = this;
         else
             Destroy(gameObject);
+        ShowLobbyOnClients();
     }
 
     public void ShowLobbyOnClients()

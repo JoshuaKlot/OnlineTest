@@ -29,8 +29,7 @@ public class Coin : NetworkBehaviour
         // Only allow interaction if the player who touched it is the one assigned
         if (triggeringClientId == visibleToClientId)
         {
-            Debug.Log($"{col.gameObject.name} picked up coin {gameObject.name} at time {Time.time}");
-            NetworkObject.Despawn(true);
+            GameManager.Instance.SendCoinMsg();
         }
     }
 
