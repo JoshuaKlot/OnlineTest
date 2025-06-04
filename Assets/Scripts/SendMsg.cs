@@ -18,15 +18,16 @@ public class SendMsg : NetworkBehaviour
         CoinCollectedClientRpc(clientId);
     }
     [ClientRpc]
-    private void CoinCollectedClientRpc(ulong clientId)
+    private void CoinCollectedClientRpc(ulong collectorClientId)
     {
-        if (clientId == OwnerClientId)
+        if (NetworkManager.Singleton.LocalClientId == collectorClientId)
         {
             Debug.Log("You collected a coin");
         }
         else
         {
-            Debug.Log("Player " +clientId+" collected a coin");
+            Debug.Log("Player " + collectorClientId + " collected a coin");
         }
     }
+
 }

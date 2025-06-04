@@ -30,6 +30,7 @@ public class Coin : NetworkBehaviour
         if (triggeringClientId == visibleToClientId)
         {
             GameManager.Instance.SendCoinMsg();
+            NetworkObject.Despawn();
         }
     }
 
