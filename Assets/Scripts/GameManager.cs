@@ -10,6 +10,7 @@ public class GameManager : NetworkBehaviour
     private Dictionary<ulong, bool> playerReadyStatus = new Dictionary<ulong, bool>();
     private bool playersSpawned = false;
     private Dictionary<ulong, NetworkObject> cursors = new Dictionary<ulong, NetworkObject>();
+    private Dictionary<ulong, NetworkObject> players = new Dictionary<ulong, NetworkObject>();
 
     private bool gameStarted = false;
 
@@ -41,7 +42,14 @@ public class GameManager : NetworkBehaviour
             Debug.Log("Cursor Registered");
         }
     }
-
+    public void RegisterPlayer(ulong clientId, NetworkObject playerObject)
+    {
+        if (!players.ContainsKey(clientId))
+        {
+            players.Add(clientId, playerObject);
+            Debug.Log("Cursor Registered");
+        }
+    }
     private void DespawnAllCursors()
     {
         foreach (var cursor in cursors.Values)
@@ -53,7 +61,7 @@ public class GameManager : NetworkBehaviour
     }
     private void DespawnAllPlayers()
     {
-        foreach (var player in playerReadyStatus.Values)
+        foreach (var player in players.Values)
         {
             Debug.Log("Despawning player " + player);
             player.Despawn();
@@ -153,6 +161,10 @@ public class GameManager : NetworkBehaviour
         DespawnAllPlayers();
         NetworkManager.Singleton.Shutdown();
         PanelManager.Instance.ShowLobbyOnClients();
+        playersSpawned = false;
+        playerReadyStatus.Clear();
+        cursors.Clear();
+        players.Clear();
     }
 
     private bool AllPlayersReady()

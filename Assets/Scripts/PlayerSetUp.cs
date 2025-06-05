@@ -59,6 +59,7 @@ public class PlayerSpawner : NetworkBehaviour
 
         newPlayer.SetActive(true);
         netObj.SpawnWithOwnership(clientId, true);
+        GameManager.Instance.RegisterPlayer(clientId, netObj);
     }
 
 }
