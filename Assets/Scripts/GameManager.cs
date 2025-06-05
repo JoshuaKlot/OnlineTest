@@ -39,7 +39,7 @@ public class GameManager : NetworkBehaviour
         if (!cursors.ContainsKey(clientId))
         {
             cursors.Add(clientId, cursorObject);
-            Debug.Log("Cursor Registered");
+            Debug.Log("Cursor "+clientId+ " Registered");
         }
     }
     public void RegisterPlayer(ulong clientId, NetworkObject playerObject)
@@ -158,13 +158,15 @@ public class GameManager : NetworkBehaviour
 
     public void ResetGame()
     {
+        Debug.Log("Reseting game");
         DespawnAllPlayers();
-        NetworkManager.Singleton.Shutdown();
+        //NetworkManager.Singleton.Shutdown();
         PanelManager.Instance.ShowLobbyOnClients();
         playersSpawned = false;
         playerReadyStatus.Clear();
         cursors.Clear();
         players.Clear();
+        gameStarted = false;
     }
 
     private bool AllPlayersReady()
