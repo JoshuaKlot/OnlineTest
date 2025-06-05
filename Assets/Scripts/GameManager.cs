@@ -51,7 +51,14 @@ public class GameManager : NetworkBehaviour
                 cursor.Despawn();
         }
     }
-
+    private void DespawnAllPlayers()
+    {
+        foreach (var player in playerReadyStatus.Values)
+        {
+            Debug.Log("Despawning player " + player);
+            player.Despawn();
+        }
+    }
     private void Awake()
     {
         
@@ -127,6 +134,7 @@ public class GameManager : NetworkBehaviour
             playersSpawned = true;
             RevealCoinsToOtherPlayers();
             SpawnAllPlayerB();
+            PanelManager.Instance.ShowPlayerPhaseOnClients();
         }
         else
         {
@@ -140,6 +148,12 @@ public class GameManager : NetworkBehaviour
         SendMsg.Instance.CoinCollected(clientId);
     }
 
+    public void ResetGame()
+    {
+        DespawnAllPlayers();
+        NetworkManager.Singleton.Shutdown();
+        PanelManager.Instance.ShowLobbyOnClients();
+    }
 
     private bool AllPlayersReady()
     {

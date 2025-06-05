@@ -25,7 +25,7 @@ public class NetworkUI : NetworkBehaviour
             if (NetworkManager.Singleton.IsHost)
             {
                 GameManager.Instance.StartGame(); // Call host-side start logic
-                startButton.gameObject.SetActive(false); // Hide the button after pressing
+                //startButton.gameObject.SetActive(false); // Hide the button after pressing
             }
         });
 
