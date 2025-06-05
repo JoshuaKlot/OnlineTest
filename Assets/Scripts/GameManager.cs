@@ -134,12 +134,12 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public void SendCoinMsg(ServerRpcParams rpcParams = default)
+    public void SendCoinMsg(ulong clientId)
     {
-        ulong clientID= rpcParams.Receive.SenderClientId;
-        Debug.Log(clientID + " colected a coin");
-        SendMsg.Instance.CoinCollected(clientID);
+        Debug.Log(clientId + " collected a coin");
+        SendMsg.Instance.CoinCollected(clientId);
     }
+
 
     private bool AllPlayersReady()
     {
@@ -246,7 +246,7 @@ public class GameManager : NetworkBehaviour
                     coin.NetworkObject.Despawn(false);
 
                 coin.visibleToClientId = newOwner;
-                coin.NetworkObject.ChangeOwnership(newOwner);
+                //coin.NetworkObject.ChangeOwnership(newOwner);
                 coin.NetworkObject.CheckObjectVisibility = coin.CheckVisibility;
                 coin.NetworkObject.Spawn(false);
             }

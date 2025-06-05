@@ -24,12 +24,15 @@ public class Coin : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        ulong triggeringClientId = col.GetComponent<NetworkObject>()?.OwnerClientId ?? ulong.MaxValue;
+        NetworkObject playerObj = col.GetComponent<NetworkObject>();
+        if (playerObj == null) return;
 
-        // Only allow interaction if the player who touched it is the one assigned
+        ulong triggeringClientId = playerObj.OwnerClientId;
+
+        // Allow only the intended player to collect the coin
         if (triggeringClientId == visibleToClientId)
         {
-            GameManager.Instance.SendCoinMsg();
+            GameManager.Instance.SendCoinMsg(triggeringClientId);
             NetworkObject.Despawn();
         }
     }
