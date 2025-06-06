@@ -15,12 +15,11 @@ public class PlayerSpawner : NetworkBehaviour
         else
             Destroy(gameObject);
     }
-    void Start()
+    public void SpawnPlayers()
     {
-        if (!IsServer)
-        {
+        if(IsClient)
             GameManager.Instance.RegisterPlayerServerRpc(); // Only register for approval
-        }
+
     }
 
     [ServerRpc(RequireOwnership = false)]

@@ -22,7 +22,7 @@ public class GameManager : NetworkBehaviour
         gameStarted = true;
 
         PanelManager.Instance.ShowCursorPhaseOnClients();
-
+        PlayerSpawner.Instance.SpawnPlayers();
         foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (clientId != NetworkManager.ServerClientId)
@@ -160,7 +160,7 @@ public class GameManager : NetworkBehaviour
     {
         Debug.Log("Reseting game");
         DespawnAllPlayers();
-        //NetworkManager.Singleton.Shutdown();
+        DespawnCoins();
         PanelManager.Instance.ShowLobbyOnClients();
         playersSpawned = false;
         playerReadyStatus.Clear();
@@ -281,6 +281,16 @@ public class GameManager : NetworkBehaviour
 
             Debug.Log($"Transferred {kvp.Value.Count} coins from player {originalOwner} to player {newOwner}");
         }
+    }
+
+    void DespawnCoins()
+    {
+        Coin[] allCoins = GameObject.FindObjectsOfType<Coin>();
+        foreach (Coin coin in allCoins)
+        {
+            coin.NetworkObject.Despawn();
+        }
+
     }
 
     void ShuffleList<T>(List<T> list)
