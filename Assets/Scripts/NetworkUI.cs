@@ -12,11 +12,14 @@ public class NetworkUI : NetworkBehaviour
     {
         hostButton.onClick.AddListener(() => {
             NetworkManager.Singleton.StartHost();
+            NetworkLogger.Log("[Host] Starting Host");
+
             SetStartButtonVisibility(); // Check visibility after host starts
         });
 
         clientButton.onClick.AddListener(() => {
             NetworkManager.Singleton.StartClient();
+            NetworkLogger.Log("[Host] Starting Client");
             SetStartButtonVisibility(); // Hide on client
         });
 

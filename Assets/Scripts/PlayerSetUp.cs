@@ -15,14 +15,26 @@ public class PlayerSpawner : NetworkBehaviour
         else
             Destroy(gameObject);
     }
+
+    [ClientRpc]
+    public void TriggerSpawnPlayersClientRpc()
+    {
+        if (IsClient && !IsHost)
+        {
+            SpawnPlayers();
+        }
+    }
+
     public void SpawnPlayers()
     {
-        
-        if (!IsServer)
+        Debug.Log($"[Client {NetworkManager.Singleton.LocalClientId}] SpawnPlayers called.");
+        if (IsClient && !IsHost)
         {
+            Debug.Log($"[Client {NetworkManager.Singleton.LocalClientId}] Registering with server.");
             GameManager.Instance.RegisterPlayerServerRpc();
         }
     }
+
 
 
     [ServerRpc(RequireOwnership = false)]

@@ -19,7 +19,7 @@ public class GameManager : NetworkBehaviour
         if (!IsServer) return;
 
         Debug.Log("Host started the game.");
-        PlayerSpawner.Instance.SpawnPlayers();
+        PlayerSpawner.Instance.TriggerSpawnPlayersClientRpc();
         
 
         PanelManager.Instance.ShowCursorPhaseOnClients();
@@ -88,11 +88,11 @@ public class GameManager : NetworkBehaviour
     {
         ulong clientId = rpcParams.Receive.SenderClientId;
 
-        if (gameStarted)
-        {
-            Debug.LogWarning($"[Server] Game already started. Rejecting new player {clientId}.");
-            return; // Prevent late joins
-        }
+        //if (gameStarted)
+        //{
+        //    Debug.LogWarning($"[Server] Game already started. Rejecting new player {clientId}.");
+        //    return; // Prevent late joins
+        //}
 
         if (!playerReadyStatus.ContainsKey(clientId))
         {
