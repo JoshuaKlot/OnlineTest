@@ -17,7 +17,11 @@ public class GameManager : NetworkBehaviour
     public void StartGame()
     {
         if (!IsServer) return;
-
+        if (NetworkManager.Singleton.ConnectedClientsList.Count < 1)
+        {
+            NetworkLogger.Log("Connect at least one player before starting");
+            return;
+        }
         Debug.Log("Host started the game.");
         PlayerSpawner.Instance.TriggerSpawnPlayersClientRpc();
         
