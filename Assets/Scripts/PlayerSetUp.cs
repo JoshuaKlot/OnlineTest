@@ -17,10 +17,13 @@ public class PlayerSpawner : NetworkBehaviour
     }
     public void SpawnPlayers()
     {
-        if(IsClient)
-            GameManager.Instance.RegisterPlayerServerRpc(); // Only register for approval
-
+        
+        if (!IsServer)
+        {
+            GameManager.Instance.RegisterPlayerServerRpc();
+        }
     }
+
 
     [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayerACursorServerRpc(ulong clientId)

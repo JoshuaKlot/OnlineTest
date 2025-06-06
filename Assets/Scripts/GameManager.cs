@@ -19,10 +19,11 @@ public class GameManager : NetworkBehaviour
         if (!IsServer) return;
 
         Debug.Log("Host started the game.");
-        gameStarted = true;
+        PlayerSpawner.Instance.SpawnPlayers();
+        
 
         PanelManager.Instance.ShowCursorPhaseOnClients();
-        PlayerSpawner.Instance.SpawnPlayers();
+        
         foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (clientId != NetworkManager.ServerClientId)
@@ -30,6 +31,7 @@ public class GameManager : NetworkBehaviour
                 PlayerSpawner.Instance.SpawnPlayerACursorServerRpc(clientId);
             }
         }
+        gameStarted = true;
     }
 
 
