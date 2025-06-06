@@ -1,15 +1,18 @@
 Download Test:
 [Here
-](https://drive.google.com/file/d/1NPNEjMMc-0OYRUJH1-mfxtO8YTg4FJd8/view?usp=sharing)
+](https://drive.google.com/file/d/1H-PgZ_ZMF1TUsMtHlPTuLVsfUJRQpR8P/view?usp=sharing)
 
 **Instructions**: Grab the zip file with the project from the README in github
 
-Open two instances of OnlineTest.exe
+Open an instance of OnlineTest.exe. Start it as a host. It cannot participate.
 
-Start one as the Host first and then the other as the Client.
+Open up one or more instances of OnlineTest.exe, and start them as clients. Press start on the host screen when you have enough.
 
-It should work
+Click on the clients screen to place down coins. One any given client is down placing down coins click the ready button. When all clients have clicked the ready button, a player phase will start
 
+Each player moves with the arrow keys and can collect coins. If two or more clients are in play, they will swap coin placements.
+
+The host can click the reset button to bring you back to the lobby.
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
