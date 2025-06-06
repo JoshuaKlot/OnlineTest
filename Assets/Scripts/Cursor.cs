@@ -38,6 +38,26 @@ public class Cursor : NetworkBehaviour
 
     private bool IsPointerOverUI()
     {
-        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        if (EventSystem.current == null)
+            return false;
+
+        PointerEventData pointerData = new PointerEventData(EventSystem.current)
+        {
+            position = Input.mousePosition
+        };
+
+        var raycastResults = new System.Collections.Generic.List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, raycastResults);
+
+        foreach (var result in raycastResults)
+        {
+            if (result.gameObject.GetComponent<UnityEngine.UI.Button>() != null)
+            {
+                return true; // Pointer is over a button
+            }
+        }
+
+        return false; // Pointer is not over any interactive UI
     }
+
 }

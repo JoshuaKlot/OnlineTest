@@ -5,9 +5,9 @@ using System.Collections.Generic;
 public class NetworkLogger : MonoBehaviour
 {
     public static NetworkLogger Instance;
-
+    [SerializeField] private int maxLogEntries = 8;
     [SerializeField] private bool logToConsole = true;
-    [SerializeField] private UnityEngine.UI.Text logTextUI; // Optional: assign in inspector
+    [SerializeField] private UnityEngine.UI.Text logTextUI;
     private List<string> logEntries = new();
 
     private void Awake()
@@ -52,13 +52,16 @@ public class NetworkLogger : MonoBehaviour
         string fullMessage = $"[{timestamp}] {message}";
         logEntries.Add(fullMessage);
 
+        // Remove oldest entries if we exceed max
+        if (logEntries.Count > maxLogEntries)
+            logEntries.RemoveAt(0);
+
         if (logToConsole)
             Debug.Log(fullMessage);
 
         if (logTextUI != null)
             logTextUI.text = string.Join("\n", logEntries);
     }
-
     // Optionally call this from other scripts to log custom info
     public static void Log(string message)
     {
