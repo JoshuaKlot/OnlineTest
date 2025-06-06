@@ -120,7 +120,7 @@ public class GameManager : NetworkBehaviour
         playerReadyStatus[clientId] = true;
         cursors[clientId].Despawn();
         Debug.Log($"Client {clientId} marked as done placing coins.");
-
+        SendMsg.Instance.Ready(clientId);
         CheckIfAllPlayersAreDone(); // NEW: separate logic to advance phase
     }
 

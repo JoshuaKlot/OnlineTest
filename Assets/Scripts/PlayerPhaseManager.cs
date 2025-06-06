@@ -5,22 +5,25 @@ using UnityEngine.UI;
 public class PlayerPhaseManager : NetworkBehaviour
 {
     public Button resetButton;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
+        // Hide the button if this client is not the host
+        if (!NetworkManager.Singleton.IsHost)
+        {
+            resetButton.gameObject.SetActive(false);
+            return; // Don't add the listener
+        }
+
+        // Only host reaches this point
         resetButton.onClick.AddListener(() =>
         {
-            if (NetworkManager.Singleton.IsHost)
-            {
-                GameManager.Instance.ResetGame(); // Call host-side start logic
-                //startButton.gameObject.SetActive(false); // Hide the button after pressing
-            }
+            GameManager.Instance.ResetGame();
         });
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        // Not used, safe to delete or keep if needed later
     }
 }

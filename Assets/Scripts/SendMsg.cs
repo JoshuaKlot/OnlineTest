@@ -17,16 +17,33 @@ public class SendMsg : NetworkBehaviour
     {
         CoinCollectedClientRpc(clientId);
     }
+
+    public void Ready(ulong clientId)
+    {
+        ReadyMsgClientRpc(clientId);
+    }
     [ClientRpc]
     private void CoinCollectedClientRpc(ulong collectorClientId)
     {
         if (NetworkManager.Singleton.LocalClientId == collectorClientId)
         {
-            Debug.Log("You collected a coin");
+            NetworkLogger.Log("You collected a coin");
         }
         else
         {
-            Debug.Log("Player " + collectorClientId + " collected a coin");
+            NetworkLogger.Log("Player " + collectorClientId + " collected a coin");
+        }
+    }
+    [ClientRpc]
+    private void ReadyMsgClientRpc(ulong ReadyClientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId == ReadyClientId)
+        {
+            NetworkLogger.Log("You are ready");
+        }
+        else
+        {
+            NetworkLogger.Log("Player " + ReadyClientId + " is ready");
         }
     }
 

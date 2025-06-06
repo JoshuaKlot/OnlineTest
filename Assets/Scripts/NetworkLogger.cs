@@ -16,7 +16,7 @@ public class NetworkLogger : MonoBehaviour
             Instance = this;
         else
             Destroy(gameObject);
-        logTextUI.text = "Starting the game....";
+        logTextUI.text = "Starting the game....\nPress the Start Host or Client Buttons";
         Debug.Log(logTextUI.text);
     }
 
