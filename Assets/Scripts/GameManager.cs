@@ -238,33 +238,15 @@ public class GameManager : NetworkBehaviour
         Dictionary<ulong, ulong> giverToReceiver = new Dictionary<ulong, ulong>();
         HashSet<ulong> assignedReceivers = new HashSet<ulong>();
 
-        foreach (ulong giver in givers)
+        // Build fair giver-to-receiver mapping: everyone gives to someone else, and everyone receives at least once.
+        //Dictionary<ulong, ulong> giverToReceiver = new Dictionary<ulong, ulong>();
+
+        int count = allClients.Count;
+        for (int i = 0; i < count; i++)
         {
-            ulong chosen = receivers
-                .Where(r => r != giver && !assignedReceivers.Contains(r))
-                .FirstOrDefault();
-
-            // If no unassigned receiver available, allow duplicates
-            if (chosen == 0 && receivers.Contains(0))
-            {
-                chosen = receivers.First(r => r != giver); // fallback
-            }
-
-            // Fallback: allow someone to receive multiple sets
-            if (chosen == 0 || chosen == giver)
-            {
-                foreach (ulong r in receivers)
-                {
-                    if (r != giver)
-                    {
-                        chosen = r;
-                        break;
-                    }
-                }
-            }
-
-            giverToReceiver[giver] = chosen;
-            assignedReceivers.Add(chosen);
+            ulong giver = allClients[i];
+            ulong receiver = allClients[(i + 1) % count]; // Shift by 1
+            giverToReceiver[giver] = receiver;
         }
 
         // Apply coin transfer
