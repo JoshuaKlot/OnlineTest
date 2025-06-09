@@ -132,7 +132,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   coins: {fileID: 5467673333300652890, guid: fd83f38dec405f24b8f6121a28a094c7, type: 3}
   numOfCoins: 6
-  mainLevel: {fileID: 7504435737895596042, guid: 3b63e1386e8cc7541a8bc963924cac07, type: 3}
 --- !u!114 &2336727080217863520
 MonoBehaviour:
   m_ObjectHideFlags: 0
