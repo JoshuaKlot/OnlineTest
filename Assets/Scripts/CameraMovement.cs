@@ -16,7 +16,7 @@ public class CameraMovement : NetworkBehaviour
     void Update()
     {
 
-        if (!IsOwner) return; // Only allow local player to move their character
+        //if (!IsOwner) return; // Only allow local player to move their character
 
         float hMovemnent = Input.GetAxisRaw("Horizontal");
         float vMovement = Input.GetAxisRaw("Vertical");
