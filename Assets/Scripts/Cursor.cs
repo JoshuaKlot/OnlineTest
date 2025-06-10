@@ -4,9 +4,13 @@ using UnityEngine.EventSystems;
 
 public class Cursor : NetworkBehaviour
 {
+
     [SerializeField] private GameObject coins;
     [SerializeField] private int numOfCoins;
 
+    private void Awake()
+    {
+    }
     void Update()
     {
         if (!IsOwner) return;

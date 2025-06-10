@@ -4,7 +4,7 @@ using Unity.Netcode;// Gets the Unity Netcode to use the function that come with
 public class PlayerSpawner : NetworkBehaviour
 {
     public static PlayerSpawner Instance;
-
+    [SerializeField] private GameObject cameraTracker;
     [SerializeField] private GameObject playerPrefabA;
     [SerializeField] private GameObject playerPrefabB;
 
@@ -42,7 +42,8 @@ public class PlayerSpawner : NetworkBehaviour
     {
         GameObject newPlayer = Instantiate(playerPrefabA);
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
-
+        GameObject cTracker = Instantiate(cameraTracker);
+        NetworkObject netObj2 = cTracker.GetComponent<NetworkObject>();
         netObj.CheckObjectVisibility = (targetClientId) =>
         {
             bool visible = targetClientId == clientId;
@@ -57,6 +58,7 @@ public class PlayerSpawner : NetworkBehaviour
 
         // Register cursor in GameManager
         GameManager.Instance.RegisterCursor(clientId, netObj);
+        GameManager.Instance.RegisterCameraTracker(clientId, netObj2);
     }
 
 

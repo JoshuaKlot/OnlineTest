@@ -10,6 +10,7 @@ public class GameManager : NetworkBehaviour
     private Dictionary<ulong, bool> playerReadyStatus = new Dictionary<ulong, bool>();
     private bool playersSpawned = false;
     private Dictionary<ulong, NetworkObject> cursors = new Dictionary<ulong, NetworkObject>();
+    private Dictionary<ulong, NetworkObject> cameraTracker = new Dictionary<ulong, NetworkObject>();
     private Dictionary<ulong, NetworkObject> players = new Dictionary<ulong, NetworkObject>();
 
     private bool gameStarted = false;
@@ -45,7 +46,6 @@ public class GameManager : NetworkBehaviour
         if (!cursors.ContainsKey(clientId))
         {
             cursors.Add(clientId, cursorObject);
-            Debug.Log("Cursor "+clientId+ " Registered");
         }
     }
     public void RegisterPlayer(ulong clientId, NetworkObject playerObject)
@@ -53,7 +53,15 @@ public class GameManager : NetworkBehaviour
         if (!players.ContainsKey(clientId))
         {
             players.Add(clientId, playerObject);
-            Debug.Log("Cursor Registered");
+           
+        }
+    }
+    public void RegisterCameraTracker(ulong clientId, NetworkObject trackerObject)
+    {
+        if (!cameraTracker.ContainsKey(clientId))
+        {
+            cameraTracker.Add(clientId, trackerObject);
+           
         }
     }
     private void DespawnAllCursors()
