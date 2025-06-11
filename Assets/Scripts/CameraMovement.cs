@@ -10,6 +10,10 @@ public class CameraMovement : NetworkBehaviour
     bool playerPhase = false;
     GameObject Player;
 
+    private void Awake()
+    {
+        Debug.Log("The camera tracker has spawned");
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -19,10 +23,11 @@ public class CameraMovement : NetworkBehaviour
     void Update()
     {
 
-        //if (!IsOwner) return; // Only allow local player to move their character
+        if (!IsOwner) return; // Only allow local player to move their character
 
         float hMovemnent = Input.GetAxisRaw("Camera Horizontal");
         float vMovement = Input.GetAxisRaw("Camera Vertical");
+        Debug.Log("vMovement is " + vMovement + "and hMovement is " + hMovemnent);
         float phMovement = Input.GetAxisRaw("Horizontal");
         float pvMovement = Input.GetAxisRaw("Vertical");
         rb2d.linearVelocity = new Vector2(hMovemnent * hSpeed, vSpeed * vMovement);

@@ -7,7 +7,7 @@ public class Coin : NetworkBehaviour
 
     private void Start()
     {
-        transform.parent = GameObject.Find("MainLevel").transform;
+        //transform.parent = GameObject.Find("MainLevel").transform;
 
         if (IsServer)
         {

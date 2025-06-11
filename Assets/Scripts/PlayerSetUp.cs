@@ -40,8 +40,10 @@ public class PlayerSpawner : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayerACursorServerRpc(ulong clientId)
     {
+        Debug.Log("Spawning PLayer");
         GameObject newPlayer = Instantiate(playerPrefabA);
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
+        Debug.Log("Spawning Camera Tracker");
         GameObject cTracker = Instantiate(cameraTracker);
         NetworkObject netObj2 = cTracker.GetComponent<NetworkObject>();
         netObj.CheckObjectVisibility = (targetClientId) =>
@@ -53,6 +55,7 @@ public class PlayerSpawner : NetworkBehaviour
 
         newPlayer.SetActive(true);
         netObj.SpawnWithOwnership(clientId, true);
+        netObj2.SpawnWithOwnership(clientId, true);
 
         Debug.Log("Register Cursor");
 
