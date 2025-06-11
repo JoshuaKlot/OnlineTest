@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq; // Add this at the top
 
 public class GameManager : NetworkBehaviour
@@ -211,9 +212,20 @@ public class GameManager : NetworkBehaviour
             }
 
             PlayerSpawner.Instance.SpawnPlayerBForClient(clientId);
+            StartCoroutine(WaitAndAttachCamera(clientId));
         }
     }
+    private IEnumerator WaitAndAttachCamera(ulong clientId)
+    {
+        // Wait for the player to spawn
+        yield return new WaitUntil(() => players.ContainsKey(clientId) && players[clientId] != null);
 
+        GameObject playerObj = players[clientId].gameObject;
+        GameObject cameraObj = cameraTracker[clientId].gameObject;
+
+        var cameraMovement = cameraObj.GetComponent<CameraMovement>();
+        cameraMovement.FollowPlayer(playerObj);
+    }
     void RevealCoinsToOtherPlayers()
     {
         // Group coins by their original owner

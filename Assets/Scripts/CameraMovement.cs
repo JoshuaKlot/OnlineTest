@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using System.Security.Cryptography;
 
 public class CameraMovement : NetworkBehaviour
 {
@@ -22,12 +23,22 @@ public class CameraMovement : NetworkBehaviour
 
         float hMovemnent = Input.GetAxisRaw("Camera Horizontal");
         float vMovement = Input.GetAxisRaw("Camera Vertical");
+        float phMovement = Input.GetAxisRaw("Horizontal");
+        float pvMovement = Input.GetAxisRaw("Vertical");
         rb2d.linearVelocity = new Vector2(hMovemnent * hSpeed, vSpeed * vMovement);
+        if (playerPhase)
+        {
+            if (phMovement != 0 && pvMovement != 0) {
+                transform.position = Vector3.Lerp(this.transform.position, Player.transform.position,2);
+            }
+        }
     }
 
-    void FollowPlayer(GameObject player)
+    public void FollowPlayer(GameObject player)
     {
-
+        Player = player;
+        playerPhase = true;
+        transform.position=Player.transform.position;
     }
 
 }
