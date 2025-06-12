@@ -74,6 +74,13 @@ public class GameManager : NetworkBehaviour
                 cursor.Despawn();
         }
     }
+    private void DespawnTrackers()
+    {
+        foreach (var tracker in cameraTracker.Values)
+        {
+            tracker.Despawn();
+        }
+    }
     private void DespawnAllPlayers()
     {
         foreach (var player in players.Values)
@@ -175,6 +182,7 @@ public class GameManager : NetworkBehaviour
     {
         Debug.Log("Reseting game");
         DespawnAllPlayers();
+        DespawnTrackers();
         DespawnCoins();
         PanelManager.Instance.ShowLobbyOnClients();
         playersSpawned = false;

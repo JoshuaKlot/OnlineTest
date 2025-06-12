@@ -6,6 +6,7 @@ public class CameraMovement : NetworkBehaviour
 {
     [SerializeField] private float vSpeed;
     [SerializeField] private float hSpeed;
+    [SerializeField] private GameObject Camera;
     Rigidbody2D rb2d;
     bool playerPhase = false;
     GameObject Player;
@@ -13,6 +14,7 @@ public class CameraMovement : NetworkBehaviour
     private void Awake()
     {
         Debug.Log("The camera tracker has spawned");
+        Camera.GetComponent<CinemachineSetUp>().SetUpTracking(this.transform.gameObject);
     }
     // Start is called before the first frame update
     void Start()
