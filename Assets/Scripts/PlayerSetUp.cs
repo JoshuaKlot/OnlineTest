@@ -7,6 +7,7 @@ public class PlayerSpawner : NetworkBehaviour
     [SerializeField] private GameObject cameraTracker;
     [SerializeField] private GameObject playerPrefabA;
     [SerializeField] private GameObject playerPrefabB;
+    [SerializeField] private GameObject cmCamera;
 
     private void Awake()
     {
