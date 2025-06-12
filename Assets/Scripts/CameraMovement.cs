@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using System.Security.Cryptography;
+using Unity.Cinemachine;
 
 public class CameraMovement : NetworkBehaviour
 {
@@ -14,12 +15,19 @@ public class CameraMovement : NetworkBehaviour
     private void Awake()
     {
         Debug.Log("The camera tracker has spawned");
-        Camera.GetComponent<CinemachineSetUp>().SetUpTracking(this.transform.gameObject);
+        Camera = GameObject.Find("CmCamera");
+        
     }
     // Start is called before the first frame update
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
+        if (Camera != null)
+        {
+            Camera.GetComponent<CinemachineSetUp>().SetUpTracking(this.transform.gameObject);
+        }
+        else
+            Debug.Log("Camera not found"); 
     }
 
     void Update()

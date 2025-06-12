@@ -8,6 +8,6 @@ public class CinemachineSetUp : NetworkBehaviour
 
     public void SetUpTracking(GameObject tracker)
     {
-        cmCamera.LookAt = tracker.transform;
+        cmCamera.Follow = tracker.transform;
     }
 }

@@ -233,6 +233,7 @@ public class GameManager : NetworkBehaviour
 
         var cameraMovement = cameraObj.GetComponent<CameraMovement>();
         cameraMovement.FollowPlayer(playerObj);
+        Debug.Log("CameraAttached");
     }
     void RevealCoinsToOtherPlayers()
     {
