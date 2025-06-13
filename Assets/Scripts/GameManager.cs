@@ -98,7 +98,10 @@ public class GameManager : NetworkBehaviour
             Destroy(gameObject);
         
     }
-
+    private void Update()
+    {
+        
+    }
     private void Start()
     {
         PanelManager.Instance.ShowLobbyOnClients();
@@ -225,16 +228,44 @@ public class GameManager : NetworkBehaviour
     }
     private IEnumerator WaitAndAttachCamera(ulong clientId)
     {
-        // Wait for the player to spawn
-        yield return new WaitUntil(() => players.ContainsKey(clientId) && players[clientId] != null);
+        float timeout = Time.time + 5f; // Timeout after 5 seconds
+
+        while (!(players.ContainsKey(clientId) && players[clientId] != null))
+        {
+            if (Time.time > timeout)
+            {
+                Debug.LogError($"Timeout waiting for player with clientId {clientId} to spawn.");
+                yield break;
+            }
+
+            Debug.Log($"Waiting for player {clientId}...");
+            yield return null;
+        }
 
         GameObject playerObj = players[clientId].gameObject;
         GameObject cameraObj = cameraTracker[clientId].gameObject;
 
-        var cameraMovement = cameraObj.GetComponent<CameraMovement>();
-        cameraMovement.FollowPlayer(playerObj);
-        Debug.Log("CameraAttached");
+        NetworkObject cameraNetObj = cameraObj.GetComponent<NetworkObject>();
+        NetworkObject playerNetObj = playerObj.GetComponent<NetworkObject>();
+
+        SetUpFollowClientRpc(cameraNetObj, playerNetObj);
+
     }
+    [ClientRpc]
+    void SetUpFollowClientRpc(NetworkObjectReference cameraRef, NetworkObjectReference playerRef, ClientRpcParams clientRpcParams = default)
+    {
+        if (cameraRef.TryGet(out NetworkObject cameraObj) && playerRef.TryGet(out NetworkObject playerObj))
+        {
+            var cameraMovement = cameraObj.GetComponent<CameraMovement>();
+            cameraMovement.FollowPlayer(playerObj.gameObject);
+            Debug.Log("CameraAttached");
+        }
+        else
+        {
+            Debug.LogError("Failed to resolve one or both NetworkObjectReferences.");
+        }
+    }
+
     void RevealCoinsToOtherPlayers()
     {
         // Group coins by their original owner

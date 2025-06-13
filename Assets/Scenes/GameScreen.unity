@@ -724,7 +724,7 @@ GameObject:
   m_Component:
   - component: {fileID: 277122276}
   - component: {fileID: 277122274}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: PlayerBounds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1446,7 +1446,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  cmCamera: {fileID: 0}
+  cmCamera: {fileID: 426248798}
 --- !u!1 &474090618
 GameObject:
   m_ObjectHideFlags: 0

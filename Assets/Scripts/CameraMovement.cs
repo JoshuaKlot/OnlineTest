@@ -37,14 +37,14 @@ public class CameraMovement : NetworkBehaviour
 
         float hMovemnent = Input.GetAxisRaw("Camera Horizontal");
         float vMovement = Input.GetAxisRaw("Camera Vertical");
-        Debug.Log("vMovement is " + vMovement + " and hMovement is " + hMovemnent);
+       // Debug.Log("vMovement is " + vMovement + " and hMovement is " + hMovemnent);
         float phMovement = Input.GetAxisRaw("Horizontal");
         float pvMovement = Input.GetAxisRaw("Vertical");
         rb2d.linearVelocity = new Vector2(hMovemnent * hSpeed, vSpeed * vMovement);
         if (playerPhase)
         {
             if (phMovement != 0 && pvMovement != 0) {
-                transform.position = Vector3.Lerp(this.transform.position, Player.transform.position,2);
+                transform.position = Vector2.Lerp(this.transform.position, Player.transform.position,2);
             }
         }
     }
@@ -53,7 +53,7 @@ public class CameraMovement : NetworkBehaviour
     {
         Player = player;
         playerPhase = true;
-        transform.position=Player.transform.position;
+        transform.position= Vector2.Lerp(this.transform.position, Player.transform.position, 2);
     }
 
 }
