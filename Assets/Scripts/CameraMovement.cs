@@ -8,6 +8,7 @@ public class CameraMovement : NetworkBehaviour
     [SerializeField] private float vSpeed;
     [SerializeField] private float hSpeed;
     [SerializeField] private GameObject Camera;
+    [SerializeField, Range(0f, 1f)] private float followSpeed;
     Rigidbody2D rb2d;
     bool playerPhase = false;
     GameObject Player;
@@ -43,17 +44,32 @@ public class CameraMovement : NetworkBehaviour
         rb2d.linearVelocity = new Vector2(hMovemnent * hSpeed, vSpeed * vMovement);
         if (playerPhase)
         {
-            if (phMovement != 0 && pvMovement != 0) {
-                transform.position = Vector2.Lerp(this.transform.position, Player.transform.position,2);
+            if (phMovement != 0 || pvMovement != 0) {
+                LerpToPlayer();
+
             }
         }
     }
+
+    private void LerpToPlayer()
+    {
+        Vector3 pos = transform.position;
+        Vector3 target = Player.transform.position;
+        
+
+        transform.position = new Vector3(
+            Mathf.Lerp(pos.x, target.x, followSpeed*Time.deltaTime),
+            Mathf.Lerp(pos.y, target.y, followSpeed * Time.deltaTime),
+            pos.z
+        );
+    }
+
 
     public void FollowPlayer(GameObject player)
     {
         Player = player;
         playerPhase = true;
-        transform.position= Vector2.Lerp(this.transform.position, Player.transform.position, 2);
+        LerpToPlayer();
     }
 
 }
