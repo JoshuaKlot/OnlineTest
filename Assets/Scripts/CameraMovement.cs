@@ -44,6 +44,7 @@ public class CameraMovement : NetworkBehaviour
         rb2d.linearVelocity = new Vector2(hMovemnent * hSpeed, vSpeed * vMovement);
         if (playerPhase)
         {
+            Debug.Log("vMovement is " + pvMovement + " and hMovement is " + phMovement);
             if (phMovement != 0 || pvMovement != 0) {
                 LerpToPlayer();
 

@@ -6,6 +6,7 @@ public class PlayerMovement : NetworkBehaviour
 {
     [SerializeField] private float vSpeed;
     [SerializeField] private float hSpeed;
+    public bool isMoving;
     Rigidbody2D rb2d;
 
     // Start is called before the first frame update
