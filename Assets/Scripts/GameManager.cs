@@ -26,8 +26,8 @@ public class GameManager : NetworkBehaviour
         }
         Debug.Log("Host started the game.");
         PlayerSpawner.Instance.TriggerSpawnPlayersClientRpc();
-        
 
+        AudioManager.Instance.PlayWaiting();
         PanelManager.Instance.ShowCursorPhaseOnClients();
         
         foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
@@ -188,6 +188,7 @@ public class GameManager : NetworkBehaviour
         DespawnTrackers();
         DespawnCoins();
         PanelManager.Instance.ShowLobbyOnClients();
+        AudioManager.Instance.StopPlaying();
         playersSpawned = false;
         playerReadyStatus.Clear();
         cursors.Clear();
@@ -223,6 +224,7 @@ public class GameManager : NetworkBehaviour
             }
 
             PlayerSpawner.Instance.SpawnPlayerBForClient(clientId);
+            AudioManager.Instance.PlayPlaying();
             StartCoroutine(WaitAndAttachCamera(clientId));
         }
     }
