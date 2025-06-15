@@ -15,14 +15,19 @@ public class Cursor : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        Vector3 cursorWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        transform.position = new Vector3(cursorWorldPosition.x, cursorWorldPosition.y, 0);
+        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2Int gridPos = GridManager.Instance.WorldToGrid(mouseWorld);
+        Vector3 snappedPosition = GridManager.Instance.GridToWorldCenter(gridPos);
+        transform.position = new Vector3(mouseWorld.x, mouseWorld.y, 0);
+        //transform.position = snappedPosition;
 
-        // Prevent coin placement if clicking UI
         if (Input.GetMouseButtonDown(0) && !IsPointerOverUI() && numOfCoins > 0)
         {
-            SpawnCoinServerRpc(transform.position);
-            
+            if (!GridManager.Instance.IsOccupied(gridPos))
+            {
+                GridManager.Instance.MarkOccupied(gridPos);
+                SpawnCoinServerRpc(snappedPosition); // send snapped pos to avoid desync
+            }
         }
     }
 
