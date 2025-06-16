@@ -40,6 +40,14 @@ public class GridManager : NetworkBehaviour
             0
         );
     }
+    public Vector2Int FindAdjacentGrid(Vector3 worldPosition, Vector2 direction)
+    {
+        Vector2Int currentGridPos = WorldToGrid(worldPosition);
+        Vector2 offset = direction.normalized; // Make sure direction is unit-length (e.g., (1, 0) or (0, -1))
+
+        Vector2Int adjacentGridPos = currentGridPos + new Vector2Int(Mathf.RoundToInt(offset.x), Mathf.RoundToInt(offset.y));
+        return adjacentGridPos;
+    }
 
     public bool IsOccupied(Vector2Int gridPos)
     {
