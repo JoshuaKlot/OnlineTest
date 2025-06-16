@@ -2,6 +2,8 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Security.Cryptography;
 using Unity.Cinemachine;
+using System.Collections;
+using System;
 
 public class CameraMovement : NetworkBehaviour
 {
@@ -57,15 +59,30 @@ public class CameraMovement : NetworkBehaviour
     {
         Vector3 pos = transform.position;
         Vector3 target = Player.transform.position;
-        
 
-        transform.position = new Vector3(
-            Mathf.Lerp(pos.x, target.x, followSpeed*Time.deltaTime),
-            Mathf.Lerp(pos.y, target.y, followSpeed * Time.deltaTime),
-            pos.z
-        );
+        StartCoroutine(LerpToPosition(target));
+        //transform.position = new Vector3(
+        //    Mathf.Lerp(pos.x, target.x, followSpeed*Time.deltaTime),
+        //    Mathf.Lerp(pos.y, target.y, followSpeed * Time.deltaTime),
+        //    pos.z
+        //);
     }
 
+    private IEnumerator LerpToPosition(Vector3 targetPos)
+    { 
+        Vector3 startPos = transform.position;
+        float elapsedTime = 0f;
+        float duration = 1f / hSpeed;
+
+        while (elapsedTime < duration)
+        {
+            transform.position = Vector3.Lerp(startPos, targetPos, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = targetPos;
+    }
 
     public void FollowPlayer(GameObject player)
     {
