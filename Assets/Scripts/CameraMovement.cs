@@ -8,6 +8,7 @@ public class CameraMovement : NetworkBehaviour
     [SerializeField] private float vSpeed;
     [SerializeField] private float hSpeed;
     [SerializeField] private GameObject Camera;
+    [SerializeField] private Vector2 SpawnPOint;
     [SerializeField, Range(0f, 1f)] private float followSpeed;
     Rigidbody2D rb2d;
     bool playerPhase = false;
@@ -17,7 +18,7 @@ public class CameraMovement : NetworkBehaviour
     {
         Debug.Log("The camera tracker has spawned");
         Camera = GameObject.Find("CmCamera");
-        
+        this.transform.position = SpawnPOint;
     }
     // Start is called before the first frame update
     void Start()
