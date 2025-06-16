@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 1768067718284133996}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.8261776, y: 1.5081383, z: 0.74387795}
+  m_LocalPosition: {x: -1.8261776, y: 1.5081383, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -74,3 +74,4 @@ MonoBehaviour:
   cameraTracker: {fileID: 6842220434778135972, guid: c8114dfd2c0d5d146ba9f47a8904231c, type: 3}
   playerPrefabA: {fileID: 85167234241281364, guid: 54a1c9ca060286545bdb131ec3c81d5d, type: 3}
   playerPrefabB: {fileID: 1538255848151728157, guid: 1afcbfb3abd8d8040a30785952261c18, type: 3}
+  cmCamera: {fileID: 0}
