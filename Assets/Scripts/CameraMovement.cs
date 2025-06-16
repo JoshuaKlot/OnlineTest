@@ -43,7 +43,7 @@ public class CameraMovement : NetworkBehaviour
         float phMovement = Input.GetAxisRaw("Horizontal");
         float pvMovement = Input.GetAxisRaw("Vertical");
         rb2d.linearVelocity = new Vector2(hMovemnent * hSpeed, vSpeed * vMovement);
-        if (playerPhase)
+        if (Player.GetComponent<PlayerMovement>().isMoving)
         {
             Debug.Log("vMovement is " + pvMovement + " and hMovement is " + phMovement);
             if (phMovement != 0 || pvMovement != 0) {

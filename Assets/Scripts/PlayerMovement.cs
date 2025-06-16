@@ -43,14 +43,31 @@ public class PlayerMovement : NetworkBehaviour
 
     void MoveAlongGrid(Vector2 direction)
     {
-        Vector2 nextPosition = GridManager.Instance.FindAdjacentGrid(this.transform.position, direction);
-        StartCoroutine(LerpToPosition(nextPosition));
+        Vector2Int targetGridPos = GridManager.Instance.FindAdjacentGrid(this.transform.position, direction);
+        Vector3 worldTarget = GridManager.Instance.GridToWorldCenter(targetGridPos);
+        if (!isMoving)
+        {
+            StartCoroutine(LerpToPosition(worldTarget));
+        }
     }
 
-    private IEnumerator LerpToPosition(Vector2 nextPosition)
+    private IEnumerator LerpToPosition(Vector3 targetPos)
     {
-        yield return new WaitUntil(() => new Vector2(this.transform.position.x, this.transform.position.y) == nextPosition);
-        this.transform.position = Vector2.Lerp(new Vector2(this.transform.position.x, this.transform.position.y), nextPosition,hSpeed*Time.deltaTime);
+        isMoving = true;
+        Vector3 startPos = transform.position;
+        float elapsedTime = 0f;
+        float duration = 1f / hSpeed;
+
+        while (elapsedTime < duration)
+        {
+            transform.position = Vector3.Lerp(startPos, targetPos, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = targetPos;
+        isMoving = false;
     }
+
 }
 
