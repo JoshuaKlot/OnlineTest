@@ -67,22 +67,28 @@ public class CameraMovement : NetworkBehaviour
         //    pos.z
         //);
     }
-
     private IEnumerator LerpToPosition(Vector3 targetPos)
-    { 
+    {
         Vector3 startPos = transform.position;
+        targetPos.z = startPos.z; // Lock z axis
         float elapsedTime = 0f;
         float duration = 1f / hSpeed;
 
         while (elapsedTime < duration)
         {
-            transform.position = Vector3.Lerp(startPos, targetPos, elapsedTime / duration);
+            float t = elapsedTime / duration;
+            transform.position = new Vector3(
+                Mathf.Lerp(startPos.x, targetPos.x, t),
+                Mathf.Lerp(startPos.y, targetPos.y, t),
+                startPos.z
+            );
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        transform.position = targetPos;
+        transform.position = new Vector3(targetPos.x, targetPos.y, startPos.z); // Lock z at end
     }
+
 
     public void FollowPlayer(GameObject player)
     {
