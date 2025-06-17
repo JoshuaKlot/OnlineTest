@@ -8,6 +8,7 @@ public class PlayerMovement : NetworkBehaviour
 {
     [SerializeField] private float vSpeed;
     [SerializeField] private float hSpeed;
+    [SerializeField] private LayerMask obstacleMask;
     public bool isMoving;
     Rigidbody2D rb2d;
     private void Awake()
@@ -45,10 +46,16 @@ public class PlayerMovement : NetworkBehaviour
     {
         Vector2Int targetGridPos = GridManager.Instance.FindAdjacentGrid(this.transform.position, direction);
         Vector3 worldTarget = GridManager.Instance.GridToWorldCenter(targetGridPos);
-        if (!isMoving)
+        if (!isMoving&&CanMove(direction))
         {
             StartCoroutine(LerpToPosition(worldTarget));
         }
+    }
+    bool CanMove(Vector2 direction)
+    {
+        Debug.DrawRay(this.transform.position, direction.normalized * 2f, Color.red, 2f);
+        RaycastHit2D hit = Physics2D.Raycast(this.transform.position, direction.normalized, 2f, obstacleMask);
+        return hit.collider == null; // If we hit something in obstacleMask, we can't move
     }
 
     private IEnumerator LerpToPosition(Vector3 targetPos)

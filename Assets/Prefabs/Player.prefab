@@ -208,6 +208,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   vSpeed: 2
   hSpeed: 2
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 64
   isMoving: 0
 --- !u!114 &8875884145017150957
 MonoBehaviour:

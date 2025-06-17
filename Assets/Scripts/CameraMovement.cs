@@ -10,7 +10,7 @@ public class CameraMovement : NetworkBehaviour
     [SerializeField] private float vSpeed;
     [SerializeField] private float hSpeed;
     [SerializeField] private GameObject Camera;
-    [SerializeField] private Vector2 SpawnPOint;
+    [SerializeField] private Vector3 SpawnPOint;
     [SerializeField, Range(0f, 1f)] private float followSpeed;
     Rigidbody2D rb2d;
     bool playerPhase = false;
@@ -47,7 +47,6 @@ public class CameraMovement : NetworkBehaviour
         rb2d.linearVelocity = new Vector2(hMovemnent * hSpeed, vSpeed * vMovement);
         if (Player.GetComponent<PlayerMovement>().isMoving)
         {
-            Debug.Log("vMovement is " + pvMovement + " and hMovement is " + phMovement);
             if (phMovement != 0 || pvMovement != 0) {
                 LerpToPlayer();
 
