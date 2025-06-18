@@ -131,7 +131,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   coins: {fileID: 5467673333300652890, guid: fd83f38dec405f24b8f6121a28a094c7, type: 3}
-  numOfCoins: 6
+  obsticles:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!114 &2336727080217863520
 MonoBehaviour:
   m_ObjectHideFlags: 0

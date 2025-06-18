@@ -6,6 +6,7 @@ public class Cursor : NetworkBehaviour
 {
 
     [SerializeField] private GameObject coins;
+    [SerializeField] private LayerMask obsticles;
     private void Awake()
     {
     }
@@ -29,6 +30,7 @@ public class Cursor : NetworkBehaviour
             }
             else
             {
+                GridManager.Instance.MarkUnoccupied(gridPos);
                 Debug.Log("Occupied");
                 TryDeleteCoinServerRpc(gridPos);
             }
@@ -53,15 +55,20 @@ public class Cursor : NetworkBehaviour
     private void TryDeleteCoinServerRpc(Vector2Int gridPos)
     {
         Vector3 worldCenter = GridManager.Instance.GridToWorldCenter(gridPos);
+        Vector3 start = new Vector3(worldCenter.x, worldCenter.y, 5);
+        Vector3 direction = new Vector3(0, 0, -10);
+
+
         // Check for coin at the position
-        Collider2D hit = Physics2D.OverlapCircle(worldCenter, 0.1f);
+        Collider2D hit = Physics2D.OverlapCircle(worldCenter, 0.1f, obsticles);
+        Debug.Log(hit);
         if (hit != null)
         {
             Coin coin = hit.GetComponent<Coin>();
             if (coin != null && coin.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
             {
                 Debug.Log("Got a coin lololol");
-                GridManager.Instance.MarkUnoccupied(gridPos);
+                
                 coin.NetworkObject.Despawn();
             }
         }

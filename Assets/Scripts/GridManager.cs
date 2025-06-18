@@ -56,11 +56,13 @@ public class GridManager : NetworkBehaviour
 
     public void MarkOccupied(Vector2Int gridPos)
     {
+        Debug.Log("Grid pos: " + gridPos + " is now occupied");
         occupiedCells.Add(gridPos);
     }
 
     public void MarkUnoccupied(Vector2Int gridPos)
     {
+        Debug.Log("Grid pos: " + gridPos + " is now unoccupied");
         occupiedCells.Remove(gridPos);
     }
 }
