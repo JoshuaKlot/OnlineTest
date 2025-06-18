@@ -58,4 +58,9 @@ public class GridManager : NetworkBehaviour
     {
         occupiedCells.Add(gridPos);
     }
+
+    public void MarkUnoccupied(Vector2Int gridPos)
+    {
+        occupiedCells.Remove(gridPos);
+    }
 }

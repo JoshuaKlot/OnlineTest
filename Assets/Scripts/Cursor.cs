@@ -28,6 +28,10 @@ public class Cursor : NetworkBehaviour
                 GridManager.Instance.MarkOccupied(gridPos);
                 SpawnCoinServerRpc(snappedPosition); // send snapped pos to avoid desync
             }
+            else
+            {
+                TryDeleteCoinServerRpc(gridPos);
+            }
         }
     }
 
@@ -44,6 +48,25 @@ public class Cursor : NetworkBehaviour
 
         netObj.Spawn();
     }
+
+    [ServerRpc]
+    private void TryDeleteCoinServerRpc(Vector2Int gridPos)
+    {
+        Vector3 worldCenter = GridManager.Instance.GridToWorldCenter(gridPos);
+
+        // Check for coin at the position
+        Collider2D hit = Physics2D.OverlapCircle(worldCenter, 0.1f);
+        if (hit != null)
+        {
+            Coin coin = hit.GetComponent<Coin>();
+            if (coin != null && coin.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
+            {
+                GridManager.Instance.MarkUnoccupied(gridPos);
+                coin.NetworkObject.Despawn();
+            }
+        }
+    }
+
 
     private bool IsPointerOverUI()
     {
