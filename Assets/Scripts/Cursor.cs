@@ -6,8 +6,6 @@ public class Cursor : NetworkBehaviour
 {
 
     [SerializeField] private GameObject coins;
-    [SerializeField] private int numOfCoins;
-
     private void Awake()
     {
     }
@@ -21,15 +19,17 @@ public class Cursor : NetworkBehaviour
         transform.position = new Vector3(mouseWorld.x, mouseWorld.y, 0);
         //transform.position = snappedPosition;
 
-        if (Input.GetMouseButtonDown(0) && !IsPointerOverUI() && numOfCoins > 0)
+        if (Input.GetMouseButtonDown(0) && !IsPointerOverUI())
         {
             if (!GridManager.Instance.IsOccupied(gridPos))
             {
+                Debug.Log("Isnt Occupied");
                 GridManager.Instance.MarkOccupied(gridPos);
                 SpawnCoinServerRpc(snappedPosition); // send snapped pos to avoid desync
             }
             else
             {
+                Debug.Log("Occupied");
                 TryDeleteCoinServerRpc(gridPos);
             }
         }
@@ -53,7 +53,6 @@ public class Cursor : NetworkBehaviour
     private void TryDeleteCoinServerRpc(Vector2Int gridPos)
     {
         Vector3 worldCenter = GridManager.Instance.GridToWorldCenter(gridPos);
-
         // Check for coin at the position
         Collider2D hit = Physics2D.OverlapCircle(worldCenter, 0.1f);
         if (hit != null)
@@ -61,10 +60,12 @@ public class Cursor : NetworkBehaviour
             Coin coin = hit.GetComponent<Coin>();
             if (coin != null && coin.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
             {
+                Debug.Log("Got a coin lololol");
                 GridManager.Instance.MarkUnoccupied(gridPos);
                 coin.NetworkObject.Despawn();
             }
         }
+
     }
 
 
