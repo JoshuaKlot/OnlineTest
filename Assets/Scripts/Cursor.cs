@@ -1,10 +1,12 @@
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.EventSystems;
+using System.Collections.Specialized;
 
 public class Cursor : NetworkBehaviour
 {
-
+    [SerializeField] private GameObject SpawnHere;
+    [SerializeField] private Animator ani;
     [SerializeField] private GameObject coins;
     [SerializeField] private LayerMask obsticles;
     private void Awake()
@@ -13,8 +15,11 @@ public class Cursor : NetworkBehaviour
     void Update()
     {
         if (!IsOwner) return;
-
-        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mouseWorld;
+        if(SpawnHere != null)
+            mouseWorld = SpawnHere.transform.position;
+        else
+            mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2Int gridPos = GridManager.Instance.WorldToGrid(mouseWorld);
         Vector3 snappedPosition = GridManager.Instance.GridToWorldCenter(gridPos);
         transform.position = new Vector3(mouseWorld.x, mouseWorld.y, 0);
@@ -22,6 +27,7 @@ public class Cursor : NetworkBehaviour
 
         if (Input.GetMouseButtonDown(0) && !IsPointerOverUI())
         {
+            ani.SetTrigger("Click");
             if (!GridManager.Instance.IsOccupied(gridPos))
             {
                 Debug.Log("Isnt Occupied");
