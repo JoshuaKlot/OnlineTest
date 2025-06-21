@@ -20,6 +20,17 @@ public class PlayerAnimation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+        if (vertical < 0)
+            direction = 0; // Down
+        else if (vertical > 0)
+            direction = 1; // Up
+        else if (horizontal != 0)
+        {
+            direction = 2; // Side
+            sprite.flipX = horizontal > 0;
+        } 
         ani.SetInteger("direction",direction);
         shirtAni.SetInteger("direction",direction);
         bool walking = (move.isMoving);
@@ -27,25 +38,7 @@ public class PlayerAnimation : MonoBehaviour
         shirtAni.SetBool("walk", walking);
 
 
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-        if (!walking)
-        {
-            Debug.Log("Standing still");
-            // Determine direction based on input
-            if (vertical < 0)
-                direction = 0; // Down
-            else if (vertical > 0)
-                direction = 1; // Up
-            else if (horizontal != 0)
-            {
-                direction = 2; // Side
-                sprite.flipX = horizontal > 0;
-            }
-        }
-        else
-        {
-            Debug.Log("walking");
-        }
+
+
     }
 }

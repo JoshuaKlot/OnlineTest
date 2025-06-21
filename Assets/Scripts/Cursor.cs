@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 public class Cursor : NetworkBehaviour
 {
     [SerializeField] private GameObject SpawnHere;
+    [SerializeField] private GameObject Highlight;
     [SerializeField] private Animator ani;
     [SerializeField] private GameObject coins;
     [SerializeField] private LayerMask obsticles;
@@ -22,6 +23,7 @@ public class Cursor : NetworkBehaviour
             mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2Int gridPos = GridManager.Instance.WorldToGrid(mouseWorld);
         Vector3 snappedPosition = GridManager.Instance.GridToWorldCenter(gridPos);
+        Highlight.transform.position = snappedPosition;
         transform.position = new Vector3(mouseWorld.x, mouseWorld.y, 0);
         //transform.position = snappedPosition;
 

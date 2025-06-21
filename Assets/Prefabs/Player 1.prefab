@@ -173,7 +173,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -313,6 +313,7 @@ MonoBehaviour:
   rb2d: {fileID: 4786296931224529347}
   sprite: {fileID: 2864419134426389410}
   ani: {fileID: 6627959079379444092}
+  move: {fileID: 4972032562402542291}
   shirt: {fileID: 8487485576891167769}
 --- !u!1 &8487485576891167769
 GameObject:
