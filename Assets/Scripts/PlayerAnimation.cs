@@ -10,6 +10,7 @@ public class PlayerAnimation : MonoBehaviour
     private Animator shirtAni;
     [SerializeField] private GameObject shirt;
     private int direction;
+    private bool walking;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -31,14 +32,24 @@ public class PlayerAnimation : MonoBehaviour
             direction = 2; // Side
             sprite.flipX = horizontal > 0;
         } 
-        ani.SetInteger("direction",direction);
-        shirtAni.SetInteger("direction",direction);
-        bool walking = (move.isMoving);
-        ani.SetBool("walk",walking);
+        Debug.Log("direction: "+direction);
+        walking = (move.isMoving);
+        animateDirection();
+        animateWalking();
+
+
+    }
+
+    void animateDirection()
+    {
+        ani.SetInteger("direction", direction);
+        shirtAni.SetInteger("direction", direction);
+    }
+
+    void animateWalking()
+    {
+        ani.SetBool("walk", walking);
         shirtAni.SetBool("walk", walking);
-
-
-
 
     }
 }
