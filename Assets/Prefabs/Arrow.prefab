@@ -380,6 +380,15 @@ MonoBehaviour:
   obsticles:
     serializedVersion: 2
     m_Bits: 512
+  sidewalk:
+    serializedVersion: 2
+    m_Bits: 2048
+  grass:
+    serializedVersion: 2
+    m_Bits: 64
+  entrances:
+    serializedVersion: 2
+    m_Bits: 4096
 --- !u!114 &4342353006545570860
 MonoBehaviour:
   m_ObjectHideFlags: 0

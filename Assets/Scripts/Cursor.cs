@@ -10,6 +10,9 @@ public class Cursor : NetworkBehaviour
     [SerializeField] private Animator ani;
     [SerializeField] private GameObject coins;
     [SerializeField] private LayerMask obsticles;
+    [SerializeField] private LayerMask sidewalk;
+    [SerializeField] private LayerMask grass;
+    [SerializeField] private LayerMask entrances;
     private void Awake()
     {
     }
@@ -48,6 +51,15 @@ public class Cursor : NetworkBehaviour
     [ServerRpc]
     private void SpawnCoinServerRpc(Vector3 spawnPosition, ServerRpcParams rpcParams = default)
     {
+        Collider2D hitSidewalk = Physics2D.OverlapCircle(spawnPosition, 0.1f, sidewalk);
+        Collider2D hitGrass = Physics2D.OverlapCircle(spawnPosition, 0.1f, grass);
+        Collider2D hitEntrance = Physics2D.OverlapCircle(spawnPosition, 0.1f, entrances);
+        if (hitSidewalk != null)
+            Debug.Log("Hit Sidewalk");
+        if (hitGrass != null)
+            Debug.Log("Hit Grass");
+        if (hitEntrance != null)
+            Debug.Log("Hit Entrance");
         GameObject placedCoin = Instantiate(coins, spawnPosition, Quaternion.identity);
 
         Coin coinComponent = placedCoin.GetComponent<Coin>();

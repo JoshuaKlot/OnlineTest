@@ -66,6 +66,11 @@ public class GameManager : NetworkBehaviour
            
         }
     }
+
+    public void SetUpEntrances()
+    {
+
+    }
     private void DespawnAllCursors()
     {
         foreach (var cursor in cursors.Values)
