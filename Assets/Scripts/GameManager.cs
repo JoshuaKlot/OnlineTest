@@ -13,7 +13,8 @@ public class GameManager : NetworkBehaviour
     private Dictionary<ulong, NetworkObject> cursors = new Dictionary<ulong, NetworkObject>();
     private Dictionary<ulong, NetworkObject> cameraTracker = new Dictionary<ulong, NetworkObject>();
     private Dictionary<ulong, NetworkObject> players = new Dictionary<ulong, NetworkObject>();
-
+    private LayerMask sidewalk;
+    private LayerMask grass;
     private bool gameStarted = false;
 
     public void StartGame()

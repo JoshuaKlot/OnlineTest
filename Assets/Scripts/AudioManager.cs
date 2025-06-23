@@ -10,6 +10,10 @@ public class AudioManager : NetworkBehaviour
 
     private void Awake()
     {
+
+        if(IsHost)
+            MuteAll();
+
         if (Instance == null)
             Instance = this;
         else
@@ -30,21 +34,26 @@ public class AudioManager : NetworkBehaviour
     {
         QuietClientRpc();
     }
-    [ClientRpc]
 
+    [ClientRpc]
     void PlayWaitingClientRpc()
     {
+        if (NetworkManager.Singleton.IsHost) return; // Skip host
+
         MuteAll();
         CursorPhase.Play();
     }
 
-    [ClientRpc]
 
+    [ClientRpc]
     void PlayPlayingClientRpc()
     {
+        if (NetworkManager.Singleton.IsHost) return; // Skip host
+
         MuteAll();
         PlayerPhase.Play();
     }
+
     [ClientRpc]
     void QuietClientRpc()
     {
