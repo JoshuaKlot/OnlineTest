@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1517181273657911509}
   - component: {fileID: 8860276206555411408}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Highlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 1008242907240668394}
   - component: {fileID: 2833668535684797774}
   - component: {fileID: 8273888334334592870}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: ArrowShirt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -197,7 +197,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2389107536010714064}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Clicked
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,7 +233,7 @@ GameObject:
   - component: {fileID: 2373277941655092349}
   - component: {fileID: 2859508423935749765}
   - component: {fileID: 4342353006545570860}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

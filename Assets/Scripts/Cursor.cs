@@ -3,6 +3,8 @@ using Unity.Netcode;
 using UnityEngine.EventSystems;
 using System.Collections.Specialized;
 
+
+
 public class Cursor : NetworkBehaviour
 {
     [SerializeField] private GameObject SpawnHere;
@@ -32,6 +34,27 @@ public class Cursor : NetworkBehaviour
 
         if (Input.GetMouseButtonDown(0) && !IsPointerOverUI())
         {
+
+            if (Input.GetMouseButtonDown(0) && !IsPointerOverUI())
+            {
+                Vector2 point = new Vector2(transform.position.x, transform.position.y); // Strip Z
+                Collider2D hit = Physics2D.OverlapPoint(point);
+                Debug.Log("Hit: " + hit.name);
+                Collider2D hitSidewalk = Physics2D.OverlapPoint(point, sidewalk,-100,100);
+                //Debug.Log("Hit: " + hitSidewalk.name);
+                Collider2D hitGrass = Physics2D.OverlapPoint(point, grass);
+                //Debug.Log("Hit: " + hitGrass.name);
+                Collider2D hitEntrance = Physics2D.OverlapPoint(point, entrances);
+                //Debug.Log("Hit: " + hitEntrance.name);
+
+                if (hitSidewalk != null)
+                    Debug.Log("Tile Type: Sidewalk");
+                if (hitGrass != null)
+                    Debug.Log("Tile Type: Grass");
+                if (hitEntrance != null)
+                    Debug.Log("Tile Type: Entrance");
+            }
+
             ani.SetTrigger("Click");
             if (!GridManager.Instance.IsOccupied(gridPos))
             {
@@ -51,15 +74,7 @@ public class Cursor : NetworkBehaviour
     [ServerRpc]
     private void SpawnCoinServerRpc(Vector3 spawnPosition, ServerRpcParams rpcParams = default)
     {
-        Collider2D hitSidewalk = Physics2D.OverlapCircle(spawnPosition, 0.1f, sidewalk);
-        Collider2D hitGrass = Physics2D.OverlapCircle(spawnPosition, 0.1f, grass);
-        Collider2D hitEntrance = Physics2D.OverlapCircle(spawnPosition, 0.1f, entrances);
-        if (hitSidewalk != null)
-            Debug.Log("Hit Sidewalk");
-        if (hitGrass != null)
-            Debug.Log("Hit Grass");
-        if (hitEntrance != null)
-            Debug.Log("Hit Entrance");
+
         GameObject placedCoin = Instantiate(coins, spawnPosition, Quaternion.identity);
 
         Coin coinComponent = placedCoin.GetComponent<Coin>();
@@ -87,7 +102,7 @@ public class Cursor : NetworkBehaviour
             Coin coin = hit.GetComponent<Coin>();
             if (coin != null && coin.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
             {
-                Debug.Log("Got a coin lololol");
+          
                 
                 coin.NetworkObject.Despawn();
             }
