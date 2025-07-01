@@ -375,6 +375,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   SpawnHere: {fileID: 0}
   Highlight: {fileID: 473361376596879461}
+  currentSelection: []
   ani: {fileID: 7502669371968789598}
   coins: {fileID: 5467673333300652890, guid: fd83f38dec405f24b8f6121a28a094c7, type: 3}
   obsticles:
@@ -389,6 +390,9 @@ MonoBehaviour:
   entrances:
     serializedVersion: 2
     m_Bits: 4096
+  start: {fileID: 7956447155177447120, guid: 89ea1f56574001440ad3fb85bd2a762a, type: 3}
+  SetUpObsticles: 0
+  ClickMap: 0
 --- !u!114 &4342353006545570860
 MonoBehaviour:
   m_ObjectHideFlags: 0

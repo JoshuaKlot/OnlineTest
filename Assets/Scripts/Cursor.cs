@@ -2,6 +2,8 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.EventSystems;
 using System.Collections.Specialized;
+using System.Collections;
+using System.Collections.Generic;
 
 
 
@@ -9,14 +11,21 @@ public class Cursor : NetworkBehaviour
 {
     [SerializeField] private GameObject SpawnHere;
     [SerializeField] private GameObject Highlight;
+    [SerializeField] private List<GameObject> currentSelection;
     [SerializeField] private Animator ani;
     [SerializeField] private GameObject coins;
     [SerializeField] private LayerMask obsticles;
     [SerializeField] private LayerMask sidewalk;
     [SerializeField] private LayerMask grass;
     [SerializeField] private LayerMask entrances;
+    [SerializeField] private GameObject start;
+    [SerializeField] private bool SetUpObsticles;
+    [SerializeField] private bool ClickMap;
+    private Vector3 selectedPosition;
     private void Awake()
     {
+        SetUpObsticles = false;
+        ClickMap = true;
     }
     void Update()
     {
@@ -32,43 +41,51 @@ public class Cursor : NetworkBehaviour
         transform.position = new Vector3(mouseWorld.x, mouseWorld.y, 0);
         //transform.position = snappedPosition;
 
-        if (Input.GetMouseButtonDown(0) && !IsPointerOverUI())
+        if (Input.GetMouseButtonDown(0) && !IsPointerOverUI()&& ClickMap)
         {
-
-            if (Input.GetMouseButtonDown(0) && !IsPointerOverUI())
-            {
-                Vector2 point = new Vector2(transform.position.x, transform.position.y); // Strip Z
-                Collider2D hit = Physics2D.OverlapPoint(point);
-                Debug.Log("Hit: " + hit.name);
-                Collider2D hitSidewalk = Physics2D.OverlapPoint(point, sidewalk,-100,100);
-                //Debug.Log("Hit: " + hitSidewalk.name);
-                Collider2D hitGrass = Physics2D.OverlapPoint(point, grass);
-                //Debug.Log("Hit: " + hitGrass.name);
-                Collider2D hitEntrance = Physics2D.OverlapPoint(point, entrances);
-                //Debug.Log("Hit: " + hitEntrance.name);
-
-                if (hitSidewalk != null)
-                    Debug.Log("Tile Type: Sidewalk");
-                if (hitGrass != null)
-                    Debug.Log("Tile Type: Grass");
-                if (hitEntrance != null)
-                    Debug.Log("Tile Type: Entrance");
-            }
+            Collider2D hitSidewalk = Physics2D.OverlapPoint(snappedPosition, sidewalk);
+            Collider2D hitGrass = Physics2D.OverlapPoint(snappedPosition, grass);
+            Collider2D hitEntrance = Physics2D.OverlapPoint(snappedPosition, entrances);
+            selectedPosition = snappedPosition;
+            if (hitSidewalk != null)
+                Debug.Log("Tile Type: Sidewalk");
+            if (hitGrass != null)
+                Debug.Log("Tile Type: Grass");
+            if (hitEntrance != null)
+                Debug.Log("Tile Type: Entrance");
 
             ani.SetTrigger("Click");
-            if (!GridManager.Instance.IsOccupied(gridPos))
-            {
-                Debug.Log("Isnt Occupied");
-                GridManager.Instance.MarkOccupied(gridPos);
-                SpawnCoinServerRpc(snappedPosition); // send snapped pos to avoid desync
+            if (!SetUpObsticles) {
+                if (hitEntrance == null)
+                {
+                    NetworkLogger.Instance.AddLog("Please click on an entrance.");
+                }
+                else
+                {
+                    SelectObsticle(start);
+                    
+                }
             }
-            else
-            {
-                GridManager.Instance.MarkUnoccupied(gridPos);
-                Debug.Log("Occupied");
-                TryDeleteCoinServerRpc(gridPos);
+            else {
+                if (!GridManager.Instance.IsOccupied(gridPos))
+                {
+                    Debug.Log("Isnt Occupied");
+                    GridManager.Instance.MarkOccupied(gridPos);
+                    SpawnCoinServerRpc(snappedPosition); // send snapped pos to avoid desync
+                }
+                else
+                {
+                    GridManager.Instance.MarkUnoccupied(gridPos);
+                    Debug.Log("Occupied");
+                    TryDeleteCoinServerRpc(gridPos);
+                }
             }
         }
+    }
+
+    public void SetSelection(List<GameObject> Selection)
+    {
+        currentSelection = Selection;
     }
 
     [ServerRpc]
@@ -135,4 +152,54 @@ public class Cursor : NetworkBehaviour
         return false; // Pointer is not over any interactive UI
     }
 
+    private void SelectObsticle(GameObject selection)
+    {
+        Instantiate(selection);
+        selection.transform.position = Highlight.transform.position;
+        selection.GetComponent<Selection>().cursor = this;
+        selection.GetComponent<Selection>().position = selectedPosition;
+        ClickMap = false;
+    }
+
+    public void PlaceObsticle(Vector3 spawnPosition, int selNum)
+    {
+        PlaceObjectServerRpc(spawnPosition,selNum);
+    }
+
+    [ServerRpc]
+    private void PlaceObjectServerRpc(Vector3 spawnPosition, int selNum, ServerRpcParams rpcParams = default)
+    {
+        if (selNum < 0 || selNum >= currentSelection.Count)
+        {
+            Vector2Int gridPos = GridManager.Instance.WorldToGrid(spawnPosition);
+            Vector3 worldCenter = GridManager.Instance.GridToWorldCenter(gridPos);
+            Vector3 start = new Vector3(worldCenter.x, worldCenter.y, 5);
+            Vector3 direction = new Vector3(0, 0, -10);
+
+
+            // Check for coin at the position
+            Collider2D hit = Physics2D.OverlapCircle(worldCenter, 0.1f, obsticles);
+            Debug.Log(hit);
+            if (hit != null)
+            {
+                Coin coin = hit.GetComponent<Coin>();
+                if (coin != null && coin.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
+                {
+
+
+                    coin.NetworkObject.Despawn();
+                }
+            }
+            return;
+        }
+        GameObject placedObject = Instantiate(currentSelection[selNum], spawnPosition, Quaternion.identity);
+
+        Coin coinComponent = placedObject.GetComponent<Coin>();
+        coinComponent.visibleToClientId = rpcParams.Receive.SenderClientId;
+
+        NetworkObject netObj = placedObject.GetComponent<NetworkObject>();
+        netObj.CheckObjectVisibility = coinComponent.CheckVisibility;
+        ClickMap = true;
+        netObj.Spawn();
+    }
 }

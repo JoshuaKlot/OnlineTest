@@ -6,6 +6,7 @@ public class PanelManager : NetworkBehaviour
     public static PanelManager Instance;
 
     [SerializeField] private GameObject lobbyPanel;
+    [SerializeField] private GameObject SetUpPhasePanel;
     [SerializeField] private GameObject cursorPhasePanel;
     [SerializeField] private GameObject playerPhasePanel;
 
@@ -33,6 +34,11 @@ public class PanelManager : NetworkBehaviour
         ShowPlayerPhaseClientRpc();
     }
 
+    public void ShowSetUpPhasePanelOnClients()
+    {
+        ShowSetUpPhaseClientRpc();
+    }
+
     [ClientRpc]
     private void ShowLobbyClientRpc()
     {
@@ -54,10 +60,18 @@ public class PanelManager : NetworkBehaviour
         playerPhasePanel?.SetActive(true);
     }
 
+    [ClientRpc]
+    private void ShowSetUpPhaseClientRpc()
+    {
+        HideAll();
+        SetUpPhasePanel?.SetActive(true);
+
+    }
     private void HideAll()
     {
         lobbyPanel?.SetActive(false);
         cursorPhasePanel?.SetActive(false);
         playerPhasePanel?.SetActive(false);
+        SetUpPhasePanel?.SetActive(false);
     }
 }

@@ -38,10 +38,24 @@ public class GameManager : NetworkBehaviour
                 PlayerSpawner.Instance.SpawnPlayerACursorServerRpc(clientId);
             }
         }
-        gameStarted = true;
+        StartCoroutine(WaitForAllPlayersToRegister());
     }
 
+    private IEnumerator WaitForAllPlayersToRegister()
+    {
+        // Get list of all expected non-host client IDs
+        List<ulong> expectedClients = NetworkManager.Singleton.ConnectedClientsIds
+            .Where(id => id != NetworkManager.ServerClientId).ToList();
 
+        // Wait until all are present in the playerReadyStatus dictionary
+        while (!expectedClients.All(id => playerReadyStatus.ContainsKey(id)))
+        {
+            yield return null; // Wait a frame
+        }
+
+        Debug.Log("All non-host clients are registered.");
+        gameStarted = true;
+    }
 
     public void RegisterCursor(ulong clientId, NetworkObject cursorObject)
     {
@@ -117,11 +131,11 @@ public class GameManager : NetworkBehaviour
     {
         ulong clientId = rpcParams.Receive.SenderClientId;
 
-        //if (gameStarted)
-        //{
-        //    Debug.LogWarning($"[Server] Game already started. Rejecting new player {clientId}.");
-        //    return; // Prevent late joins
-        //}
+        if (gameStarted)
+        {
+            Debug.LogWarning($"[Server] Game already started. Rejecting new player {clientId}.");
+            return; // Prevent late joins
+        }
 
         if (!playerReadyStatus.ContainsKey(clientId))
         {
