@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1101694266303108896}
   - component: {fileID: 7207362843593013424}
   - component: {fileID: 3758374932761875044}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: End
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -77,7 +77,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: -4938904925403426689, guid: 552433ccc5cbfe94780bbefab38af9f2, type: 3}
   m_Color: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
   m_FlipX: 0
@@ -160,7 +160,7 @@ GameObject:
   - component: {fileID: 8305631505286979473}
   - component: {fileID: 6245378059295044703}
   - component: {fileID: 567044262915431549}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Start
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,7 +225,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 2660195087753647290, guid: 552433ccc5cbfe94780bbefab38af9f2, type: 3}
   m_Color: {r: 0.6226415, g: 0.6226415, b: 0.6226415, a: 1}
   m_FlipX: 0
@@ -306,7 +306,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2596081574391714238}
   - component: {fileID: 5190692954985676338}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Entrances
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -322,7 +322,7 @@ Transform:
   m_GameObject: {fileID: 7956447155177447120}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.1511815, y: 2.524479, z: -1.6395221}
+  m_LocalPosition: {x: 5, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -347,7 +347,7 @@ MonoBehaviour:
   - {fileID: 3224432587336740763, guid: 49ad49b1e071b4842aabd11211334f48, type: 3}
   - {fileID: 1228283657262690232, guid: 86548e767e4c8cb4b8963d417aa0ae19, type: 3}
   cursor: {fileID: 0}
-  position: {x: 0, y: 0, z: 0}
+  position: {x: 5, y: 3, z: 0}
 --- !u!1 &8781923683471703804
 GameObject:
   m_ObjectHideFlags: 0
@@ -359,7 +359,7 @@ GameObject:
   - component: {fileID: 5387483321627219591}
   - component: {fileID: 8538224579850637929}
   - component: {fileID: 9066413829189969092}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Exit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -424,7 +424,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 8e7b58cb4c63fe047935f137788a73ce, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

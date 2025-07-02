@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SelectableObject : MonoBehaviour
 {
-    [SerializeField] private int SetNum;
+    public int SetNum;
 
     void OnMouseDown()
     {

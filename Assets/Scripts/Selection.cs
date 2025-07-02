@@ -3,13 +3,25 @@ using UnityEngine;
 
 public class Selection : MonoBehaviour
 {
-
     [SerializeField] private List<GameObject> obstaclePrefabs;
     public Cursor cursor;
     public Vector3 position;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    // Call this after assigning cursor
+    public void SetSelection()
+    {
+        if (cursor != null)
+            cursor.SetSelection(obstaclePrefabs);
+        else
+            Debug.LogError("Selection: cursor not assigned before SetSelection call.");
+    }
+
     public void SetObject(int SetNum)
     {
-        cursor.PlaceObsticle(position, SetNum);
+        if (cursor != null)
+            cursor.PlaceObsticle(position, SetNum);
+        else
+            Debug.LogError("Selection: cursor not assigned before SetObject call.");
+        Destroy(gameObject);
     }
 }

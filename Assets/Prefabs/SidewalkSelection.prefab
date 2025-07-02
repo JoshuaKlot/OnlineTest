@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6941594680446703468}
   - component: {fileID: 7470671573116413328}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: SidewalkSelection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61,7 +61,7 @@ GameObject:
   - component: {fileID: 7819711334631194850}
   - component: {fileID: 3758270832355330922}
   - component: {fileID: 2958946249747350271}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: BananaSelect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -195,6 +195,10 @@ PrefabInstance:
     - target: {fileID: 7586754222352297017, guid: 16412b22b06517b40b5e00c60aff9668, type: 3}
       propertyPath: m_Name
       value: Exit
+      objectReference: {fileID: 0}
+    - target: {fileID: 7586754222352297017, guid: 16412b22b06517b40b5e00c60aff9668, type: 3}
+      propertyPath: m_Layer
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 8989949296634854103, guid: 16412b22b06517b40b5e00c60aff9668, type: 3}
       propertyPath: m_LocalPosition.x
