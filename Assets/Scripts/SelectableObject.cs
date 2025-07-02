@@ -6,6 +6,6 @@ public class SelectableObject : MonoBehaviour
 
     void OnMouseDown()
     {
-        this.GetComponentInParent<Selection>().SetObject(SetNum);
+        //this.GetComponentInParent<Selection>().SetObject(SetNum);
     }
 }

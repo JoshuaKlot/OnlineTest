@@ -5,8 +5,6 @@ using System.Collections.Specialized;
 using System.Collections;
 using System.Collections.Generic;
 
-
-
 public class Cursor : NetworkBehaviour
 {
     [SerializeField] private GameObject SpawnHere;
@@ -14,7 +12,7 @@ public class Cursor : NetworkBehaviour
     [SerializeField] private List<GameObject> currentSelection;
     [SerializeField] private Animator ani;
     [SerializeField] private GameObject coins;
-    
+
     [SerializeField] private LayerMask obsticles;
     [SerializeField] private LayerMask sidewalk;
     [SerializeField] private LayerMask grass;
@@ -139,7 +137,7 @@ public class Cursor : NetworkBehaviour
         Debug.Log(hit);
         if (hit != null)
         {
-            Coin coin = hit.GetComponent<Coin>();
+            OwnerOnlyVisibility coin = hit.GetComponent<OwnerOnlyVisibility>();
             if (coin != null && coin.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
             {
           
@@ -200,6 +198,7 @@ public class Cursor : NetworkBehaviour
         
         if (selNum < 0 || selNum >= currentSelection.Count)
         {
+            Debug.Log("Selection number out of range.");
             Vector2Int gridPos = GridManager.Instance.WorldToGrid(spawnPosition);
             Vector3 worldCenter = GridManager.Instance.GridToWorldCenter(gridPos);
             Vector3 start = new Vector3(worldCenter.x, worldCenter.y, 5);
@@ -211,7 +210,7 @@ public class Cursor : NetworkBehaviour
             Debug.Log(hit);
             if (hit != null)
             {
-                Coin coin = hit.GetComponent<Coin>();
+                OwnerOnlyVisibility coin = hit.GetComponent<OwnerOnlyVisibility>();
                 if (coin != null && coin.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
                 {
 
@@ -222,13 +221,25 @@ public class Cursor : NetworkBehaviour
             return;
         }
         GameObject placedObject = Instantiate(currentSelection[selNum], spawnPosition, Quaternion.identity);
-
-        Coin coinComponent = placedObject.GetComponent<Coin>();
-        coinComponent.visibleToClientId = rpcParams.Receive.SenderClientId;
+        Debug.Log("Placing Object: " + placedObject.name);
+        OwnerOnlyVisibility visibleComponent = placedObject.GetComponent<OwnerOnlyVisibility>();
+        visibleComponent.visibleToClientId = rpcParams.Receive.SenderClientId;
 
         NetworkObject netObj = placedObject.GetComponent<NetworkObject>();
-        netObj.CheckObjectVisibility = coinComponent.CheckVisibility;
-        ClickMap = true;
+        netObj.CheckObjectVisibility = visibleComponent.CheckVisibility;
+
         netObj.Spawn();
     }
+
+    //[ServerRpc]
+    //public void SetSelectionServerRpc(int[] selectionIndices)
+    //{
+    //    // Rebuild the currentSelection list on the server using indices
+    //    // You need a master list of all possible prefabs on both client and server
+    //    currentSelection = new List<GameObject>();
+    //    foreach (int idx in selectionIndices)
+    //    {
+    //        currentSelection.Add(MasterObstacleList[idx]);
+    //    }
+    //}
 }

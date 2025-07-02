@@ -3,32 +3,22 @@ using UnityEngine;
 
 public class OwnerOnlyVisibility : NetworkBehaviour
 {
-    private NetworkObject netObj;
+    public ulong visibleToClientId;
 
-    public override void OnNetworkSpawn()
+    private void Start()
     {
-        if (IsServer) // Only the server needs to set visibility callbacks
+        //transform.parent = GameObject.Find("MainLevel").transform;
+
+        if (IsServer)
         {
-            NetworkObject netObject = GetComponent<NetworkObject>();
-            
-            if (netObject != null)
-            {
-                netObject.NetworkShow(OwnerClientId);
-                Debug.Log($"[Server] Setting visibility callback for {netObj.name} | Owner: {OwnerClientId}");
-                //netObj.CheckObjectVisibility = IsVisibleToClient;
-            }
-            else
-            {
-                Debug.LogWarning("[Server] No NetworkObject found on object with OwnerOnlyVisibility.");
-            }
+            NetworkObject.CheckObjectVisibility = CheckVisibility;
         }
     }
 
-    private bool IsVisibleToClient(ulong clientId)
+    public bool CheckVisibility(ulong clientId)
     {
-        bool visible = clientId == OwnerClientId;
-        Debug.Log($"Visibility check for object {netObj.name} | clientId: {clientId} | ownerId: {OwnerClientId} => {visible}");
-        return visible;
+        return clientId == visibleToClientId;
     }
+
 
 }
