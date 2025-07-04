@@ -199,29 +199,21 @@ public class Cursor : NetworkBehaviour
     private void PlaceObjectServerRpc(Vector3 spawnPosition, int selNum, ServerRpcParams rpcParams = default)
     {
        
-        
+                // Check for coin at the position
+        Collider2D hit = Physics2D.OverlapCircle(spawnPosition, 0.1f, obsticles);
+        Debug.Log(hit);
+        if (hit != null)
+        {
+            OwnerOnlyVisibility coin = hit.GetComponent<OwnerOnlyVisibility>();
+            if (coin != null && coin.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
+            {
+
+
+                coin.NetworkObject.Despawn();
+            }
+        }
         if (selNum < 0 || selNum >= currentSelection.Count)
         {
-            Debug.Log("Selection number out of range.");
-            Vector2Int gridPos = GridManager.Instance.WorldToGrid(spawnPosition);
-            Vector3 worldCenter = GridManager.Instance.GridToWorldCenter(gridPos);
-            Vector3 start = new Vector3(worldCenter.x, worldCenter.y, 5);
-            Vector3 direction = new Vector3(0, 0, -10);
-
-
-            // Check for coin at the position
-            Collider2D hit = Physics2D.OverlapCircle(worldCenter, 0.1f, obsticles);
-            Debug.Log(hit);
-            if (hit != null)
-            {
-                OwnerOnlyVisibility coin = hit.GetComponent<OwnerOnlyVisibility>();
-                if (coin != null && coin.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
-                {
-
-
-                    coin.NetworkObject.Despawn();
-                }
-            }
             return;
         }
         GameObject placedObject = Instantiate(currentSelection[selNum], spawnPosition, Quaternion.identity);
