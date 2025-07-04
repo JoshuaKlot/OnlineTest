@@ -4,6 +4,7 @@ using UnityEngine;
 public class Selection : MonoBehaviour
 {
     [SerializeField] private List<GameObject> obstaclePrefabs;
+    [SerializeField] private MasterObstacleListSO masterObstacleListSO;
     public Cursor cursor;
     public Vector3 position;
 
@@ -14,14 +15,14 @@ public class Selection : MonoBehaviour
         {
             cursor.SetSelection(obstaclePrefabs);
 
-        //    // Find indices of selected prefabs in the master list
-        //    List<int> indices = new List<int>();
-        //    foreach (var prefab in obstaclePrefabs)
-        //    {
-        //        int idx = cursor.MasterObstacleList.IndexOf(prefab);
-        //        if (idx >= 0) indices.Add(idx);
-        //    }
-        //    cursor.SetSelectionServerRpc(indices.ToArray());
+            // Find indices of selected prefabs in the master list
+            List<int> indices = new List<int>();
+            foreach (var prefab in obstaclePrefabs)
+            {
+                int idx = cursor.MasterObstacleList.IndexOf(prefab);
+                if (idx >= 0) indices.Add(idx);
+            }
+            cursor.SetSelectionServerRpc(indices.ToArray());
         }
         else
         {

@@ -22,11 +22,15 @@ public class Cursor : NetworkBehaviour
     [SerializeField] private bool SetUpObsticles;
     [SerializeField] private bool ClickMap;
     private Vector3 selectedPosition;
+    [SerializeField] private MasterObstacleListSO masterObstacleListSO;
+
+    public List<GameObject> MasterObstacleList => masterObstacleListSO.MasterObstacleList;
 
     private void Awake()
     {
         SetUpObsticles = false;
         ClickMap = true;
+
     }
 
     void Update()
@@ -231,15 +235,15 @@ public class Cursor : NetworkBehaviour
         netObj.Spawn();
     }
 
-    //[ServerRpc]
-    //public void SetSelectionServerRpc(int[] selectionIndices)
-    //{
-    //    // Rebuild the currentSelection list on the server using indices
-    //    // You need a master list of all possible prefabs on both client and server
-    //    currentSelection = new List<GameObject>();
-    //    foreach (int idx in selectionIndices)
-    //    {
-    //        currentSelection.Add(MasterObstacleList[idx]);
-    //    }
-    //}
+    [ServerRpc]
+    public void SetSelectionServerRpc(int[] selectionIndices)
+    {
+        // Rebuild the currentSelection list on the server using indices
+        // You need a master list of all possible prefabs on both client and server
+        currentSelection = new List<GameObject>();
+        foreach (int idx in selectionIndices)
+        {
+            currentSelection.Add(MasterObstacleList[idx]);
+        }
+    }
 }
