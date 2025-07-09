@@ -19,7 +19,7 @@ public class Cursor : NetworkBehaviour
     [SerializeField] private LayerMask entrances;
     [SerializeField] private LayerMask selectableLayer;
     [SerializeField] private GameObject start;
-    [SerializeField] private bool SetUpObsticles;
+    [SerializeField] public bool SetUpObsticles;
     [SerializeField] private bool ClickMap;
     private Vector3 selectedPosition;
     [SerializeField] private MasterObstacleListSO masterObstacleListSO;

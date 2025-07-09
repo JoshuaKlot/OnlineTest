@@ -83,7 +83,13 @@ public class GameManager : NetworkBehaviour
 
     public void SetUpEntrances()
     {
-
+        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (clientId != NetworkManager.ServerClientId)
+            {
+                PlayerSpawner.Instance.SpawnPlayerACursorServerRpc(clientId);
+            }
+        }
     }
     private void DespawnAllCursors()
     {
@@ -147,7 +153,15 @@ public class GameManager : NetworkBehaviour
             Debug.LogWarning($"[Server] Player {clientId} was already registered.");
         }
     }
-
+    [ServerRpc(RequireOwnership = false)]
+    public void SetUpObsticalsServerRpc()
+    {
+        foreach (var cursor in cursors.Values)
+        {
+            cursor.GetComponent<Cursor>().SetUpObsticles=true;
+        }
+        PanelManager.Instance.ShowCursorPhaseOnClients();
+    }
 
     [ServerRpc(RequireOwnership = false)]
     public void MarkPlayerDonePlacingCoinsServerRpc(ServerRpcParams rpcParams = default)

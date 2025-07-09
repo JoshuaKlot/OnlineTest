@@ -22,6 +22,11 @@ public class SendMsg : NetworkBehaviour
     {
         ReadyMsgClientRpc(clientId);
     }
+
+    public void SetUpEntrances(ulong clientId)
+    {
+        SetUpEntrancesClientRpc(clientId);
+    }
     [ClientRpc]
     private void CoinCollectedClientRpc(ulong collectorClientId)
     {
@@ -46,5 +51,16 @@ public class SendMsg : NetworkBehaviour
             NetworkLogger.Log("Player " + ReadyClientId + " is ready");
         }
     }
-
+    [ClientRpc]
+    private void SetUpEntrancesClientRpc(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            NetworkLogger.Log("You set up the entrances");
+        }
+        else
+        {
+            NetworkLogger.Log("Player " + clientId + " set up the entrances");
+        }
+    }
 }
