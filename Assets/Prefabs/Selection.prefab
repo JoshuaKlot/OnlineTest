@@ -47,7 +47,7 @@ MonoBehaviour:
   obstaclePrefabs:
   - {fileID: 3224432587336740763, guid: 49ad49b1e071b4842aabd11211334f48, type: 3}
   - {fileID: 1228283657262690232, guid: 86548e767e4c8cb4b8963d417aa0ae19, type: 3}
-  masterObstacleListSO: {fileID: 0}
+  masterObstacleListSO: {fileID: 11400000, guid: 4d93bb1b492d91e4d83926489a092e5e, type: 2}
   xSpacing: 4
   SelecatableObject: {fileID: 3971118080587827695, guid: 4acd4c16ef61cd247804efc0878c6cc1, type: 3}
   deleteObject: {fileID: 7802018892431730895, guid: 14b25145779256c4183d68a0d87e7283, type: 3}
