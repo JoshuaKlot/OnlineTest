@@ -375,7 +375,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   SpawnHere: {fileID: 0}
   Highlight: {fileID: 473361376596879461}
-  currentSelection: []
+  currentSelection:
+  - {fileID: 3224432587336740763, guid: 49ad49b1e071b4842aabd11211334f48, type: 3}
+  - {fileID: 1228283657262690232, guid: 86548e767e4c8cb4b8963d417aa0ae19, type: 3}
   ani: {fileID: 7502669371968789598}
   coins: {fileID: 5467673333300652890, guid: fd83f38dec405f24b8f6121a28a094c7, type: 3}
   obsticles:

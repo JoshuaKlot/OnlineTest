@@ -59,7 +59,7 @@ public class Cursor : NetworkBehaviour
                 if (selectable != null)
                 {
                     // Call SetObject on the parent Selection
-                    selectable.GetComponentInParent<Selection>().SetObject(selectable.SetNum);
+                    selectable.GetComponentInParent<Selection>().AddList(currentSelection);
                     return; // Don't process map click
                 }
             }
@@ -91,17 +91,21 @@ public class Cursor : NetworkBehaviour
                 }
                 else
                 {
-                    if (!GridManager.Instance.IsOccupied(gridPos))
+                    Collider2D hitStart = Physics2D.OverlapCircle(snappedPosition, 0.1f, obsticles);
+                    if (hitStart.gameObject.tag == "Unmovable")
                     {
-                        Debug.Log("Isnt Occupied");
-                        GridManager.Instance.MarkOccupied(gridPos);
-                        SpawnCoinServerRpc(snappedPosition); // send snapped pos to avoid desync
+                        NetworkLogger.Instance.AddLog("Please do not place obsticles over entrances and exits");
                     }
                     else
                     {
-                        GridManager.Instance.MarkUnoccupied(gridPos);
-                        Debug.Log("Occupied");
-                        TryDeleteCoinServerRpc(gridPos);
+                        if (hitSidewalk != null)
+                        {
+
+                        }
+                        else if (hitGrass != null)
+                        {
+
+                        }
                     }
                 }
             }

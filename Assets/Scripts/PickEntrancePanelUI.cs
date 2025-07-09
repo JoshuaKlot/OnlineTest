@@ -24,7 +24,7 @@ public class PickEntrancePanelUI : NetworkBehaviour
             if (!hasStart || !hasExit)
             {
                 Debug.LogWarning("You must place both a start and an exit before readying up!");
-                // Optionally show a UI warning here
+                NetworkLogger.Instance.AddLog("You must place both a start and an exit before readying up!");
                 return;
             }
 
