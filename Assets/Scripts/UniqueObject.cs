@@ -1,16 +1,24 @@
 using UnityEngine;
 using Unity.Netcode;
+
 public class UniqueObject : NetworkBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public enum UniqueType { Start, Exit }
+    public UniqueType uniqueType;
 
-    // Update is called once per frame
-    void Update()
+    public override void OnNetworkSpawn()
     {
-        
+        if (IsServer)
+        {
+            // Find all UniqueObjects of the same type except this one
+            foreach (var obj in FindObjectsOfType<UniqueObject>())
+            {
+                if (obj != this && obj.uniqueType == uniqueType && obj.NetworkObject.IsSpawned)
+                {
+                    obj.NetworkObject.Despawn();
+                    Destroy(obj.gameObject);
+                }
+            }
+        }
     }
 }
