@@ -4,6 +4,8 @@ using UnityEngine;
 public class Selection : MonoBehaviour
 {
     private List<GameObject> obstaclePrefabs;
+
+  
     [SerializeField] private MasterObstacleListSO masterObstacleListSO;
     [SerializeField] private int xSpacing;
     [SerializeField] private GameObject SelecatableObject;
@@ -11,7 +13,10 @@ public class Selection : MonoBehaviour
     private GameObject delete;
     public Cursor cursor;
     public Vector3 position;
-
+    void Awake()
+    {
+        obstaclePrefabs = new List<GameObject>();
+    }
     // Call this after assigning cursor
     public void SetSelection()
     {
@@ -42,6 +47,7 @@ public class Selection : MonoBehaviour
         }   
         for (int i = 0; i < list.Count; i++)
         {
+            Debug.Log("Adding item: " + list[i].name);  
             GameObject selectedPrefab = list[i];
             Vector2 newPosition = new Vector2(position.x + (i * xSpacing), position.y);
             GameObject newItem = Instantiate(SelecatableObject);
