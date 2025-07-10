@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Selection : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> obstaclePrefabs;
+    private List<GameObject> obstaclePrefabs;
     [SerializeField] private MasterObstacleListSO masterObstacleListSO;
     [SerializeField] private int xSpacing;
     [SerializeField] private GameObject SelecatableObject;
@@ -45,6 +45,7 @@ public class Selection : MonoBehaviour
             GameObject selectedPrefab = list[i];
             Vector2 newPosition = new Vector2(position.x + (i * xSpacing), position.y);
             GameObject newItem = Instantiate(SelecatableObject);
+            obstaclePrefabs.Add(selectedPrefab);
             newItem.transform.parent = this.transform;
             newItem.transform.position = newPosition;
             newItem.GetComponent<SelectableObject>().SetNum= cursor.MasterObstacleList.IndexOf(selectedPrefab);

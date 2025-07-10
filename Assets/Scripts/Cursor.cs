@@ -18,6 +18,7 @@ public class Cursor : NetworkBehaviour
     [SerializeField] private LayerMask grass;
     [SerializeField] private LayerMask entrances;
     [SerializeField] private LayerMask selectableLayer;
+    [SerializeField] private ObList obList;
     [SerializeField] private GameObject start;
     [SerializeField] public bool SetUpObsticles;
     [SerializeField] private bool ClickMap;
@@ -85,7 +86,9 @@ public class Cursor : NetworkBehaviour
                     }
                     else
                     {
-                        SelectObsticle(start, snappedPosition);
+                        obList.SpawnSelection(snappedPosition);
+                        obList.Signals(ObList.ObsticalType.Entrances);
+                        ClickMap = false;
 
                     }
                 }
@@ -98,13 +101,14 @@ public class Cursor : NetworkBehaviour
                     }
                     else
                     {
+                        obList.SpawnSelection(snappedPosition);
                         if (hitSidewalk != null)
                         {
-
+                            obList.Signals(ObList.ObsticalType.Sidewalk);
                         }
                         else if (hitGrass != null)
                         {
-
+                            obList.Signals(ObList.ObsticalType.Grass);
                         }
                     }
                 }

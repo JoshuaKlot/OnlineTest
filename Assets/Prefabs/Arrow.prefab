@@ -229,6 +229,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1793795731390585214}
   - component: {fileID: 3831823602936312324}
+  - component: {fileID: 8148742997299699416}
   - component: {fileID: 7502669371968789598}
   - component: {fileID: 2373277941655092349}
   - component: {fileID: 2859508423935749765}
@@ -313,6 +314,31 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &8148742997299699416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8010906532664601726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 011886ceb2307fb4dbd6c8f9a25aaccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SelectionPrefab: {fileID: 7956447155177447120, guid: 89ea1f56574001440ad3fb85bd2a762a, type: 3}
+  MasterList:
+  - Type: 0
+    Obsticles:
+    - {fileID: 3224432587336740763, guid: 49ad49b1e071b4842aabd11211334f48, type: 3}
+    - {fileID: 1228283657262690232, guid: 86548e767e4c8cb4b8963d417aa0ae19, type: 3}
+  - Type: 1
+    Obsticles:
+    - {fileID: 5467673333300652890, guid: fd83f38dec405f24b8f6121a28a094c7, type: 3}
+  - Type: 2
+    Obsticles:
+    - {fileID: 1033767421492550346, guid: 3c4c6d2e8886dda4ab1080aaf89575f0, type: 3}
+  cursor: {fileID: 2859508423935749765}
 --- !u!95 &7502669371968789598
 Animator:
   serializedVersion: 7
@@ -395,6 +421,7 @@ MonoBehaviour:
   selectableLayer:
     serializedVersion: 2
     m_Bits: 16384
+  obList: {fileID: 8148742997299699416}
   start: {fileID: 7956447155177447120, guid: 89ea1f56574001440ad3fb85bd2a762a, type: 3}
   SetUpObsticles: 0
   ClickMap: 0
