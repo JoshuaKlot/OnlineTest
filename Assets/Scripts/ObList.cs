@@ -31,6 +31,20 @@ public class ObList : MonoBehaviour
         activeSelection = selectionObj; // Store the active selection for later use
         //selectionScript.SetSelection(); // Call this after assignment
     }
+
+    public void DeleteSelection()
+    {
+        if (activeSelection != null)
+        {
+            Destroy(activeSelection);
+            activeSelection = null; // Clear the reference after deletion
+            selectedSpawned = false;
+        }
+        else
+        {
+            Debug.Log("No active selection to delete.");
+        }
+    }
     public void Signals(ObsticalType type)
     {
         foreach(var list in MasterList)

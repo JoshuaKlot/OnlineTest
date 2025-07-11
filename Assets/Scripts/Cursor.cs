@@ -19,7 +19,6 @@ public class Cursor : NetworkBehaviour
     [SerializeField] private LayerMask entrances;
     [SerializeField] private LayerMask selectableLayer;
     [SerializeField] private ObList obList;
-    [SerializeField] private GameObject start;
     [SerializeField] public bool SetUpObsticles;
     [SerializeField] private bool ClickMap;
     private Vector3 selectedPosition;
@@ -43,7 +42,17 @@ public class Cursor : NetworkBehaviour
         else
             mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2Int gridPos = GridManager.Instance.WorldToGrid(mouseWorld);
-        Vector3 snappedPosition = GridManager.Instance.GridToWorldCenter(gridPos);
+        Vector3 snappedPosition = Vector3.zero;
+        if (ClickMap)
+        {
+            Highlight.SetActive(true);
+            snappedPosition = GridManager.Instance.GridToWorldCenter(gridPos);
+        }
+        else
+        {
+            Highlight.SetActive(false);
+        }
+        
         Highlight.transform.position = snappedPosition;
         transform.position = new Vector3(mouseWorld.x, mouseWorld.y, 0);
         //transform.position = snappedPosition;
@@ -59,8 +68,8 @@ public class Cursor : NetworkBehaviour
                 var selectable = hit.collider.GetComponent<SelectableObject>();
                 if (selectable != null)
                 {
-                    // Call SetObject on the parent Selection
-                    selectable.GetComponentInParent<Selection>().AddList(currentSelection);
+                    // Make the selectable spawn at the selection position
+                    PlaceObsticle(snappedPosition, selectable.SetNum);
                     return; // Don't process map click
                 }
             }
@@ -206,8 +215,16 @@ public class Cursor : NetworkBehaviour
     [ServerRpc]
     private void PlaceObjectServerRpc(Vector3 spawnPosition, int selNum, ServerRpcParams rpcParams = default)
     {
-       
-                // Check for coin at the position
+        GameObject selectionPrefab = null;
+        for (int i=0;i<MasterObstacleList.Count;i++)
+        {
+            
+            if (selNum == i)
+            {
+                selectionPrefab = MasterObstacleList[i];
+            }
+        }
+        // Check for coin at the position
         Collider2D hit = Physics2D.OverlapCircle(spawnPosition, 0.1f, obsticles);
         Debug.Log(hit);
         if (hit != null)
@@ -224,7 +241,7 @@ public class Cursor : NetworkBehaviour
         {
             return;
         }
-        GameObject placedObject = Instantiate(currentSelection[selNum], spawnPosition, Quaternion.identity);
+        GameObject placedObject = Instantiate(selectionPrefab, spawnPosition, Quaternion.identity);
         Debug.Log("Placing Object: " + placedObject.name);
         OwnerOnlyVisibility visibleComponent = placedObject.GetComponent<OwnerOnlyVisibility>();
         visibleComponent.visibleToClientId = rpcParams.Receive.SenderClientId;
