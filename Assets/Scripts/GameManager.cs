@@ -17,6 +17,7 @@ public class GameManager : NetworkBehaviour
     private LayerMask grass;
     private bool gameStarted = false;
 
+    //Called From NetworkUI
     public void StartGame()
     {
         if (!IsServer) return;
@@ -29,7 +30,7 @@ public class GameManager : NetworkBehaviour
         PlayerSpawner.Instance.TriggerSpawnPlayersClientRpc();
 
         AudioManager.Instance.PlayWaiting();
-        PanelManager.Instance.ShowCursorPhaseOnClients();
+        PanelManager.Instance.ShowSetUpPhasePanelOnClients();
         
         foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
@@ -132,6 +133,7 @@ public class GameManager : NetworkBehaviour
     {
         PanelManager.Instance.ShowLobbyOnClients();
     }
+    //Called from PlayerSpawner
     [ServerRpc(RequireOwnership = false)]
     public void RegisterPlayerServerRpc(ServerRpcParams rpcParams = default)
     {
@@ -153,6 +155,7 @@ public class GameManager : NetworkBehaviour
             Debug.LogWarning($"[Server] Player {clientId} was already registered.");
         }
     }
+    //Called from PickEntrancePanelUI
     [ServerRpc(RequireOwnership = false)]
     public void SetUpObsticalsServerRpc()
     {
