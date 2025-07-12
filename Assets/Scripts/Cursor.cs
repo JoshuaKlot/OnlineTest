@@ -42,11 +42,10 @@ public class Cursor : NetworkBehaviour
         else
             mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2Int gridPos = GridManager.Instance.WorldToGrid(mouseWorld);
-        Vector3 snappedPosition = Vector3.zero;
+        Vector3 snappedPosition = GridManager.Instance.GridToWorldCenter(gridPos);
         if (ClickMap)
         {
             Highlight.SetActive(true);
-            snappedPosition = GridManager.Instance.GridToWorldCenter(gridPos);
         }
         else
         {
@@ -69,7 +68,8 @@ public class Cursor : NetworkBehaviour
                 if (selectable != null)
                 {
                     // Make the selectable spawn at the selection position
-                    PlaceObsticle(snappedPosition, selectable.SetNum);
+                    PlaceObsticle(obList.Position, selectable.SetNum);
+                    obList.DeleteSelection();
                     return; // Don't process map click
                 }
             }

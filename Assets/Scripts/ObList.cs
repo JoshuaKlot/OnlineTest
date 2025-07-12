@@ -6,6 +6,7 @@ public class ObList : MonoBehaviour
     private bool selectedSpawned;
     [SerializeField] private GameObject SelectionPrefab;
     private GameObject activeSelection;
+    public Vector3 Position;
     public enum ObsticalType { Entrances, Sidewalk, Grass }
     [System.Serializable]
     public struct ObsticalList
@@ -22,6 +23,7 @@ public class ObList : MonoBehaviour
         {
             return;
         }
+        Position = spawnPosition;
         GameObject selectionObj = Instantiate(SelectionPrefab);
         selectionObj.transform.position = spawnPosition;
         Selection selectionScript = selectionObj.GetComponent<Selection>();
