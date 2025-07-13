@@ -28,7 +28,7 @@ public class PickEntrancePanelUI : NetworkBehaviour
                 return;
             }
 
-            Debug.Log("Ready button pressed. Marking player as done.");
+            Debug.Log("Entances Set Up.");
             SendMsg.Instance.SetUpEntrances(NetworkManager.Singleton.LocalClientId);
             GameManager.Instance.SetUpObsticalsServerRpc();
         });

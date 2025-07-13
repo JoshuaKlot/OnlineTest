@@ -58,6 +58,7 @@ public class GameManager : NetworkBehaviour
         gameStarted = true;
     }
 
+    //Called From PlayerSetUp
     public void RegisterCursor(ulong clientId, NetworkObject cursorObject)
     {
         if (!cursors.ContainsKey(clientId))
@@ -156,15 +157,38 @@ public class GameManager : NetworkBehaviour
         }
     }
     //Called from PickEntrancePanelUI
+    //Called from PickEntrancePanelUI
     [ServerRpc(RequireOwnership = false)]
     public void SetUpObsticalsServerRpc()
     {
-        foreach (var cursor in cursors.Values)
+        foreach (var kvp in cursors)
         {
+            ulong clientId = kvp.Key;
+            NetworkObject cursor = kvp.Value;
+            Debug.Log("Setting Up " + cursor);
+
+            // Optionally call on the server too:
             cursor.GetComponent<Cursor>().ObsticleTime();
+
+            // Then tell the client to run it
+            TriggerObsticleTimeClientRpc(clientId);
         }
+
         PanelManager.Instance.ShowCursorPhaseOnClients();
     }
+
+    [ClientRpc]
+    public void TriggerObsticleTimeClientRpc(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            if (cursors.TryGetValue(clientId, out NetworkObject cursorObj))
+            {
+                cursorObj.GetComponent<Cursor>().ObsticleTime();
+            }
+        }
+    }
+
 
     [ServerRpc(RequireOwnership = false)]
     public void MarkPlayerDonePlacingCoinsServerRpc(ServerRpcParams rpcParams = default)
