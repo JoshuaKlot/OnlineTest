@@ -161,7 +161,7 @@ public class GameManager : NetworkBehaviour
     {
         foreach (var cursor in cursors.Values)
         {
-            cursor.GetComponent<Cursor>().SetUpObsticles=true;
+            cursor.GetComponent<Cursor>().ObsticleTime();
         }
         PanelManager.Instance.ShowCursorPhaseOnClients();
     }

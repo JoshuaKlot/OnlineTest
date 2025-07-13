@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using System.Collections.Specialized;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class Cursor : NetworkBehaviour
 {
@@ -58,6 +59,7 @@ public class Cursor : NetworkBehaviour
 
         if (Input.GetMouseButtonDown(0) && !IsPointerOverUI())
         {
+            //Place this inside of this statement inside of a different function, prefeable in oblist
             // Only check for selectable objects using the layer mask
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, selectableLayer);
@@ -104,9 +106,12 @@ public class Cursor : NetworkBehaviour
                 else
                 {
                     Collider2D hitStart = Physics2D.OverlapCircle(snappedPosition, 0.1f, obsticles);
-                    if (hitStart.gameObject.tag == "Unmovable")
-                    {
-                        NetworkLogger.Instance.AddLog("Please do not place obsticles over entrances and exits");
+                    if(hitStart != null) { 
+                        if (hitStart.gameObject.tag == "Unmovable")
+                        {
+                            NetworkLogger.Instance.AddLog("Please do not place obsticles over entrances and exits");
+                            return;
+                        }
                     }
                     else
                     {
@@ -125,6 +130,23 @@ public class Cursor : NetworkBehaviour
         }
     }
 
+    public void ObsticleTime()
+    {
+        if (SetUpObsticles)
+        {
+            SetUpObsticles = false;
+            obList.DeleteSelection();
+            ClickMap = true;
+            NetworkLogger.Instance.AddLog("Click on an entrance to place obsticles.");
+        }
+        else
+        {
+            SetUpObsticles = true;
+            obList.DeleteSelection();
+            ClickMap = true;
+            NetworkLogger.Instance.AddLog("Click on the map to place obsticles.");
+        }
+    }
     public void SetSelection(List<GameObject> Selection)
     {
         currentSelection = Selection;
