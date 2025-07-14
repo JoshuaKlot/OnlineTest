@@ -175,7 +175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  uniqueType: 0
+  uniqueType: 1
 --- !u!114 &6118601807009382976
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -87,7 +87,7 @@ public class Cursor : NetworkBehaviour
                     Debug.Log("Tile Type: Grass");
                 if (hitEntrance != null)
                     Debug.Log("Tile Type: Entrance");
-
+                Debug.Log("Hit Stuff: " + hitStuff);
                 ani.SetTrigger("Click");
                 if (!SetUpObsticles)
                 {
@@ -105,8 +105,10 @@ public class Cursor : NetworkBehaviour
                 }
                 else
                 {
+                    //Make sure the obsticle is deleted if it exists
                     Collider2D hitStart = Physics2D.OverlapCircle(snappedPosition, 0.1f, obsticles);
-                    if(hitStart != null) { 
+                    if (hitStart != null)
+                    {
                         if (hitStart.gameObject.tag == "Unmovable")
                         {
                             NetworkLogger.Instance.AddLog("Please do not place obsticles over entrances and exits");
@@ -237,7 +239,24 @@ public class Cursor : NetworkBehaviour
 
     [ServerRpc]
     private void PlaceObjectServerRpc(Vector3 spawnPosition, int selNum, ServerRpcParams rpcParams = default)
-    {
+    {   
+        Collider2D hit = Physics2D.OverlapCircle(spawnPosition, 0.1f, obsticles);
+        Debug.Log(hit);
+        if (hit != null)
+        {
+            OwnerOnlyVisibility obj = hit.GetComponent<OwnerOnlyVisibility>();
+            if (obj != null && obj.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
+            {
+
+
+                obj.NetworkObject.Despawn();
+            }
+        }
+        
+        if (selNum < 0)
+        {
+            return;
+        }
         GameObject selectionPrefab = null;
         for (int i=0;i<MasterObstacleList.Count;i++)
         {
@@ -247,23 +266,9 @@ public class Cursor : NetworkBehaviour
                 selectionPrefab = MasterObstacleList[i];
             }
         }
+        Debug.Log("Selection Prefab: " + selectionPrefab.name); 
         // Check for coin at the position
-        Collider2D hit = Physics2D.OverlapCircle(spawnPosition, 0.1f, obsticles);
-        Debug.Log(hit);
-        if (hit != null)
-        {
-            OwnerOnlyVisibility coin = hit.GetComponent<OwnerOnlyVisibility>();
-            if (coin != null && coin.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
-            {
 
-
-                coin.NetworkObject.Despawn();
-            }
-        }
-        if (selNum < 0)
-        {
-            return;
-        }
         GameObject placedObject = Instantiate(selectionPrefab, spawnPosition, Quaternion.identity);
         Debug.Log("Placing Object: " + placedObject.name);
         OwnerOnlyVisibility visibleComponent = placedObject.GetComponent<OwnerOnlyVisibility>();

@@ -171,7 +171,7 @@ public class GameManager : NetworkBehaviour
             // Optionally call on the server too:
             //cursor.GetComponent<Cursor>().ObsticleTime();
             bool found = cursors.TryGetValue(clientId, out NetworkObject cursorObj);
-            Debug.Log(found + " and we got " + cursorObj);
+            
             // Then tell the client to run it
             TriggerObsticleTimeClientRpc(clientId,cursorObj);
         }
