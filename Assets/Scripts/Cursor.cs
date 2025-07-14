@@ -260,7 +260,7 @@ public class Cursor : NetworkBehaviour
                 coin.NetworkObject.Despawn();
             }
         }
-        if (selNum < 0 || selNum >= currentSelection.Count)
+        if (selNum < 0)
         {
             return;
         }
