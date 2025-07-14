@@ -32,7 +32,7 @@ public class PlayerAnimation : MonoBehaviour
             direction = 2; // Side
             sprite.flipX = horizontal > 0;
         } 
-        Debug.Log("direction: "+direction);
+        //Debug.Log("direction: "+direction);
         walking = (move.isMoving);
         animateDirection();
         animateWalking();

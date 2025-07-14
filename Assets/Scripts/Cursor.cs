@@ -132,6 +132,7 @@ public class Cursor : NetworkBehaviour
 
     public void ObsticleTime()
     {
+        Debug.Log("Obsticle Time");
         if (SetUpObsticles)
         {
             SetUpObsticles = false;

@@ -63,6 +63,7 @@ public class GameManager : NetworkBehaviour
     {
         if (!cursors.ContainsKey(clientId))
         {
+            Debug.Log("Adding " + cursorObject + " for client " + clientId);
             cursors.Add(clientId, cursorObject);
         }
     }
@@ -168,7 +169,7 @@ public class GameManager : NetworkBehaviour
             Debug.Log("Setting Up " + cursor);
 
             // Optionally call on the server too:
-            cursor.GetComponent<Cursor>().ObsticleTime();
+            //cursor.GetComponent<Cursor>().ObsticleTime();
 
             // Then tell the client to run it
             TriggerObsticleTimeClientRpc(clientId);
@@ -180,12 +181,36 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     public void TriggerObsticleTimeClientRpc(ulong clientId)
     {
+        Debug.Log("Triggering ObsticleTime for client " + clientId);
+        Debug.Log("LocalClientId: " + NetworkManager.Singleton.LocalClientId);
+        Debug.Log("Cursors count: " + cursors.Count);
         if (NetworkManager.Singleton.LocalClientId == clientId)
         {
-            if (cursors.TryGetValue(clientId, out NetworkObject cursorObj))
+            Debug.Log("This is the local client, calling ObsticleTime directly.");
+            bool found = cursors.TryGetValue(clientId, out NetworkObject cursorObj);
+            Debug.Log(found + " and we got " + cursorObj);
+            if (found)
             {
-                cursorObj.GetComponent<Cursor>().ObsticleTime();
+                Debug.Log("Cursor Object found: " + cursorObj.name);
+                var cursorComponent = cursorObj.GetComponent<Cursor>();
+                if (cursorComponent != null)
+                {
+                    Debug.Log("Cursor component found, calling ObsticleTime()");
+                    cursorComponent.ObsticleTime();
+                }
+                else
+                {
+                    Debug.LogWarning("Cursor component NOT found on object: " + cursorObj.name);
+                }
             }
+            else
+            {
+                Debug.LogWarning("Cursor Object not found for client " + clientId);
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Client {clientId} does not have a cursor registered.");
         }
     }
 
