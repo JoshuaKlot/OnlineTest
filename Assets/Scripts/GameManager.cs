@@ -170,27 +170,30 @@ public class GameManager : NetworkBehaviour
 
             // Optionally call on the server too:
             //cursor.GetComponent<Cursor>().ObsticleTime();
-
+            bool found = cursors.TryGetValue(clientId, out NetworkObject cursorObj);
+            Debug.Log(found + " and we got " + cursorObj);
             // Then tell the client to run it
-            TriggerObsticleTimeClientRpc(clientId);
+            TriggerObsticleTimeClientRpc(clientId,cursorObj);
         }
 
         PanelManager.Instance.ShowCursorPhaseOnClients();
     }
 
     [ClientRpc]
-    public void TriggerObsticleTimeClientRpc(ulong clientId)
+    public void TriggerObsticleTimeClientRpc(ulong clientId,NetworkObjectReference cursorRef, ClientRpcParams clientRpcParams = default)
     {
-        Debug.Log("Triggering ObsticleTime for client " + clientId);
-        Debug.Log("LocalClientId: " + NetworkManager.Singleton.LocalClientId);
-        Debug.Log("Cursors count: " + cursors.Count);
+        //Debug.Log("Triggering ObsticleTime for client " + clientId);
+        //Debug.Log("LocalClientId: " + NetworkManager.Singleton.LocalClientId);
+        //Debug.Log("Cursors count: " + cursors.Count);
         if (NetworkManager.Singleton.LocalClientId == clientId)
         {
-            Debug.Log("This is the local client, calling ObsticleTime directly.");
-            bool found = cursors.TryGetValue(clientId, out NetworkObject cursorObj);
-            Debug.Log(found + " and we got " + cursorObj);
-            if (found)
+            //Debug.Log("This is the local client, calling ObsticleTime directly.");
+            //bool found = cursors.TryGetValue(clientId, out NetworkObject cursorObj);
+            //Debug.Log(found + " and we got " + cursorObj);
+            if (cursorRef.TryGet(out NetworkObject cursorObj))
             {
+                Debug.LogError($"Cursor object for client {clientId} not found or not spawned.");
+
                 Debug.Log("Cursor Object found: " + cursorObj.name);
                 var cursorComponent = cursorObj.GetComponent<Cursor>();
                 if (cursorComponent != null)
@@ -205,7 +208,7 @@ public class GameManager : NetworkBehaviour
             }
             else
             {
-                Debug.LogWarning("Cursor Object not found for client " + clientId);
+                Debug.LogError($"Cursor object for client {clientId} not found or not spawned.");
             }
         }
         else
