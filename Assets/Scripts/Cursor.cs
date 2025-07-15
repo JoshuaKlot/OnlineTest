@@ -87,7 +87,6 @@ public class Cursor : NetworkBehaviour
                     Debug.Log("Tile Type: Grass");
                 if (hitEntrance != null)
                     Debug.Log("Tile Type: Entrance");
-                Debug.Log("Hit Stuff: " + hitStuff);
                 ani.SetTrigger("Click");
                 if (!SetUpObsticles)
                 {
@@ -115,18 +114,18 @@ public class Cursor : NetworkBehaviour
                             return;
                         }
                     }
-                    else
+
+                    obList.SpawnSelection(snappedPosition);
+                    if (hitSidewalk != null)
                     {
-                        obList.SpawnSelection(snappedPosition);
-                        if (hitSidewalk != null)
-                        {
-                            obList.Signals(ObList.ObsticalType.Sidewalk);
-                        }
-                        else if (hitGrass != null)
-                        {
-                            obList.Signals(ObList.ObsticalType.Grass);
-                        }
+                        obList.Signals(ObList.ObsticalType.Sidewalk);
                     }
+
+                    if (hitGrass != null)
+                    {
+                        obList.Signals(ObList.ObsticalType.Grass);
+                    }
+                    
                 }
             }
         }
