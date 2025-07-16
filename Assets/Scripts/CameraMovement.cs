@@ -41,7 +41,7 @@ public class CameraMovement : NetworkBehaviour
 
         float hMovemnent = Input.GetAxisRaw("Camera Horizontal");
         float vMovement = Input.GetAxisRaw("Camera Vertical");
-       // Debug.Log("vMovement is " + vMovement + " and hMovement is " + hMovemnent);
+        Debug.Log("vMovement is " + vMovement + " and hMovement is " + hMovemnent);
         float phMovement = Input.GetAxisRaw("Horizontal");
         float pvMovement = Input.GetAxisRaw("Vertical");
         rb2d.linearVelocity = new Vector2(hMovemnent * hSpeed, vSpeed * vMovement);
