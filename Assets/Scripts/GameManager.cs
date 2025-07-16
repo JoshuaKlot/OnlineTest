@@ -7,7 +7,11 @@ using System.Linq; // Add this at the top
 public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance;
-
+    /// <summary>
+    /// Set Up a dicttionary of playerSetUpObjects 
+    /// and have them keep track of whatcursors have spawned and what players ae ready
+    /// It will simplify the code much better
+    /// </summary>
     private Dictionary<ulong, bool> playerReadyStatus = new Dictionary<ulong, bool>();
     private bool playersSpawned = false;
     private Dictionary<ulong, NetworkObject> cursors = new Dictionary<ulong, NetworkObject>();
@@ -31,7 +35,7 @@ public class GameManager : NetworkBehaviour
 
         AudioManager.Instance.PlayWaiting();
         PanelManager.Instance.ShowSetUpPhasePanelOnClients();
-        
+
         foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (clientId != NetworkManager.ServerClientId)
@@ -72,7 +76,7 @@ public class GameManager : NetworkBehaviour
         if (!players.ContainsKey(clientId))
         {
             players.Add(clientId, playerObject);
-           
+
         }
     }
     public void RegisterCameraTracker(ulong clientId, NetworkObject trackerObject)
@@ -80,7 +84,7 @@ public class GameManager : NetworkBehaviour
         if (!cameraTracker.ContainsKey(clientId))
         {
             cameraTracker.Add(clientId, trackerObject);
-           
+
         }
     }
 
@@ -98,7 +102,7 @@ public class GameManager : NetworkBehaviour
     {
         foreach (var cursor in cursors.Values)
         {
-            Debug.Log("Despawning Cursor "+cursor);
+            Debug.Log("Despawning Cursor " + cursor);
             if (cursor.IsSpawned)
                 cursor.Despawn();
         }
@@ -120,16 +124,16 @@ public class GameManager : NetworkBehaviour
     }
     private void Awake()
     {
-        
+
         if (Instance == null)
             Instance = this;
         else
             Destroy(gameObject);
-        
+
     }
     private void Update()
     {
-        
+
     }
     private void Start()
     {
@@ -171,14 +175,21 @@ public class GameManager : NetworkBehaviour
             // Optionally call on the server too:
             //cursor.GetComponent<Cursor>().ObsticleTime();
             bool found = cursors.TryGetValue(clientId, out NetworkObject cursorObj);
-            
+
             // Then tell the client to run it
-            TriggerObsticleTimeClientRpc(clientId,cursorObj);
+            TriggerObsticleTimeClientRpc(clientId, cursorObj);
         }
 
         PanelManager.Instance.ShowCursorPhaseOnClients();
     }
-
+    public void SetStartPoint(ulong clientId, Vector2 playerStart)
+    {
+        SetStartPointClientRpc(clientId, playerStart);
+    }
+    [ClientRpc]
+    private void SetStartPoint(){
+        
+    }
     [ClientRpc]
     public void TriggerObsticleTimeClientRpc(ulong clientId,NetworkObjectReference cursorRef, ClientRpcParams clientRpcParams = default)
     {
@@ -268,6 +279,11 @@ public class GameManager : NetworkBehaviour
     {
         Debug.Log(clientId + " collected a coin");
         SendMsg.Instance.CoinCollected(clientId);
+    }
+    public void SendExitReachedMsg(ulong clientId)
+    {
+        Debug.Log(clientId + " reached the exit");
+        SendMsg.Instance.ExitReached(clientId);
     }
 
     public void ResetGame()

@@ -7,6 +7,7 @@ public class PlayerSpawner : NetworkBehaviour
     [SerializeField] private GameObject cameraTracker;
     [SerializeField] private GameObject playerPrefabA;
     [SerializeField] private GameObject playerPrefabB;
+    private Vector2 StartHere;
     [SerializeField] private GameObject cmCamera;
 
     private void Awake()
@@ -17,6 +18,10 @@ public class PlayerSpawner : NetworkBehaviour
             Destroy(gameObject);
     }
 
+    public void SetStartPosition(Vector2 startPosition)
+    {
+        StartHere = startPosition;
+    }
     [ClientRpc]
     public void TriggerSpawnPlayersClientRpc()
     {
@@ -68,7 +73,7 @@ public class PlayerSpawner : NetworkBehaviour
 
     public void SpawnPlayerBForClient(ulong clientId)
     {
-        GameObject newPlayer = Instantiate(playerPrefabB);
+        GameObject newPlayer = Instantiate(playerPrefabB,StartHere);
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
 
         //Set visibility callback

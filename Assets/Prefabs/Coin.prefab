@@ -132,6 +132,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   visibleToClientId: 0
+  visibility: {fileID: -7713986837095810004}
 --- !u!61 &-5834277415257528097
 BoxCollider2D:
   m_ObjectHideFlags: 0

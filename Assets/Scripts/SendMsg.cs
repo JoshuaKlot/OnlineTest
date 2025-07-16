@@ -17,7 +17,10 @@ public class SendMsg : NetworkBehaviour
     {
         CoinCollectedClientRpc(clientId);
     }
-
+    public void ExitReached(ulong clientId)
+    {
+        ExitReachedClientRpc(clientId);
+    }
     public void Ready(ulong clientId)
     {
         ReadyMsgClientRpc(clientId);
@@ -37,6 +40,18 @@ public class SendMsg : NetworkBehaviour
         else
         {
             NetworkLogger.Log("Player " + collectorClientId + " collected a coin");
+        }
+    }
+    [ClientRpc]
+    private void ExitReachedClientRpc(ulong collectorClientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId == collectorClientId)
+        {
+            NetworkLogger.Log("You reached the exit");
+        }
+        else
+        {
+            NetworkLogger.Log("Player " + collectorClientId + " reached the exit");
         }
     }
     [ClientRpc]
