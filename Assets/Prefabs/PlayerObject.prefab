@@ -72,6 +72,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   cameraTracker: {fileID: 6842220434778135972, guid: c8114dfd2c0d5d146ba9f47a8904231c, type: 3}
-  playerPrefabA: {fileID: 8010906532664601726, guid: 6888731cec0f6f243a3b9315f8a2c0a4, type: 3}
-  playerPrefabB: {fileID: 5126196606388345920, guid: a671ba84583916f489e7221b103ea2c5, type: 3}
+  cursor: {fileID: 8010906532664601726, guid: 6888731cec0f6f243a3b9315f8a2c0a4, type: 3}
+  player: {fileID: 5126196606388345920, guid: a671ba84583916f489e7221b103ea2c5, type: 3}
+  activeObject: {fileID: 0}
+  ready: 0
   cmCamera: {fileID: 0}

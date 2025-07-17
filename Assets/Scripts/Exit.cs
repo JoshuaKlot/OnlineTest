@@ -1,12 +1,13 @@
 using UnityEngine;
-
-public class Exit : MonoBehaviour
+using Unity.Netcode;
+public class Exit : NetworkBehaviour
 {
+    [SerializeField] private OwnerOnlyVisibility visibility;
     private void OnTriggerEnter2D(Collider2D col)
     {
-
-        //if (!IsServer) return;
         
+        //if (!IsServer) return;
+
         NetworkObject playerObj = col.GetComponent<NetworkObject>();
         if (playerObj == null) return;
 

@@ -98,15 +98,15 @@ public class GameManager : NetworkBehaviour
             }
         }
     }
-    private void DespawnAllCursors()
-    {
-        foreach (var cursor in cursors.Values)
-        {
-            Debug.Log("Despawning Cursor " + cursor);
-            if (cursor.IsSpawned)
-                cursor.Despawn();
-        }
-    }
+    //private void DespawnAllCursors()
+    //{
+
+    //    foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+    //    {
+    //        if (cursor.IsSpawned)
+    //            cursor.Despawn();
+    //    }
+    //}
     private void DespawnTrackers()
     {
         foreach (var tracker in cameraTracker.Values)
@@ -187,8 +187,16 @@ public class GameManager : NetworkBehaviour
         SetStartPointClientRpc(clientId, playerStart);
     }
     [ClientRpc]
-    private void SetStartPoint(){
-        
+    private void SetStartPointClientRpc(ulong clientId, Vector2 playerStart)
+    {
+        foreach (var cId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (clientId == cId)
+            {
+                PlayerSpawner.Instance.SetStartPosition(playerStart);
+            }
+        }
+
     }
     [ClientRpc]
     public void TriggerObsticleTimeClientRpc(ulong clientId,NetworkObjectReference cursorRef, ClientRpcParams clientRpcParams = default)
@@ -315,7 +323,7 @@ public class GameManager : NetworkBehaviour
 
     private void SpawnAllPlayerB()
     {
-        DespawnAllCursors(); // Despawn cursors
+        //DespawnAllCursors(); // Despawn cursors
 
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {

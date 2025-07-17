@@ -5,8 +5,10 @@ public class PlayerSpawner : NetworkBehaviour
 {
     public static PlayerSpawner Instance;
     [SerializeField] private GameObject cameraTracker;
-    [SerializeField] private GameObject playerPrefabA;
-    [SerializeField] private GameObject playerPrefabB;
+    [SerializeField] private GameObject cursor;
+    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject activeObject;
+    [SerializeField] public bool ready;
     private Vector2 StartHere;
     [SerializeField] private GameObject cmCamera;
 
@@ -47,7 +49,8 @@ public class PlayerSpawner : NetworkBehaviour
     public void SpawnPlayerACursorServerRpc(ulong clientId)
     {
         Debug.Log("Spawning PLayer");
-        GameObject newPlayer = Instantiate(playerPrefabA);
+        GameObject newPlayer = Instantiate(cursor);
+        activeObject = newPlayer;
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
         Debug.Log("Spawning Camera Tracker");
         GameObject cTracker = Instantiate(cameraTracker);
@@ -70,12 +73,22 @@ public class PlayerSpawner : NetworkBehaviour
         GameManager.Instance.RegisterCameraTracker(clientId, netObj2);
     }
 
-
+    public void MarkReady()
+    {
+        ready = true;
+        Debug.Log("Player is ready");
+    }
+    public void resetReady()
+    {
+        ready = false;
+        Debug.Log("Player is not ready");
+    }
     public void SpawnPlayerBForClient(ulong clientId)
     {
-        GameObject newPlayer = Instantiate(playerPrefabB,StartHere);
+        Destroy(activeObject);
+        GameObject newPlayer = Instantiate(player,StartHere,Quaternion.EulerRotation(0,0,0));
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
-
+        activeObject = newPlayer;
         //Set visibility callback
         netObj.CheckObjectVisibility = (targetClientId) =>
         {
