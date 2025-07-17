@@ -98,15 +98,15 @@ public class GameManager : NetworkBehaviour
             }
         }
     }
-    //private void DespawnAllCursors()
-    //{
+    private void DespawnAllCursors()
+    {
 
-    //    foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
-    //    {
-    //        if (cursor.IsSpawned)
-    //            cursor.Despawn();
-    //    }
-    //}
+        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (cursor.IsSpawned)
+                cursor.Despawn();
+        }
+    }
     private void DespawnTrackers()
     {
         foreach (var tracker in cameraTracker.Values)
