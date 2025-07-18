@@ -278,7 +278,8 @@ public class GameManager : NetworkBehaviour
             if(obsticlephase==false)
             {
                 obsticlephase = true;
-                foreach(var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+                RevealCoinsToOtherPlayers();
+                foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
                 {
                     playerReadyStatus[clientId]=false; // Reset player ready status for the next phase
                 }
