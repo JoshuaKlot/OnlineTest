@@ -62,6 +62,13 @@ public class PlayerSpawner : NetworkBehaviour
             return visible;
         };
 
+        netObj2.CheckObjectVisibility = (targetClientId) =>
+        {
+            bool visible = targetClientId == clientId;
+            Debug.Log($"[Server] Visibility check for {netObj2.name} | TargetClientID: {targetClientId} | OwnerID: {clientId} => {visible}");
+            return visible;
+        };
+
         newPlayer.SetActive(true);
         netObj.SpawnWithOwnership(clientId, true);
         netObj2.SpawnWithOwnership(clientId, true);

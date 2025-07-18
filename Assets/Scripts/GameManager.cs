@@ -20,6 +20,7 @@ public class GameManager : NetworkBehaviour
     private LayerMask sidewalk;
     private LayerMask grass;
     private bool gameStarted = false;
+    private bool obsticlephase= false;
 
     //Called From NetworkUI
     public void StartGame()
@@ -177,7 +178,10 @@ public class GameManager : NetworkBehaviour
             bool found = cursors.TryGetValue(clientId, out NetworkObject cursorObj);
 
             // Then tell the client to run it
-            TriggerObsticleTimeClientRpc(clientId, cursorObj);
+            if(found)
+                TriggerObsticleTimeClientRpc(clientId, cursorObj);
+            else
+                Debug.LogError($"Cursor object for client {clientId} not found or not spawned.");
         }
 
         PanelManager.Instance.ShowCursorPhaseOnClients();
@@ -249,7 +253,8 @@ public class GameManager : NetworkBehaviour
         }
 
         playerReadyStatus[clientId] = true;
-        cursors[clientId].Despawn();
+        if(obsticlephase)
+            cursors[clientId].Despawn();
         Debug.Log($"Client {clientId} marked as done placing coins.");
         SendMsg.Instance.Ready(clientId);
         CheckIfAllPlayersAreDone(); // NEW: separate logic to advance phase
@@ -272,10 +277,22 @@ public class GameManager : NetworkBehaviour
         if (AllPlayersReady())
         {
             Debug.Log("All players ready! Advancing phase.");
-            playersSpawned = true;
-            RevealCoinsToOtherPlayers();
-            SpawnAllPlayerB();
-            PanelManager.Instance.ShowPlayerPhaseOnClients();
+            if(obsticlephase==false)
+            {
+                obsticlephase = true;
+                foreach(var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+                {
+                    playerReadyStatus[clientId]=false; // Reset player ready status for the next phase
+                }
+                SetUpObsticalsServerRpc();
+                
+            }
+            else { 
+                playersSpawned = true;
+                RevealCoinsToOtherPlayers();
+                SpawnAllPlayerB();
+                PanelManager.Instance.ShowPlayerPhaseOnClients();
+            }
         }
         else
         {
@@ -384,14 +401,14 @@ public class GameManager : NetworkBehaviour
     void RevealCoinsToOtherPlayers()
     {
         // Group coins by their original owner
-        Dictionary<ulong, List<Coin>> coinsByOwner = new Dictionary<ulong, List<Coin>>();
-        Coin[] allCoins = GameObject.FindObjectsOfType<Coin>();
+        Dictionary<ulong, List<OwnerOnlyVisibility>> coinsByOwner = new Dictionary<ulong, List<OwnerOnlyVisibility>>();
+        OwnerOnlyVisibility[] allCoins = GameObject.FindObjectsOfType<OwnerOnlyVisibility>();
 
-        foreach (Coin coin in allCoins)
+        foreach (OwnerOnlyVisibility coin in allCoins)
         {
             if (!coinsByOwner.ContainsKey(coin.visibleToClientId))
             {
-                coinsByOwner[coin.visibleToClientId] = new List<Coin>();
+                coinsByOwner[coin.visibleToClientId] = new List<OwnerOnlyVisibility>();
             }
             coinsByOwner[coin.visibleToClientId].Add(coin);
         }
@@ -431,7 +448,7 @@ public class GameManager : NetworkBehaviour
             if (!giverToReceiver.ContainsKey(originalOwner)) continue;
 
             ulong newOwner = giverToReceiver[originalOwner];
-            foreach (Coin coin in kvp.Value)
+            foreach (OwnerOnlyVisibility coin in kvp.Value)
             {
                 if (coin.NetworkObject.IsSpawned)
                     coin.NetworkObject.Despawn(false);
@@ -448,8 +465,8 @@ public class GameManager : NetworkBehaviour
 
     void DespawnCoins()
     {
-        Coin[] allCoins = GameObject.FindObjectsOfType<Coin>();
-        foreach (Coin coin in allCoins)
+        OwnerOnlyVisibility[] allCoins = GameObject.FindObjectsOfType<OwnerOnlyVisibility>();
+        foreach (OwnerOnlyVisibility coin in allCoins)
         {
             coin.NetworkObject.Despawn();
         }

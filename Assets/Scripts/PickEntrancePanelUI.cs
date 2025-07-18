@@ -30,7 +30,7 @@ public class PickEntrancePanelUI : NetworkBehaviour
 
             Debug.Log("Entances Set Up.");
             SendMsg.Instance.SetUpEntrances(NetworkManager.Singleton.LocalClientId);
-            GameManager.Instance.SetUpObsticalsServerRpc();
+            GameManager.Instance.MarkPlayerDonePlacingCoinsServerRpc();
         });
     }
 }
