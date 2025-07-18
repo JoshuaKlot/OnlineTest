@@ -8,7 +8,7 @@ public class UniqueObject : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsServer)
+        if (!IsHost)
         {
             // Find all UniqueObjects of the same type except this one
             foreach (var obj in FindObjectsOfType<UniqueObject>())

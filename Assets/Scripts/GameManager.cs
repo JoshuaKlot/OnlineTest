@@ -253,8 +253,6 @@ public class GameManager : NetworkBehaviour
         }
 
         playerReadyStatus[clientId] = true;
-        if(obsticlephase)
-            cursors[clientId].Despawn();
         Debug.Log($"Client {clientId} marked as done placing coins.");
         SendMsg.Instance.Ready(clientId);
         CheckIfAllPlayersAreDone(); // NEW: separate logic to advance phase
@@ -289,6 +287,7 @@ public class GameManager : NetworkBehaviour
             }
             else { 
                 playersSpawned = true;
+                DespawnAllCursors();
                 RevealCoinsToOtherPlayers();
                 SpawnAllPlayerB();
                 PanelManager.Instance.ShowPlayerPhaseOnClients();
@@ -406,6 +405,7 @@ public class GameManager : NetworkBehaviour
 
         foreach (OwnerOnlyVisibility coin in allCoins)
         {
+            Debug.Log($"Coin {coin.name} visible to client {coin.visibleToClientId}");
             if (!coinsByOwner.ContainsKey(coin.visibleToClientId))
             {
                 coinsByOwner[coin.visibleToClientId] = new List<OwnerOnlyVisibility>();
