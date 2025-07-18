@@ -101,7 +101,7 @@ public class GameManager : NetworkBehaviour
     private void DespawnAllCursors()
     {
 
-        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        foreach (var cursor in cursors.Values)
         {
             if (cursor.IsSpawned)
                 cursor.Despawn();
