@@ -18,6 +18,9 @@ public class PlayerSpawner : NetworkBehaviour
             Instance = this;
         else
             Destroy(gameObject);
+
+        if(IsHost)
+            Destroy(gameObject);
     }
 
     public void SetStartPosition(Vector2 startPosition)
@@ -90,7 +93,8 @@ public class PlayerSpawner : NetworkBehaviour
         ready = false;
         Debug.Log("Player is not ready");
     }
-    public void SpawnPlayerBForClient(ulong clientId)
+    [ServerRpc(RequireOwnership = false)]
+    public void SpawnPlayerBServerRpc(ulong clientId)
     {
         Destroy(activeObject);
         Debug.Log("SPAWNING Da PLAYER");
@@ -100,12 +104,16 @@ public class PlayerSpawner : NetworkBehaviour
         //Set visibility callback
         netObj.CheckObjectVisibility = (targetClientId) =>
         {
-            return targetClientId == clientId;
+            bool visible = targetClientId == clientId;
+            Debug.Log($"[Server] Visibility check for {netObj.name} | TargetClientID: {targetClientId} | OwnerID: {clientId} => {visible}");
+            return visible;
         };
 
         newPlayer.SetActive(true);
         netObj.SpawnWithOwnership(clientId, true);
         GameManager.Instance.RegisterPlayer(clientId, netObj);
     }
+
+
 
 }

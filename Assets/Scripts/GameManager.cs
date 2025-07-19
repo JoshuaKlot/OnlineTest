@@ -266,11 +266,11 @@ public class GameManager : NetworkBehaviour
             Debug.Log($"Player {kvp.Key}: ready = {kvp.Value}");
         }
 
-        if (playersSpawned)
-        {
-            Debug.Log("Players already spawned. Skipping.");
-            return;
-        }
+        //if (playersSpawned)
+        //{
+        //    Debug.Log("Players already spawned. Skipping.");
+        //    return;
+        //}
 
         if (AllPlayersReady())
         {
@@ -288,10 +288,11 @@ public class GameManager : NetworkBehaviour
                 
             }
             else { 
+                Debug.Log("All players ready! Spawning players.");
                 playersSpawned = true;
                 DespawnAllCursors();
                 RevealCoinsToOtherPlayers();
-                SpawnAllPlayerB();
+                SpawnAllPlayerBClientRpc();
                 PanelManager.Instance.ShowPlayerPhaseOnClients();
             }
         }
@@ -300,7 +301,18 @@ public class GameManager : NetworkBehaviour
             Debug.Log("Not all players are ready yet.");
         }
     }
+    [ClientRpc]
+    private void SpawnPlayerClientRpc(ulong clientId, Vector2 playerStart)
+    {
+        foreach (var cId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (clientId == cId)
+            {
+                PlayerSpawner.Instance.SetStartPosition(playerStart);
+            }
+        }
 
+    }
     public void SendCoinMsg(ulong clientId)
     {
         Debug.Log(clientId + " collected a coin");
@@ -338,25 +350,22 @@ public class GameManager : NetworkBehaviour
         }
         return true;
     }
-
-    private void SpawnAllPlayerB()
+    [ClientRpc]
+    private void SpawnAllPlayerBClientRpc()
     {
-        //DespawnAllCursors(); // Despawn cursors
+        ulong localId = NetworkManager.Singleton.LocalClientId;
+        Debug.Log("Spawning Player B for local client " + localId);
 
-        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+        // Only spawn for the local client (not the host)
+        if (localId != NetworkManager.ServerClientId)
         {
-            ulong clientId = client.ClientId;
-
-            //Skip the host
-            if (clientId == NetworkManager.ServerClientId)
-            {
-                Debug.Log("Skipping host client when spawning Player B.");
-                continue;
-            }
-
-            PlayerSpawner.Instance.SpawnPlayerBForClient(clientId);
+            PlayerSpawner.Instance.SpawnPlayerBServerRpc(localId);
             AudioManager.Instance.PlayPlaying();
-            StartCoroutine(WaitAndAttachCamera(clientId));
+            StartCoroutine(WaitAndAttachCamera(localId));
+        }
+        else
+        {
+            Debug.Log("Skipping host client when spawning Player B.");
         }
     }
     private IEnumerator WaitAndAttachCamera(ulong clientId)
