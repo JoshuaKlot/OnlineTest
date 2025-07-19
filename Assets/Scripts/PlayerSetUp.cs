@@ -93,6 +93,7 @@ public class PlayerSpawner : NetworkBehaviour
     public void SpawnPlayerBForClient(ulong clientId)
     {
         Destroy(activeObject);
+        Debug.Log("SPAWNING Da PLAYER");
         GameObject newPlayer = Instantiate(player,StartHere,Quaternion.EulerRotation(0,0,0));
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
         activeObject = newPlayer;

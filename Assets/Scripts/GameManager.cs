@@ -281,7 +281,8 @@ public class GameManager : NetworkBehaviour
                 RevealCoinsToOtherPlayers();
                 foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
                 {
-                    playerReadyStatus[clientId]=false; // Reset player ready status for the next phase
+                    if(clientId !=0)
+                        playerReadyStatus[clientId]=false; // Reset player ready status for the next phase
                 }
                 SetUpObsticalsServerRpc();
                 
