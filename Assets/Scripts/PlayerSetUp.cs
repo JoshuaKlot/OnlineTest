@@ -9,7 +9,7 @@ public class PlayerSpawner : NetworkBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject activeObject;
     [SerializeField] public bool ready;
-    [SerializeField] private Vector2 StartHere;
+    private Vector2 StartHere;
     [SerializeField] private GameObject cmCamera;
 
     private void Awake()
@@ -98,28 +98,28 @@ public class PlayerSpawner : NetworkBehaviour
     {
 
         Destroy(activeObject);
-        SpawnOnServerRpc(clientId,StartHere);
+        Debug.Log("SPAWNING Da PLAYER");
+        //Make the player  spawn from the start here assigned on the client level not the server level
+        GameObject newPlayer = Instantiate(player,StartHere,Quaternion.EulerRotation(0,0,0));
+        NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
+        activeObject = newPlayer;
+        //Set visibility callback
+        netObj.CheckObjectVisibility = (targetClientId) =>
+        {
+            bool visible = targetClientId == clientId;
+            Debug.Log($"[Server] Visibility check for {netObj.name} | TargetClientID: {targetClientId} | OwnerID: {clientId} => {visible}");
+            return visible;
+        };
+
+        newPlayer.SetActive(true);
+        SpawnOnServerRpc(clientId);
     }
     [ServerRpc(RequireOwnership = false)]
-    public void SpawnOnServerRpc(ulong clientId,Vector2 startPos)
-    {        
-            Debug.Log("SPAWNING Da PLAYER");
-            //Make the player  spawn from the start here assigned on the client level not the server level
-            GameObject newPlayer = Instantiate(player,startPos,Quaternion.EulerRotation(0,0,0));
-            NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
-            activeObject = newPlayer;
-            //Set visibility callback
-            netObj.CheckObjectVisibility = (targetClientId) =>
-            {
-                bool visible = targetClientId == clientId;
-                Debug.Log($"[Server] Visibility check for {netObj.name} | TargetClientID: {targetClientId} | OwnerID: {clientId} => {visible}");
-                return visible;
-            };
-
-            newPlayer.SetActive(true);
-            
-            netObj.SpawnWithOwnership(clientId, true);
-            GameManager.Instance.RegisterPlayer(clientId, netObj);
+    public void SpawnOnServerRpc(ulong clientId)
+    {
+        NetworkObject netObj = activeObject.GetComponent<NetworkObject>();
+        netObj.SpawnWithOwnership(clientId, true);
+        GameManager.Instance.RegisterPlayer(clientId, netObj);
     }
 
 
