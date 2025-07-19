@@ -178,8 +178,11 @@ public class GameManager : NetworkBehaviour
             bool found = cursors.TryGetValue(clientId, out NetworkObject cursorObj);
 
             // Then tell the client to run it
-            if(found)
+            if (found)
+            {
                 TriggerObsticleTimeClientRpc(clientId, cursorObj);
+                Debug.Log($"Triggering ObsticleTime for client {clientId} with cursor {cursorObj.name}");
+            }
             else
                 Debug.LogError($"Cursor object for client {clientId} not found or not spawned.");
         }
@@ -292,7 +295,7 @@ public class GameManager : NetworkBehaviour
                 playersSpawned = true;
                 DespawnAllCursors();
                 RevealCoinsToOtherPlayers();
-                SpawnAllPlayerBClientRpc();
+                SpawnAllPlayerB();
                 PanelManager.Instance.ShowPlayerPhaseOnClients();
             }
         }
@@ -337,7 +340,8 @@ public class GameManager : NetworkBehaviour
         cursors.Clear();
         players.Clear();
         gameStarted = false;
-    }
+        obsticlephase = false;
+}
 
     private bool AllPlayersReady()
     {
@@ -350,23 +354,25 @@ public class GameManager : NetworkBehaviour
         }
         return true;
     }
-    [ClientRpc]
-    private void SpawnAllPlayerBClientRpc()
+    
+    private void SpawnAllPlayerB()
     {
         ulong localId = NetworkManager.Singleton.LocalClientId;
         Debug.Log("Spawning Player B for local client " + localId);
+        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (clientId != NetworkManager.ServerClientId)
+            {
+                PlayerSpawner.Instance.SpawnPlayerB(clientId);
+                AudioManager.Instance.PlayPlaying();
+                StartCoroutine(WaitAndAttachCamera(clientId));
+            }
+            else
+            {
+                Debug.Log("Skipping host client when spawning Player B.");
+            }
+        }
 
-        // Only spawn for the local client (not the host)
-        if (localId != NetworkManager.ServerClientId)
-        {
-            PlayerSpawner.Instance.SpawnPlayerBServerRpc(localId);
-            AudioManager.Instance.PlayPlaying();
-            StartCoroutine(WaitAndAttachCamera(localId));
-        }
-        else
-        {
-            Debug.Log("Skipping host client when spawning Player B.");
-        }
     }
     private IEnumerator WaitAndAttachCamera(ulong clientId)
     {

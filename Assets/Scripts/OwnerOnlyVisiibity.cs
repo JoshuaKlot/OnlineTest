@@ -2,7 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class OwnerOnlyVisibility : NetworkBehaviour
-{
+{   
     public ulong visibleToClientId;
 
     private void Start()

@@ -17,6 +17,7 @@ public class Exit : NetworkBehaviour
         if (visibility.CheckVisibility(triggeringClientId))
         {
             GameManager.Instance.SendExitReachedMsg(triggeringClientId);
+            GameManager.Instance.ResetGame();
             NetworkObject.Despawn();
         }
     }

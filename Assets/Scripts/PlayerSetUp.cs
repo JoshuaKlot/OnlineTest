@@ -9,7 +9,7 @@ public class PlayerSpawner : NetworkBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject activeObject;
     [SerializeField] public bool ready;
-    private Vector2 StartHere;
+    [SerializeField] private Vector2 StartHere;
     [SerializeField] private GameObject cmCamera;
 
     private void Awake()
@@ -93,25 +93,33 @@ public class PlayerSpawner : NetworkBehaviour
         ready = false;
         Debug.Log("Player is not ready");
     }
-    [ServerRpc(RequireOwnership = false)]
-    public void SpawnPlayerBServerRpc(ulong clientId)
+    
+    public void SpawnPlayerB(ulong clientId)
     {
-        Destroy(activeObject);
-        Debug.Log("SPAWNING Da PLAYER");
-        GameObject newPlayer = Instantiate(player,StartHere,Quaternion.EulerRotation(0,0,0));
-        NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
-        activeObject = newPlayer;
-        //Set visibility callback
-        netObj.CheckObjectVisibility = (targetClientId) =>
-        {
-            bool visible = targetClientId == clientId;
-            Debug.Log($"[Server] Visibility check for {netObj.name} | TargetClientID: {targetClientId} | OwnerID: {clientId} => {visible}");
-            return visible;
-        };
 
-        newPlayer.SetActive(true);
-        netObj.SpawnWithOwnership(clientId, true);
-        GameManager.Instance.RegisterPlayer(clientId, netObj);
+        Destroy(activeObject);
+        SpawnOnServerRpc(clientId,StartHere);
+    }
+    [ServerRpc(RequireOwnership = false)]
+    public void SpawnOnServerRpc(ulong clientId,Vector2 startPos)
+    {        
+            Debug.Log("SPAWNING Da PLAYER");
+            //Make the player  spawn from the start here assigned on the client level not the server level
+            GameObject newPlayer = Instantiate(player,startPos,Quaternion.EulerRotation(0,0,0));
+            NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
+            activeObject = newPlayer;
+            //Set visibility callback
+            netObj.CheckObjectVisibility = (targetClientId) =>
+            {
+                bool visible = targetClientId == clientId;
+                Debug.Log($"[Server] Visibility check for {netObj.name} | TargetClientID: {targetClientId} | OwnerID: {clientId} => {visible}");
+                return visible;
+            };
+
+            newPlayer.SetActive(true);
+            
+            netObj.SpawnWithOwnership(clientId, true);
+            GameManager.Instance.RegisterPlayer(clientId, netObj);
     }
 
 
