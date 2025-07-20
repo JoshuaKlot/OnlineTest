@@ -3,8 +3,10 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 public class Start : NetworkBehaviour
 {
-    void Awake()
+    public void SetStartPoint(Vector2 startHere, ulong clientId)
     {
-        GameManager.Instance.SetStartPoint(this.gameObject.GetComponent<OwnerOnlyVisibility>().visibleToClientId,this.transform.position);
+        Debug.Log("Setting start point for this client: " + clientId);
+        GameManager.Instance.SetStartPoint(clientId, startHere);
     }
+
 }

@@ -9,7 +9,7 @@ public class PlayerSpawner : NetworkBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject activeObject;
     [SerializeField] public bool ready;
-    private Vector2 StartHere;
+    [SerializeField]private Vector2 StartHere;
     [SerializeField] private GameObject cmCamera;
 
     private void Awake()
@@ -97,7 +97,7 @@ public class PlayerSpawner : NetworkBehaviour
     public void SpawnPlayerB(ulong clientId)
     {
 
-        Destroy(activeObject);
+        //Destroy(activeObject);
         Debug.Log("SPAWNING Da PLAYER");
         //Make the player  spawn from the start here assigned on the client level not the server level
         GameObject newPlayer = Instantiate(player,StartHere,Quaternion.EulerRotation(0,0,0));

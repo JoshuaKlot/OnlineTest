@@ -194,17 +194,16 @@ public class GameManager : NetworkBehaviour
         SetStartPointClientRpc(clientId, playerStart);
     }
     [ClientRpc]
-    private void SetStartPointClientRpc(ulong clientId, Vector2 playerStart)
+    private void SetStartPointClientRpc(ulong clientId, Vector2 playerStart, ClientRpcParams clientRpcParams = default)
     {
-        foreach (var cId in NetworkManager.Singleton.ConnectedClientsIds)
-        {
-            if (clientId == cId)
-            {
-                PlayerSpawner.Instance.SetStartPosition(playerStart);
-            }
-        }
+        if (NetworkManager.Singleton.LocalClientId != clientId)
+            return;
 
+        Debug.Log("Setting start position for client " + clientId + " to " + playerStart);
+        PlayerSpawner.Instance.SetStartPosition(playerStart);
     }
+
+ 
     [ClientRpc]
     public void TriggerObsticleTimeClientRpc(ulong clientId,NetworkObjectReference cursorRef, ClientRpcParams clientRpcParams = default)
     {

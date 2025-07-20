@@ -272,12 +272,21 @@ public class Cursor : NetworkBehaviour
         Debug.Log("Placing Object: " + placedObject.name);
         OwnerOnlyVisibility visibleComponent = placedObject.GetComponent<OwnerOnlyVisibility>();
         visibleComponent.visibleToClientId = rpcParams.Receive.SenderClientId;
-
+        Debug.Log("Visible to Client ID: " + visibleComponent.visibleToClientId);
         NetworkObject netObj = placedObject.GetComponent<NetworkObject>();
+        Start start = placedObject.GetComponent<Start>();
+        if (start != null)
+        {
+               
+            Debug.Log("Setting start point for object: " + placedObject.name);
+            start.SetStartPoint(spawnPosition,visibleComponent.visibleToClientId);
+        }
         netObj.CheckObjectVisibility = visibleComponent.CheckVisibility;
 
         netObj.Spawn();
     }
+
+
 
     [ServerRpc]
     public void SetSelectionServerRpc(int[] selectionIndices)
