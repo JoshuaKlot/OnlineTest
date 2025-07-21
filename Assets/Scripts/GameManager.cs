@@ -22,6 +22,9 @@ public class GameManager : NetworkBehaviour
     private bool gameStarted = false;
     private bool obsticlephase= false;
 
+    // Add this field to GameManager
+    private Dictionary<ulong, Vector2> playerStartPositions = new Dictionary<ulong, Vector2>();
+
     //Called From NetworkUI
     public void StartGame()
     {
@@ -362,9 +365,17 @@ public class GameManager : NetworkBehaviour
         {
             if (clientId != NetworkManager.ServerClientId)
             {
-                PlayerSpawner.Instance.SpawnPlayerB(clientId);
-                AudioManager.Instance.PlayPlaying();
-                StartCoroutine(WaitAndAttachCamera(clientId));
+                if (playerStartPositions.TryGetValue(clientId, out Vector2 startPos))
+                {
+                    PlayerSpawner.Instance.SpawnPlayerB(clientId, startPos);
+                    AudioManager.Instance.PlayPlaying();
+                    StartCoroutine(WaitAndAttachCamera(clientId));
+                }
+                else
+                {
+                    Debug.LogWarning($"No start position found for client {clientId}, using default.");
+                    PlayerSpawner.Instance.SpawnPlayerB(clientId, Vector2.zero);
+                }
             }
             else
             {
@@ -506,4 +517,12 @@ public class GameManager : NetworkBehaviour
         return others[Random.Range(1, others.Count)];
     }
 
+    // Add this ServerRpc to receive the start position from the client
+    [ServerRpc(RequireOwnership = false)]
+    public void SubmitStartPositionServerRpc(ulong clientId,Vector2 startPosition, ServerRpcParams rpcParams = default)
+    {
+        //ulong clientId = rpcParams.Receive.SenderClientId;
+        playerStartPositions[clientId] = startPosition;
+        Debug.Log($"Received start position {startPosition} from client {clientId}");
+    }
 }

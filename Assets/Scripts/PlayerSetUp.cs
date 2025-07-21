@@ -94,16 +94,13 @@ public class PlayerSpawner : NetworkBehaviour
         Debug.Log("Player is not ready");
     }
     
-    public void SpawnPlayerB(ulong clientId)
+    public void SpawnPlayerB(ulong clientId, Vector2 startPosition)
     {
 
-        //Destroy(activeObject);
-        Debug.Log("SPAWNING Da PLAYER");
-        //Make the player  spawn from the start here assigned on the client level not the server level
-        GameObject newPlayer = Instantiate(player,StartHere,Quaternion.EulerRotation(0,0,0));
+        Debug.Log("SPAWNING Da PLAYER for " + clientId + " on " + startPosition);
+        GameObject newPlayer = Instantiate(player, startPosition, Quaternion.Euler(0, 0, 0));
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
         activeObject = newPlayer;
-        //Set visibility callback
         netObj.CheckObjectVisibility = (targetClientId) =>
         {
             bool visible = targetClientId == clientId;
