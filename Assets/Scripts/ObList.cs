@@ -6,7 +6,7 @@ public class ObList : NetworkBehaviour
 {
     private bool selectedSpawned;
     [SerializeField] private GameObject SelectionPrefab;
-    private GameObject activeSelection;
+    public GameObject activeSelection;
     public Vector3 Position;
     public enum ObsticalType { Entrances, Sidewalk, Grass }
     [System.Serializable]
@@ -161,7 +161,7 @@ public class ObList : NetworkBehaviour
 
     //    netObj.Spawn();
     //}
-
+    
     public void DeleteSelection()
     {
         if (activeSelection != null)

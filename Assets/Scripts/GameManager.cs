@@ -108,9 +108,14 @@ public class GameManager : NetworkBehaviour
         foreach (var cursor in cursors.Values)
         {
             if (cursor.IsSpawned)
+            {
+                cursor.GetComponent<ObList>().DeleteSelection();
                 cursor.Despawn();
+            }
         }
     }
+
+
     private void DespawnTrackers()
     {
         foreach (var tracker in cameraTracker.Values)
@@ -290,13 +295,16 @@ public class GameManager : NetworkBehaviour
                         playerReadyStatus[clientId]=false; // Reset player ready status for the next phase
                 }
                 SetUpObsticalsServerRpc();
-                
+
+               
+
             }
             else { 
                 Debug.Log("All players ready! Spawning players.");
                 playersSpawned = true;
                 DespawnAllCursors();
                 RevealCoinsToOtherPlayers();
+
                 SpawnAllPlayerB();
                 PanelManager.Instance.ShowPlayerPhaseOnClients();
             }

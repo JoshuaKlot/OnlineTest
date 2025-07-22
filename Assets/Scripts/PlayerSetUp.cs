@@ -96,7 +96,7 @@ public class PlayerSpawner : NetworkBehaviour
     
     public void SpawnPlayerB(ulong clientId, Vector2 startPosition)
     {
-
+        DeleteSelectionsClientRpc();
         Debug.Log("SPAWNING Da PLAYER for " + clientId + " on " + startPosition);
         GameObject newPlayer = Instantiate(player, startPosition, Quaternion.Euler(0, 0, 0));
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
@@ -110,6 +110,15 @@ public class PlayerSpawner : NetworkBehaviour
 
         newPlayer.SetActive(true);
         SpawnOnServerRpc(clientId);
+    }
+    [ClientRpc]
+    private void DeleteSelectionsClientRpc()
+    {
+        Selection[] sel = GameObject.FindObjectsOfType<Selection>();
+        for (int i = 0; i < sel.Length; i++)
+        {
+            Destroy(sel[i].gameObject);
+        }
     }
     [ServerRpc(RequireOwnership = false)]
     public void SpawnOnServerRpc(ulong clientId)
