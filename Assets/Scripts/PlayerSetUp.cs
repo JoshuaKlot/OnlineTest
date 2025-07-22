@@ -8,9 +8,11 @@ public class PlayerSpawner : NetworkBehaviour
     [SerializeField] private GameObject cursor;
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject activeObject;
-    [SerializeField] public bool ready;
-    [SerializeField]private Vector2 StartHere;
+    [SerializeField] private GameObject activeCamera;
+    [SerializeField] public bool ready=true;
+    [SerializeField] public Vector2 StartHere;
     [SerializeField] private GameObject cmCamera;
+    private NetworkObject netObj;
 
     private void Awake()
     {
@@ -18,35 +20,84 @@ public class PlayerSpawner : NetworkBehaviour
             Instance = this;
         else
             Destroy(gameObject);
-
-        if(IsHost)
-            Destroy(gameObject);
+        netObj = GetComponent<NetworkObject>();
     }
-
+    [ClientRpc]
+    public void RegisterPlayerClientRpc()
+    {
+        if (IsClient)
+        {
+            Debug.Log($"[Client {NetworkManager.Singleton.LocalClientId}] Requesting player registration.");
+            GameManager.Instance.RegisterPlayerSetUpObject(OwnerClientId,netObj);
+        }
+    }
     public void SetStartPosition(Vector2 startPosition)
     {
         StartHere = startPosition;
     }
-    [ClientRpc]
-    public void TriggerSpawnPlayersClientRpc()
+    //[ClientRpc]
+    //public void TriggerSpawnPlayersClientRpc()
+    //{
+    //    if (IsClient && !IsHost)
+    //    {
+    //        SpawnPlayers();
+    //    }
+    //}
+
+    //public void SpawnPlayers()
+    //{
+    //    Debug.Log($"[Client {NetworkManager.Singleton.LocalClientId}] SpawnPlayers called.");
+    //    if (IsClient && !IsHost)
+    //    {
+    //        Debug.Log($"[Client {NetworkManager.Singleton.LocalClientId}] Registering with server.");
+    //        GameManager.Instance.RegisterPlayerServerRpc();
+    //    }
+    //}
+    
+    public void DestroyActiveTracker()
     {
-        if (IsClient && !IsHost)
+        if (activeCamera != null)
         {
-            SpawnPlayers();
+            Debug.Log("Destroying active object: " + activeCamera.name);
+            NetworkObject netObj = activeCamera.GetComponent<NetworkObject>();
+            if (netObj != null && netObj.IsSpawned)
+            {
+                DespawnActiveObjectServerRpc(netObj);
+            }
+            Destroy(activeCamera);
+            activeCamera = null;
         }
     }
-
-    public void SpawnPlayers()
+    
+    public void DestroyActiveObject()
     {
-        Debug.Log($"[Client {NetworkManager.Singleton.LocalClientId}] SpawnPlayers called.");
-        if (IsClient && !IsHost)
+        if (activeObject != null)
         {
-            Debug.Log($"[Client {NetworkManager.Singleton.LocalClientId}] Registering with server.");
-            GameManager.Instance.RegisterPlayerServerRpc();
+            Debug.Log("Destroying active object: " + activeObject.name);
+            NetworkObject netObj = activeObject.GetComponent<NetworkObject>();
+            if (netObj != null && netObj.IsSpawned)
+            {
+                DespawnActiveObjectServerRpc(netObj);
+            }
+            Destroy(activeObject);
+            activeObject = null;
         }
     }
+    [ServerRpc(RequireOwnership = false)]
+    private void DespawnActiveObjectServerRpc(NetworkObjectReference activeRef)
+    {
+        NetworkObject activeObj = activeRef.TryGet(out NetworkObject obj) ? obj : null;
+        if(activeObject != null)
+        {
+            Debug.Log("Despawned active object: " + activeObj.name);
 
+            if (activeObj != null && activeObj.IsSpawned)
+            {
+                activeObj.Despawn();
+            }
 
+        }
+    }
 
     [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayerACursorServerRpc(ulong clientId)
@@ -79,8 +130,8 @@ public class PlayerSpawner : NetworkBehaviour
         Debug.Log("Register Cursor");
 
         // Register cursor in GameManager
-        GameManager.Instance.RegisterCursor(clientId, netObj);
-        GameManager.Instance.RegisterCameraTracker(clientId, netObj2);
+        //GameManager.Instance.RegisterCursor(clientId, netObj);
+        //GameManager.Instance.RegisterCameraTracker(clientId, netObj2);
     }
 
     public void MarkReady()
@@ -93,12 +144,12 @@ public class PlayerSpawner : NetworkBehaviour
         ready = false;
         Debug.Log("Player is not ready");
     }
-    
-    public void SpawnPlayerB(ulong clientId, Vector2 startPosition)
+    [ClientRpc]
+    public void SpawnPlayerBClientRpc(ulong clientId)
     {
         DeleteSelectionsClientRpc();
-        Debug.Log("SPAWNING Da PLAYER for " + clientId + " on " + startPosition);
-        GameObject newPlayer = Instantiate(player, startPosition, Quaternion.Euler(0, 0, 0));
+        Debug.Log("SPAWNING Da PLAYER for " + clientId + " on " + StartHere);
+        GameObject newPlayer = Instantiate(player, StartHere, Quaternion.Euler(0, 0, 0));
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
         activeObject = newPlayer;
         netObj.CheckObjectVisibility = (targetClientId) =>
@@ -107,10 +158,49 @@ public class PlayerSpawner : NetworkBehaviour
             Debug.Log($"[Server] Visibility check for {netObj.name} | TargetClientID: {targetClientId} | OwnerID: {clientId} => {visible}");
             return visible;
         };
+        SetUpFollow(activeCamera, activeObject);
 
         newPlayer.SetActive(true);
         SpawnOnServerRpc(clientId);
     }
+    //private IEnumerator WaitAndAttachCamera(ulong clientId)
+    //{
+    //    float timeout = Time.time + 5f; // Timeout after 5 seconds
+
+    //    while (!(playerSetUpObjects.ContainsKey(clientId) && playerSetUpObjects[clientId] != null))
+    //    {
+    //        if (Time.time > timeout)
+    //        {
+    //            Debug.LogError($"Timeout waiting for player with clientId {clientId} to spawn.");
+    //            yield break;
+    //        }
+
+    //        Debug.Log($"Waiting for player {clientId}...");
+    //        yield return null;
+    //    }
+
+    //    NetworkObject cameraNetObj = cameraObj.GetComponent<NetworkObject>();
+    //    NetworkObject playerNetObj = playerObj.GetComponent<NetworkObject>();
+
+        
+
+    //}
+
+    
+    void SetUpFollow(NetworkObjectReference cameraRef, NetworkObjectReference playerRef, ClientRpcParams clientRpcParams = default)
+    {
+        if (cameraRef.TryGet(out NetworkObject cameraObj) && playerRef.TryGet(out NetworkObject playerObj))
+        {
+            var cameraMovement = cameraObj.GetComponent<CameraMovement>();
+            cameraMovement.FollowPlayer(playerObj.gameObject);
+            Debug.Log("CameraAttached");
+        }
+        else
+        {
+            Debug.LogError("Failed to resolve one or both NetworkObjectReferences.");
+        }
+    }
+
     [ClientRpc]
     private void DeleteSelectionsClientRpc()
     {
@@ -125,7 +215,7 @@ public class PlayerSpawner : NetworkBehaviour
     {
         NetworkObject netObj = activeObject.GetComponent<NetworkObject>();
         netObj.SpawnWithOwnership(clientId, true);
-        GameManager.Instance.RegisterPlayer(clientId, netObj);
+        //GameManager.Instance.RegisterPlayer(clientId, netObj);
     }
 
 
