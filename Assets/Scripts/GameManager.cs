@@ -34,7 +34,7 @@ public class GameManager : NetworkBehaviour
             return;
         }
         Debug.Log("Host started the game.");
-        PlayerSpawner.Instance.RegisterPlayerClientRpc();
+        
 
         AudioManager.Instance.PlayWaiting();
         PanelManager.Instance.ShowSetUpPhasePanelOnClients();
@@ -42,8 +42,9 @@ public class GameManager : NetworkBehaviour
         foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (clientId != NetworkManager.ServerClientId)
-            {
-                PlayerSpawner.Instance.SpawnPlayerACursorServerRpc(clientId);
+            {   
+                //playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().RegisterPlayerClientRpc();
+                playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().SpawnPlayerACursorServerRpc(clientId);
             }
         }
         StartCoroutine(WaitForAllPlayersToRegister());
@@ -91,17 +92,23 @@ public class GameManager : NetworkBehaviour
     //    }
     //}
     [ServerRpc(RequireOwnership = false)]
-    public void RegisterPlayerSetUpObjectServerRpc(ulong clientId, NetworkObject playerSetUpObject)
+    public void RegisterPlayerSetUpObjectServerRpc(ulong clientId, NetworkObjectReference playerSetUpObject)
     {
-        if (!playerSetUpObjects.ContainsKey(clientId))
-        {
-            playerSetUpObjects.Add(clientId, playerSetUpObject);
-            Debug.Log($"Registered Player Set Up Object for client {clientId}: {playerSetUpObject.name}");
-        }
-        else
-        {
-            Debug.LogWarning($"Player Set Up Object for client {clientId} is already registered.");
-        }
+    if (!playerSetUpObject.TryGet(out NetworkObject playerSetUpObjectInstance))
+    {
+        Debug.LogError($"Failed to resolve player set up object for client {clientId}");
+        return;
+    }
+
+    if (!playerSetUpObjects.ContainsKey(clientId))
+    {
+        playerSetUpObjects.Add(clientId, playerSetUpObjectInstance);
+        Debug.Log($"Registered Player Set Up Object for client {clientId}: {playerSetUpObjectInstance.name}");
+    }
+    else
+    {
+        Debug.LogWarning($"Player Set Up Object for client {clientId} is already registered.");
+    }
     }
 
     public void SetUpEntrances()
@@ -226,46 +233,48 @@ public class GameManager : NetworkBehaviour
             return;
 
         Debug.Log("Setting start position for client " + clientId + " to " + playerStart);
-        PlayerSpawner.Instance.SetStartPosition(playerStart);
+        playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().SetStartPosition(playerStart);
     }
 
  
     [ClientRpc]
     public void TriggerObsticleTimeClientRpc(ulong clientId,NetworkObjectReference cursorRef, ClientRpcParams clientRpcParams = default)
     {
-        //Debug.Log("Triggering ObsticleTime for client " + clientId);
-        //Debug.Log("LocalClientId: " + NetworkManager.Singleton.LocalClientId);
-        //Debug.Log("Cursors count: " + playerSetUpObjects.Count);
-        if (NetworkManager.Singleton.LocalClientId == clientId)
-        {
-            //Debug.Log("This is the local client, calling ObsticleTime directly.");
-            //bool found = playerSetUpObjects.TryGetValue(clientId, out NetworkObject cursorObj);
-            //Debug.Log(found + " and we got " + cursorObj);
-            if (cursorRef.TryGet(out NetworkObject cursorObj))
-            {
-                Debug.LogError($"Cursor object for client {clientId} not found or not spawned.");
 
-                Debug.Log("Cursor Object found: " + cursorObj.name);
-                var cursorComponent = cursorObj.GetComponent<Cursor>();
-                if (cursorComponent != null)
-                {
-                    Debug.Log("Cursor component found, calling ObsticleTime()");
-                    cursorComponent.ObsticleTime();
-                }
-                else
-                {
-                    Debug.LogWarning("Cursor component NOT found on object: " + cursorObj.name);
-                }
-            }
-            else
-            {
-                Debug.LogError($"Cursor object for client {clientId} not found or not spawned.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"Client {clientId} does not have a cursor registered.");
-        }
+        playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().ObsticleSetUp();
+        ////Debug.Log("Triggering ObsticleTime for client " + clientId);
+        ////Debug.Log("LocalClientId: " + NetworkManager.Singleton.LocalClientId);
+        ////Debug.Log("Cursors count: " + playerSetUpObjects.Count);
+        //if (NetworkManager.Singleton.LocalClientId == clientId)
+        //{
+        //    //Debug.Log("This is the local client, calling ObsticleTime directly.");
+        //    //bool found = playerSetUpObjects.TryGetValue(clientId, out NetworkObject cursorObj);
+        //    //Debug.Log(found + " and we got " + cursorObj);
+        //    if (cursorRef.TryGet(out NetworkObject cursorObj))
+        //    {
+        //        Debug.LogError($"Cursor object for client {clientId} not found or not spawned.");
+
+        //        Debug.Log("Cursor Object found: " + cursorObj.name);
+        //        var cursorComponent = cursorObj.GetComponent<Cursor>();
+        //        if (cursorComponent != null)
+        //        {
+        //            Debug.Log("Cursor component found, calling ObsticleTime()");
+        //            cursorComponent.ObsticleTime();
+        //        }
+        //        else
+        //        {
+        //            Debug.LogWarning("Cursor component NOT found on object: " + cursorObj.name);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError($"Cursor object for client {clientId} not found or not spawned.");
+        //    }
+        //}
+        //else
+        //{
+        //    Debug.LogWarning($"Client {clientId} does not have a cursor registered.");
+        //}
     }
 
 
@@ -338,7 +347,7 @@ public class GameManager : NetworkBehaviour
         {
             if (clientId == cId)
             {
-                PlayerSpawner.Instance.SetStartPosition(playerStart);
+                playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().StartHere=playerStart;
             }
         }
 
@@ -389,7 +398,7 @@ public class GameManager : NetworkBehaviour
             if (clientId != NetworkManager.ServerClientId)
             {
 
-                PlayerSpawner.Instance.SpawnPlayerBClientRpc(clientId);
+                playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().SpawnPlayerBClientRpc(clientId);
                 AudioManager.Instance.PlayPlaying();
                 //StartCoroutine(WaitAndAttachCamera(clientId));
 

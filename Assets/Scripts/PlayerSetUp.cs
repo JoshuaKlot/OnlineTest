@@ -12,28 +12,46 @@ public class PlayerSpawner : NetworkBehaviour
     [SerializeField] public bool ready=true;
     [SerializeField] public Vector2 StartHere;
     [SerializeField] private GameObject cmCamera;
-    private NetworkObject netObj;
+    [SerializeField]private NetworkObject netObj;
 
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
+        //if (Instance == null)
+        //    Instance = this;
+        //else
+        //    Destroy(gameObject);
         netObj = GetComponent<NetworkObject>();
+        GameManager.Instance.RegisterPlayerSetUpObjectServerRpc(
+            NetworkManager.Singleton.LocalClientId,
+            new NetworkObjectReference(GetComponent<NetworkObject>())
+);
     }
+    
     [ClientRpc]
     public void RegisterPlayerClientRpc()
     {
         if (!IsHost)
         {
             Debug.Log($"[Client {NetworkManager.Singleton.LocalClientId}] Requesting player registration.");
-            GameManager.Instance.RegisterPlayerSetUpObjectServerRpc(NetworkManager.Singleton.LocalClientId, netObj);
+            
         }
     }
     public void SetStartPosition(Vector2 startPosition)
     {
         StartHere = startPosition;
+    }
+
+    public void ObsticleSetUp()
+    {
+        Cursor cursor= activeObject.GetComponent<Cursor>();
+        if (cursor != null)
+        {
+            cursor.ObsticleTime();
+        }
+        else
+        {
+            Debug.LogError("Cursor component not found on activeObject.");
+        }
     }
     //[ClientRpc]
     //public void TriggerSpawnPlayersClientRpc()
