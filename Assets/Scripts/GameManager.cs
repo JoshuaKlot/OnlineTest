@@ -90,8 +90,8 @@ public class GameManager : NetworkBehaviour
 
     //    }
     //}
-
-    public void RegisterPlayerSetUpObject(ulong clientId, NetworkObject playerSetUpObject)
+    [ServerRpc(RequireOwnership = false)]
+    public void RegisterPlayerSetUpObjectServerRpc(ulong clientId, NetworkObject playerSetUpObject)
     {
         if (!playerSetUpObjects.ContainsKey(clientId))
         {

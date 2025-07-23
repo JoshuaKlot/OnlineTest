@@ -25,10 +25,10 @@ public class PlayerSpawner : NetworkBehaviour
     [ClientRpc]
     public void RegisterPlayerClientRpc()
     {
-        if (IsClient)
+        if (!IsHost)
         {
             Debug.Log($"[Client {NetworkManager.Singleton.LocalClientId}] Requesting player registration.");
-            GameManager.Instance.RegisterPlayerSetUpObject(OwnerClientId,netObj);
+            GameManager.Instance.RegisterPlayerSetUpObjectServerRpc(NetworkManager.Singleton.LocalClientId, netObj);
         }
     }
     public void SetStartPosition(Vector2 startPosition)
