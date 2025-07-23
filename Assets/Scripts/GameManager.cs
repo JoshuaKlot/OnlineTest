@@ -1,8 +1,8 @@
-using UnityEngine;
-using Unity.Netcode;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq; // Add this at the top
+using Unity.Netcode;
+using UnityEngine;
 
 public class GameManager : NetworkBehaviour
 {
@@ -274,13 +274,13 @@ public class GameManager : NetworkBehaviour
     {
         
         ulong clientId = rpcParams.Receive.SenderClientId;
-        if (!playerReadyStatus.ContainsKey(clientId))
+        if (!playerSetUpObjects.ContainsKey(clientId))
         {
             Debug.LogWarning($"Client {clientId} was not registered but attempted to mark done.");
             return;
         }
 
-        playerReadyStatus[clientId] = true;
+        playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().ready = true;
         Debug.Log($"Client {clientId} marked as done placing coins.");
         SendMsg.Instance.Ready(clientId);
         CheckIfAllPlayersAreDone(); // NEW: separate logic to advance phase
@@ -289,9 +289,9 @@ public class GameManager : NetworkBehaviour
     private void CheckIfAllPlayersAreDone()
     {
         Debug.Log("Checking if all playerSetUpObjects are done...");
-        foreach (var kvp in playerReadyStatus)
+        foreach (var kvp in playerSetUpObjects)
         {
-            Debug.Log($"Player {kvp.Key}: ready = {kvp.Value}");
+            //Debug.Log($"Player {kvp.Key}: ready = {playerSetUpObjects[kvp].GetComponent<PlayerSpawner>().ready}");
         }
 
         //if (playersSpawned)
@@ -310,7 +310,7 @@ public class GameManager : NetworkBehaviour
                 foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
                 {
                     if(clientId !=0)
-                        playerReadyStatus[clientId]=false; // Reset player ready status for the next phase
+                        playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().ready=false; // Reset player ready status for the next phase
                 }
                 SetUpObsticalsServerRpc();
 
@@ -370,11 +370,11 @@ public class GameManager : NetworkBehaviour
 
     private bool AllPlayersReady()
     {
-        Debug.Log("There are "+playerReadyStatus.Count);
-        foreach (var ready in playerReadyStatus.Values)
+        Debug.Log("There are "+ playerSetUpObjects.Count);
+        foreach (var ready in playerSetUpObjects.Values)
         {
             
-            if (!ready)
+            if (!ready.GetComponent<PlayerSpawner>().ready)
                 return false;
         }
         return true;
@@ -391,7 +391,7 @@ public class GameManager : NetworkBehaviour
 
                 PlayerSpawner.Instance.SpawnPlayerBClientRpc(clientId);
                 AudioManager.Instance.PlayPlaying();
-                StartCoroutine(WaitAndAttachCamera(clientId));
+                //StartCoroutine(WaitAndAttachCamera(clientId));
 
             }
             else
@@ -422,7 +422,7 @@ public class GameManager : NetworkBehaviour
             coinsByOwner[coin.visibleToClientId].Add(coin);
         }
 
-        List<ulong> allClients = new List<ulong>(playerReadyStatus.Keys);
+        List<ulong> allClients = new List<ulong>(playerSetUpObjects.Keys);
         if (allClients.Count < 2)
         {
             Debug.LogWarning("Not enough playerSetUpObjects to exchange coins.");
@@ -504,7 +504,7 @@ public class GameManager : NetworkBehaviour
     public void SubmitStartPositionServerRpc(ulong clientId,Vector2 startPosition, ServerRpcParams rpcParams = default)
     {
         //ulong clientId = rpcParams.Receive.SenderClientId;
-        playerStartPositions[clientId] = startPosition;
+        playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().StartHere = startPosition;
         Debug.Log($"Received start position {startPosition} from client {clientId}");
     }
 }
