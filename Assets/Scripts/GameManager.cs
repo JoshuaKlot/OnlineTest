@@ -251,8 +251,13 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     public void TriggerObsticleTimeClientRpc(ulong clientId,NetworkObjectReference cursorRef, ClientRpcParams clientRpcParams = default)
     {
-
-        playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().ObsticleSetUp();
+        Cursor[] cursors =GameObject.FindObjectsOfType<Cursor>();
+        foreach (Cursor cursor in cursors)
+        {
+            Debug.Log("Cursor found: " + cursor.name);
+            cursor.ObsticleTime();
+        }
+        
         ////Debug.Log("Triggering ObsticleTime for client " + clientId);
         ////Debug.Log("LocalClientId: " + NetworkManager.Singleton.LocalClientId);
         ////Debug.Log("Cursors count: " + playerSetUpObjects.Count);
