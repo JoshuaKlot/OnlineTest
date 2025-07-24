@@ -7,8 +7,8 @@ public class PlayerSpawner : NetworkBehaviour
     [SerializeField] private GameObject cameraTracker;
     [SerializeField] private GameObject cursor;
     [SerializeField] private GameObject player;
-    [SerializeField] private GameObject activeObject;
-    [SerializeField] private GameObject activeCamera;
+    [SerializeField] public GameObject activeObject;
+    [SerializeField] public GameObject activeCamera;
     [SerializeField] public bool ready=true;
     [SerializeField] public Vector2 StartHere;
     [SerializeField] private GameObject cmCamera;
