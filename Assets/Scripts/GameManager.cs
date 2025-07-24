@@ -59,7 +59,15 @@ public class GameManager : NetworkBehaviour
         }
         StartCoroutine(WaitForAllPlayersToRegister());
     }
-
+    private void SyncVariables()
+    {
+        foreach (var kvp in playerSetUpObjects)
+        {
+            ulong clientId = kvp.Key;
+            NetworkObject playerSetUpObject = kvp.Value;
+            playerSetUpObjects[clientId].GetComponent<SyncVariables>().SetClientVariablesClientRpc(clientId, new NetworkObjectReference(playerSetUpObject));
+        }
+    }
     private IEnumerator WaitForAllPlayersToRegister()
     {
         // Get list of all expected non-host client IDs
@@ -317,6 +325,7 @@ public class GameManager : NetworkBehaviour
             Debug.Log("All playerSetUpObjects ready! Advancing phase.");
             if(obsticlephase==false)
             {
+                
                 obsticlephase = true;
                 RevealCoinsToOtherPlayers();
                 foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
@@ -326,16 +335,18 @@ public class GameManager : NetworkBehaviour
                 }
                 SetUpObsticalsClientRpc();
 
-               
+               SyncVariables();
 
             }
-            else { 
+            else {
+                
                 Debug.Log("All playerSetUpObjects ready! Spawning playerSetUpObjects.");
                 playersSpawned = true;
                 DestroyActiveObjectClientRpc();
                 RevealCoinsToOtherPlayers();
                 SpawnAllPlayerB();
                 PanelManager.Instance.ShowPlayerPhaseOnClients();
+                SyncVariables();
             }
         }
         else
@@ -519,4 +530,13 @@ public class GameManager : NetworkBehaviour
         playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().StartHere = startPosition;
         Debug.Log($"Received start position {startPosition} from client {clientId}");
     }
+
+    //[ClientRpc]
+    //private void SyncPlayersClientRpc(NetworkObjectReference netObj)
+    //{
+    //    NetworkObject pSetUp = netObj.TryGet(out NetworkObject playerSetUpObject);
+    //    ulong clientId = NetworkManager.Singleton.LocalClientId;
+    //    NetworkObject Obj = GameObject.FindObjectOfType<PlayerSpawner>();
+
+    //}
 }
