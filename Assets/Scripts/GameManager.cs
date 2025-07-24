@@ -42,7 +42,17 @@ public class GameManager : NetworkBehaviour
         foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (clientId != NetworkManager.ServerClientId)
-            {   
+            {
+                PlayerSpawner[] players = GameObject.FindObjectsOfType<PlayerSpawner>();
+                foreach(PlayerSpawner player in players)
+                {
+                    if (player.GetComponent<NetworkObject>().OwnerClientId == clientId)
+                    {
+                        Debug.Log($"Registering Player Set Up Object for client {clientId}: {player.gameObject.name}");
+                        // Register the playerSetUpObject with the GameManager
+                        RegisterPlayerSetUpObjectServerRpc(clientId, new NetworkObjectReference(player.GetComponent<NetworkObject>()));
+                    }
+                }
                 //playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().RegisterPlayerClientRpc();
                 playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().SpawnPlayerACursorServerRpc(clientId);
             }
@@ -197,8 +207,8 @@ public class GameManager : NetworkBehaviour
     //}
     //Called from PickEntrancePanelUI
     //Called from PickEntrancePanelUI
-    [ServerRpc(RequireOwnership = false)]
-    public void SetUpObsticalsServerRpc()
+    [ClientRpc]
+    public void SetUpObsticalsClientRpc()
     {
         foreach (var kvp in playerSetUpObjects)
         {
@@ -224,19 +234,12 @@ public class GameManager : NetworkBehaviour
     }
     public void SetStartPoint(ulong clientId, Vector2 playerStart)
     {
-        SetStartPointClientRpc(clientId, playerStart);
-    }
-    [ClientRpc]
-    private void SetStartPointClientRpc(ulong clientId, Vector2 playerStart, ClientRpcParams clientRpcParams = default)
-    {
-        if (NetworkManager.Singleton.LocalClientId != clientId)
-            return;
-
+        SetStartPoint(clientId, playerStart);
         Debug.Log("Setting start position for client " + clientId + " to " + playerStart);
         playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().SetStartPosition(playerStart);
     }
 
- 
+
     [ClientRpc]
     public void TriggerObsticleTimeClientRpc(ulong clientId,NetworkObjectReference cursorRef, ClientRpcParams clientRpcParams = default)
     {
@@ -321,7 +324,7 @@ public class GameManager : NetworkBehaviour
                     if(clientId !=0)
                         playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().ready=false; // Reset player ready status for the next phase
                 }
-                SetUpObsticalsServerRpc();
+                SetUpObsticalsClientRpc();
 
                
 

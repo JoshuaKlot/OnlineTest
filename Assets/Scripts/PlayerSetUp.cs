@@ -27,15 +27,7 @@ public class PlayerSpawner : NetworkBehaviour
 );
     }
     
-    [ClientRpc]
-    public void RegisterPlayerClientRpc()
-    {
-        if (!IsHost)
-        {
-            Debug.Log($"[Client {NetworkManager.Singleton.LocalClientId}] Requesting player registration.");
-            
-        }
-    }
+
     public void SetStartPosition(Vector2 startPosition)
     {
         StartHere = startPosition;
