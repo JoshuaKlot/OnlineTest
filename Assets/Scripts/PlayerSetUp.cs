@@ -66,9 +66,13 @@ public class PlayerSpawner : NetworkBehaviour
     //        GameManager.Instance.RegisterPlayerServerRpc();
     //    }
     //}
-    
-    public void DestroyActiveTracker()
+    [ClientRpc]
+    public void DestroyActiveTrackerClientRpc(ulong clientId)
     {
+        if(clientId != NetworkManager.Singleton.LocalClientId)
+        {
+            return; // Only destroy if it's the local client's tracker
+        }
         if (activeCamera != null)
         {
             Debug.Log("Destroying active object: " + activeCamera.name);
@@ -81,9 +85,13 @@ public class PlayerSpawner : NetworkBehaviour
             activeCamera = null;
         }
     }
-    
-    public void DestroyActiveObject()
+    [ClientRpc]
+    public void DestroyActiveObjectClientRpc(ulong clientId)
     {
+        if (clientId != NetworkManager.Singleton.LocalClientId)
+        {
+            return; // Only destroy if it's the local client's tracker
+        }
         if (activeObject != null)
         {
             Debug.Log("Destroying active object: " + activeObject.name);
@@ -121,6 +129,7 @@ public class PlayerSpawner : NetworkBehaviour
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
         Debug.Log("Spawning Camera Tracker");
         GameObject cTracker = Instantiate(cameraTracker);
+        activeCamera = cTracker;
         NetworkObject netObj2 = cTracker.GetComponent<NetworkObject>();
         netObj.CheckObjectVisibility = (targetClientId) =>
         {
@@ -157,8 +166,8 @@ public class PlayerSpawner : NetworkBehaviour
         ready = false;
         Debug.Log("Player is not ready");
     }
-    [ClientRpc]
-    public void SpawnPlayerBClientRpc(ulong clientId)
+    [ServerRpc(RequireOwnership = false)]
+    public void SpawnPlayerBServerRpc(ulong clientId)
     {
         DeleteSelectionsClientRpc();
         Debug.Log("SPAWNING Da PLAYER for " + clientId + " on " + StartHere);
@@ -171,7 +180,7 @@ public class PlayerSpawner : NetworkBehaviour
             Debug.Log($"[Server] Visibility check for {netObj.name} | TargetClientID: {targetClientId} | OwnerID: {clientId} => {visible}");
             return visible;
         };
-        SetUpFollow(activeCamera, activeObject);
+        SetUpFollowClientRpc(activeCamera.GetComponent<NetworkObject>(), activeObject.GetComponent<NetworkObject>());
 
         newPlayer.SetActive(true);
         SpawnOnServerRpc(clientId);
@@ -195,12 +204,12 @@ public class PlayerSpawner : NetworkBehaviour
     //    NetworkObject cameraNetObj = cameraObj.GetComponent<NetworkObject>();
     //    NetworkObject playerNetObj = playerObj.GetComponent<NetworkObject>();
 
-        
+
 
     //}
 
-    
-    void SetUpFollow(NetworkObjectReference cameraRef, NetworkObjectReference playerRef, ClientRpcParams clientRpcParams = default)
+    [ClientRpc]
+    void SetUpFollowClientRpc(NetworkObjectReference cameraRef, NetworkObjectReference playerRef, ClientRpcParams clientRpcParams = default)
     {
         if (cameraRef.TryGet(out NetworkObject cameraObj) && playerRef.TryGet(out NetworkObject playerObj))
         {

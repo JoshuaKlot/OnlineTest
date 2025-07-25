@@ -12,7 +12,7 @@ public class GameManager : NetworkBehaviour
     /// and have them keep track of whatcursors have spawned and what playerSetUpObjects ae ready
     /// It will simplify the code much better
     /// </summary>
-    private Dictionary<ulong, NetworkObject> playerSetUpObjects = new Dictionary<ulong, NetworkObject>();
+    private NetworkDictionary<ulong, NetworkObject> playerSetUpObjects = new Dictionary<ulong, NetworkObject>();
     private bool playersSpawned = false;
     //private Dictionary<ulong, bool> playerReadyStatus = new Dictionary<ulong, bool>();
     //private Dictionary<ulong, NetworkObject> playerSetUpObjects = new Dictionary<ulong, NetworkObject>();
@@ -177,15 +177,27 @@ public class GameManager : NetworkBehaviour
             Destroy(gameObject);
 
     }
-    [ClientRpc]
-    private void DestroyActiveObjectClientRpc()
+
+    private void DestroyActiveObject()
     {
-        PlayerSpawner.Instance.DestroyActiveObject();
+        foreach (var kvp in playerSetUpObjects)
+        {
+            ulong clientId = kvp.Key;
+            NetworkObject player = kvp.Value;
+            player.GetComponent<PlayerSpawner>().DestroyActiveObjectClientRpc(clientId);
+            
+        }
     }
-    [ClientRpc]
-    private void DestroyActiveCameraClientRpc()
+
+    private void DestroyActiveCamera()
     {
-        PlayerSpawner.Instance.DestroyActiveTracker();
+        foreach (var kvp in playerSetUpObjects)
+        {
+            ulong clientId = kvp.Key;
+            NetworkObject player = kvp.Value;
+            player.GetComponent<PlayerSpawner>().DestroyActiveTrackerClientRpc(clientId);
+
+        }
     }
     private void Start()
     {
@@ -347,7 +359,7 @@ public class GameManager : NetworkBehaviour
                 
                 Debug.Log("All playerSetUpObjects ready! Spawning playerSetUpObjects.");
                 playersSpawned = true;
-                DestroyActiveObjectClientRpc();
+                DestroyActiveObject();
                 RevealCoinsToOtherPlayers();
                 SpawnAllPlayerB();
                 PanelManager.Instance.ShowPlayerPhaseOnClients();
@@ -385,8 +397,8 @@ public class GameManager : NetworkBehaviour
     public void ResetGame()
     {
         Debug.Log("Reseting game");
-        DestroyActiveObjectClientRpc();
-        DestroyActiveCameraClientRpc();
+        DestroyActiveObject();
+        DestroyActiveCamera();
         DespawnCoins();
         PanelManager.Instance.ShowLobbyOnClients();
         AudioManager.Instance.StopPlaying();
@@ -417,7 +429,7 @@ public class GameManager : NetworkBehaviour
             if (clientId != NetworkManager.ServerClientId)
             {
 
-                playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().SpawnPlayerBClientRpc(clientId);
+                playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().SpawnPlayerBServerRpc(clientId);
                 AudioManager.Instance.PlayPlaying();
                 //StartCoroutine(WaitAndAttachCamera(clientId));
 
