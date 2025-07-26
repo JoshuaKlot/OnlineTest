@@ -14,7 +14,7 @@ public class CameraMovement : NetworkBehaviour
     [SerializeField, Range(0f, 1f)] private float followSpeed;
     Rigidbody2D rb2d;
     bool playerPhase = false;
-    GameObject Player;
+    [SerializeField]private GameObject Player;
 
     private void Awake()
     {
@@ -92,12 +92,15 @@ public class CameraMovement : NetworkBehaviour
         transform.position = new Vector3(targetPos.x, targetPos.y, startPos.z); // Lock z at end
     }
 
-
+    
     public void FollowPlayer(GameObject player)
     {
-        Player = player;
-        playerPhase = true;
-        LerpToPlayer();
+
+            Player = player;
+            playerPhase = true;
+            LerpToPlayer();
+
+
     }
 
 }

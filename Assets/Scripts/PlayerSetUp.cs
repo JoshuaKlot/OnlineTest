@@ -3,6 +3,9 @@ using Unity.Netcode;// Gets the Unity Netcode to use the function that come with
 
 public class PlayerSpawner : NetworkBehaviour
 {
+    /// <summary>
+    /// SPAAWN Everything on the server the client is unnessesary.
+    /// </summary>
     public static PlayerSpawner Instance;
     [SerializeField] private GameObject cameraTracker;
     [SerializeField] private GameObject cursor;
@@ -66,13 +69,9 @@ public class PlayerSpawner : NetworkBehaviour
     //        GameManager.Instance.RegisterPlayerServerRpc();
     //    }
     //}
-    [ClientRpc]
-    public void DestroyActiveTrackerClientRpc(ulong clientId)
+    
+    public void DestroyActiveTracker(ulong clientId)
     {
-        if(clientId != NetworkManager.Singleton.LocalClientId)
-        {
-            return; // Only destroy if it's the local client's tracker
-        }
         if (activeCamera != null)
         {
             Debug.Log("Destroying active object: " + activeCamera.name);
@@ -85,13 +84,9 @@ public class PlayerSpawner : NetworkBehaviour
             activeCamera = null;
         }
     }
-    [ClientRpc]
-    public void DestroyActiveObjectClientRpc(ulong clientId)
+    
+    public void DestroyActiveObject(ulong clientId)
     {
-        if (clientId != NetworkManager.Singleton.LocalClientId)
-        {
-            return; // Only destroy if it's the local client's tracker
-        }
         if (activeObject != null)
         {
             Debug.Log("Destroying active object: " + activeObject.name);
@@ -169,6 +164,7 @@ public class PlayerSpawner : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayerBServerRpc(ulong clientId)
     {
+        Debug.Log("Player spawned on server for client: " + clientId);
         DeleteSelectionsClientRpc();
         Debug.Log("SPAWNING Da PLAYER for " + clientId + " on " + StartHere);
         GameObject newPlayer = Instantiate(player, StartHere, Quaternion.Euler(0, 0, 0));
@@ -180,9 +176,10 @@ public class PlayerSpawner : NetworkBehaviour
             Debug.Log($"[Server] Visibility check for {netObj.name} | TargetClientID: {targetClientId} | OwnerID: {clientId} => {visible}");
             return visible;
         };
-        SetUpFollowClientRpc(activeCamera.GetComponent<NetworkObject>(), activeObject.GetComponent<NetworkObject>());
-
+        SetUpFollow(activeCamera, activeObject);
+        
         newPlayer.SetActive(true);
+        netObj.SpawnWithOwnership(clientId, true);
         SpawnOnServerRpc(clientId);
     }
     //private IEnumerator WaitAndAttachCamera(ulong clientId)
@@ -208,19 +205,14 @@ public class PlayerSpawner : NetworkBehaviour
 
     //}
 
-    [ClientRpc]
-    void SetUpFollowClientRpc(NetworkObjectReference cameraRef, NetworkObjectReference playerRef, ClientRpcParams clientRpcParams = default)
+
+    void SetUpFollow(GameObject camera, GameObject player)
     {
-        if (cameraRef.TryGet(out NetworkObject cameraObj) && playerRef.TryGet(out NetworkObject playerObj))
-        {
-            var cameraMovement = cameraObj.GetComponent<CameraMovement>();
-            cameraMovement.FollowPlayer(playerObj.gameObject);
-            Debug.Log("CameraAttached");
-        }
-        else
-        {
-            Debug.LogError("Failed to resolve one or both NetworkObjectReferences.");
-        }
+     
+        var cameraMovement = camera.GetComponent<CameraMovement>();
+        cameraMovement.FollowPlayer(player);
+        Debug.Log("CameraAttached");
+
     }
 
     [ClientRpc]
@@ -235,8 +227,9 @@ public class PlayerSpawner : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void SpawnOnServerRpc(ulong clientId)
     {
+        
         NetworkObject netObj = activeObject.GetComponent<NetworkObject>();
-        netObj.SpawnWithOwnership(clientId, true);
+        
         //GameManager.Instance.RegisterPlayer(clientId, netObj);
     }
 

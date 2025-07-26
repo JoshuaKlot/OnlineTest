@@ -12,7 +12,7 @@ public class GameManager : NetworkBehaviour
     /// and have them keep track of whatcursors have spawned and what playerSetUpObjects ae ready
     /// It will simplify the code much better
     /// </summary>
-    private NetworkDictionary<ulong, NetworkObject> playerSetUpObjects = new Dictionary<ulong, NetworkObject>();
+    private Dictionary<ulong, NetworkObject> playerSetUpObjects = new Dictionary<ulong, NetworkObject>();
     private bool playersSpawned = false;
     //private Dictionary<ulong, bool> playerReadyStatus = new Dictionary<ulong, bool>();
     //private Dictionary<ulong, NetworkObject> playerSetUpObjects = new Dictionary<ulong, NetworkObject>();
@@ -59,6 +59,29 @@ public class GameManager : NetworkBehaviour
         }
         StartCoroutine(WaitForAllPlayersToRegister());
     }
+    private void SpawnAllPlayerB()
+    {
+        ulong localId = NetworkManager.Singleton.LocalClientId;
+        
+        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (clientId != NetworkManager.ServerClientId)
+            {
+                Debug.Log("Spawning Player B for local client " + clientId);
+
+                playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().SpawnPlayerBServerRpc(clientId);
+                AudioManager.Instance.PlayPlaying();
+                //StartCoroutine(WaitAndAttachCamera(clientId));
+
+            }
+            else
+            {
+                Debug.Log("Skipping host client when spawning Player B.");
+            }
+        }
+
+    }
+
     private void SyncVariables()
     {
         foreach (var kvp in playerSetUpObjects)
@@ -180,11 +203,13 @@ public class GameManager : NetworkBehaviour
 
     private void DestroyActiveObject()
     {
+        Debug.Log("Ther eis " + playerSetUpObjects.Count + " playerSetUpObjects"); 
         foreach (var kvp in playerSetUpObjects)
         {
+            Debug.Log("Destroying active object for client " + kvp.Key);
             ulong clientId = kvp.Key;
             NetworkObject player = kvp.Value;
-            player.GetComponent<PlayerSpawner>().DestroyActiveObjectClientRpc(clientId);
+            player.GetComponent<PlayerSpawner>().DestroyActiveObject(clientId);
             
         }
     }
@@ -193,9 +218,10 @@ public class GameManager : NetworkBehaviour
     {
         foreach (var kvp in playerSetUpObjects)
         {
+            Debug.Log("Destroying active tracker for client " + kvp.Key);
             ulong clientId = kvp.Key;
             NetworkObject player = kvp.Value;
-            player.GetComponent<PlayerSpawner>().DestroyActiveTrackerClientRpc(clientId);
+            player.GetComponent<PlayerSpawner>().DestroyActiveTracker(clientId);
 
         }
     }
@@ -420,27 +446,6 @@ public class GameManager : NetworkBehaviour
         return true;
     }
     //Move this to PlayerSpawner
-    private void SpawnAllPlayerB()
-    {
-        ulong localId = NetworkManager.Singleton.LocalClientId;
-        Debug.Log("Spawning Player B for local client " + localId);
-        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
-        {
-            if (clientId != NetworkManager.ServerClientId)
-            {
-
-                playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().SpawnPlayerBServerRpc(clientId);
-                AudioManager.Instance.PlayPlaying();
-                //StartCoroutine(WaitAndAttachCamera(clientId));
-
-            }
-            else
-            {
-                Debug.Log("Skipping host client when spawning Player B.");
-            }
-        }
-
-    }
 
 
 
