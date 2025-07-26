@@ -103,4 +103,17 @@ public class CameraMovement : NetworkBehaviour
 
     }
 
+    [ClientRpc]public void GetPlayerClientRpc()
+    {
+        if (Player == null)
+        {
+            Player = GameObject.FindGameObjectWithTag("Player");
+            Debug.Log("Player found: " + Player.name);
+        }
+        else
+        {
+            Debug.Log("Player already assigned: " + Player.name);
+        }
+    }
+
 }

@@ -176,7 +176,7 @@ public class PlayerSpawner : NetworkBehaviour
             Debug.Log($"[Server] Visibility check for {netObj.name} | TargetClientID: {targetClientId} | OwnerID: {clientId} => {visible}");
             return visible;
         };
-        SetUpFollow(activeCamera, activeObject);
+        activeCamera.GetComponent<CameraMovement>().GetPlayerClientRpc();
         
         newPlayer.SetActive(true);
         netObj.SpawnWithOwnership(clientId, true);
