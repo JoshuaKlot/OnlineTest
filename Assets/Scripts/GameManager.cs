@@ -1,29 +1,28 @@
-using UnityEngine;
-using Unity.Netcode;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq; // Add this at the top
+using Unity.Netcode;
+using UnityEngine;
 
 public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance;
     /// <summary>
     /// Set Up a dicttionary of playerSetUpObjects 
-    /// and have them keep track of whatcursors have spawned and what players ae ready
+    /// and have them keep track of whatcursors have spawned and what playerSetUpObjects ae ready
     /// It will simplify the code much better
     /// </summary>
-    private Dictionary<ulong, bool> playerReadyStatus = new Dictionary<ulong, bool>();
+    private Dictionary<ulong, NetworkObject> playerSetUpObjects = new Dictionary<ulong, NetworkObject>();
     private bool playersSpawned = false;
-    private Dictionary<ulong, NetworkObject> cursors = new Dictionary<ulong, NetworkObject>();
-    private Dictionary<ulong, NetworkObject> cameraTracker = new Dictionary<ulong, NetworkObject>();
-    private Dictionary<ulong, NetworkObject> players = new Dictionary<ulong, NetworkObject>();
-    private LayerMask sidewalk;
-    private LayerMask grass;
+    //private Dictionary<ulong, bool> playerReadyStatus = new Dictionary<ulong, bool>();
+    //private Dictionary<ulong, NetworkObject> playerSetUpObjects = new Dictionary<ulong, NetworkObject>();
+    //private Dictionary<ulong, NetworkObject> cameraTracker = new Dictionary<ulong, NetworkObject>();
+    //private Dictionary<ulong, NetworkObject> playerSetUpObjects = new Dictionary<ulong, NetworkObject>();
     private bool gameStarted = false;
     private bool obsticlephase= false;
 
     // Add this field to GameManager
-    private Dictionary<ulong, Vector2> playerStartPositions = new Dictionary<ulong, Vector2>();
+    //private Dictionary<ulong, Vector2> playerStartPositions = new Dictionary<ulong, Vector2>();
 
     //Called From NetworkUI
     public void StartGame()
@@ -35,7 +34,7 @@ public class GameManager : NetworkBehaviour
             return;
         }
         Debug.Log("Host started the game.");
-        PlayerSpawner.Instance.TriggerSpawnPlayersClientRpc();
+        
 
         AudioManager.Instance.PlayWaiting();
         PanelManager.Instance.ShowSetUpPhasePanelOnClients();
@@ -44,12 +43,54 @@ public class GameManager : NetworkBehaviour
         {
             if (clientId != NetworkManager.ServerClientId)
             {
-                PlayerSpawner.Instance.SpawnPlayerACursorServerRpc(clientId);
+                PlayerSpawner[] players = GameObject.FindObjectsOfType<PlayerSpawner>();
+                foreach(PlayerSpawner player in players)
+                {
+                    if (player.GetComponent<NetworkObject>().OwnerClientId == clientId)
+                    {
+                        Debug.Log($"Registering Player Set Up Object for client {clientId}: {player.gameObject.name}");
+                        // Register the playerSetUpObject with the GameManager
+                        RegisterPlayerSetUpObjectServerRpc(clientId, new NetworkObjectReference(player.GetComponent<NetworkObject>()));
+                    }
+                }
+                //playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().RegisterPlayerClientRpc();
+                playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().SpawnPlayerACursorServerRpc(clientId);
             }
         }
         StartCoroutine(WaitForAllPlayersToRegister());
     }
+    private void SpawnAllPlayerB()
+    {
+        ulong localId = NetworkManager.Singleton.LocalClientId;
+        
+        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (clientId != NetworkManager.ServerClientId)
+            {
+                Debug.Log("Spawning Player B for local client " + clientId);
 
+                playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().SpawnPlayerBServerRpc(clientId);
+                AudioManager.Instance.PlayPlaying();
+                //StartCoroutine(WaitAndAttachCamera(clientId));
+
+            }
+            else
+            {
+                Debug.Log("Skipping host client when spawning Player B.");
+            }
+        }
+
+    }
+
+    private void SyncVariables()
+    {
+        foreach (var kvp in playerSetUpObjects)
+        {
+            ulong clientId = kvp.Key;
+            NetworkObject playerSetUpObject = kvp.Value;
+            playerSetUpObjects[clientId].GetComponent<SyncVariables>().SetClientVariablesClientRpc(clientId, new NetworkObjectReference(playerSetUpObject));
+        }
+    }
     private IEnumerator WaitForAllPlayersToRegister()
     {
         // Get list of all expected non-host client IDs
@@ -57,7 +98,7 @@ public class GameManager : NetworkBehaviour
             .Where(id => id != NetworkManager.ServerClientId).ToList();
 
         // Wait until all are present in the playerReadyStatus dictionary
-        while (!expectedClients.All(id => playerReadyStatus.ContainsKey(id)))
+        while (!expectedClients.All(id => playerSetUpObjects.ContainsKey(id)))
         {
             yield return null; // Wait a frame
         }
@@ -67,29 +108,48 @@ public class GameManager : NetworkBehaviour
     }
 
     //Called From PlayerSetUp
-    public void RegisterCursor(ulong clientId, NetworkObject cursorObject)
-    {
-        if (!cursors.ContainsKey(clientId))
-        {
-            Debug.Log("Adding " + cursorObject + " for client " + clientId);
-            cursors.Add(clientId, cursorObject);
-        }
-    }
-    public void RegisterPlayer(ulong clientId, NetworkObject playerObject)
-    {
-        if (!players.ContainsKey(clientId))
-        {
-            players.Add(clientId, playerObject);
+    //public void RegisterCursor(ulong clientId, NetworkObject cursorObject)
+    //{
+    //    if (!playerSetUpObjects.ContainsKey(clientId))
+    //    {
+    //        Debug.Log("Adding " + cursorObject + " for client " + clientId);
+    //        playerSetUpObjects.Add(clientId, cursorObject);
+    //    }
+    //}
+    //public void RegisterPlayer(ulong clientId, NetworkObject playerObject)
+    //{
+    //    if (!playerSetUpObjects.ContainsKey(clientId))
+    //    {
+    //        playerSetUpObjects.Add(clientId, playerObject);
 
-        }
-    }
-    public void RegisterCameraTracker(ulong clientId, NetworkObject trackerObject)
-    {
-        if (!cameraTracker.ContainsKey(clientId))
-        {
-            cameraTracker.Add(clientId, trackerObject);
+    //    }
+    //}
+    //public void RegisterCameraTracker(ulong clientId, NetworkObject trackerObject)
+    //{
+    //    if (!cameraTracker.ContainsKey(clientId))
+    //    {
+    //        cameraTracker.Add(clientId, trackerObject);
 
-        }
+    //    }
+    //}
+    [ServerRpc(RequireOwnership = false)]
+    public void RegisterPlayerSetUpObjectServerRpc(ulong clientId, NetworkObjectReference playerSetUpObject)
+    {
+    if (!playerSetUpObject.TryGet(out NetworkObject playerSetUpObjectInstance))
+    {
+        Debug.LogError($"Failed to resolve player set up object for client {clientId}");
+        return;
+    }
+
+    if (!playerSetUpObjects.ContainsKey(clientId))
+    {
+        playerSetUpObjects.Add(clientId, playerSetUpObjectInstance);
+        Debug.Log($"Registered Player Set Up Object for client {clientId}: {playerSetUpObjectInstance.name}");
+    }
+    else
+    {
+        Debug.LogWarning($"Player Set Up Object for client {clientId} is already registered.");
+    }
     }
 
     public void SetUpEntrances()
@@ -102,35 +162,35 @@ public class GameManager : NetworkBehaviour
             }
         }
     }
-    private void DespawnAllCursors()
-    {
+    //private void DespawnAllCursors()
+    //{
 
-        foreach (var cursor in cursors.Values)
-        {
-            if (cursor.IsSpawned)
-            {
-                cursor.GetComponent<ObList>().DeleteSelection();
-                cursor.Despawn();
-            }
-        }
-    }
+    //    foreach (var cursor in playerSetUpObjects.Values)
+    //    {
+    //        if (cursor.IsSpawned)
+    //        {
+    //            cursor.GetComponent<ObList>().DeleteSelection();
+    //            cursor.Despawn();
+    //        }
+    //    }
+    //}
 
 
-    private void DespawnTrackers()
-    {
-        foreach (var tracker in cameraTracker.Values)
-        {
-            tracker.Despawn();
-        }
-    }
-    private void DespawnAllPlayers()
-    {
-        foreach (var player in players.Values)
-        {
-            Debug.Log("Despawning player " + player);
-            player.Despawn();
-        }
-    }
+    //private void DespawnTrackers()
+    //{
+    //    foreach (var tracker in cameraTracker.Values)
+    //    {
+    //        tracker.Despawn();
+    //    }
+    //}
+    //private void DespawnAllPlayers()
+    //{
+    //    foreach (var player in playerSetUpObjects.Values)
+    //    {
+    //        Debug.Log("Despawning player " + player);
+    //        player.Despawn();
+    //    }
+    //}
     private void Awake()
     {
 
@@ -140,42 +200,63 @@ public class GameManager : NetworkBehaviour
             Destroy(gameObject);
 
     }
-    private void Update()
-    {
 
+    private void DestroyActiveObject()
+    {
+        Debug.Log("Ther eis " + playerSetUpObjects.Count + " playerSetUpObjects"); 
+        foreach (var kvp in playerSetUpObjects)
+        {
+            Debug.Log("Destroying active object for client " + kvp.Key);
+            ulong clientId = kvp.Key;
+            NetworkObject player = kvp.Value;
+            player.GetComponent<PlayerSpawner>().DestroyActiveObject(clientId);
+            
+        }
+    }
+
+    private void DestroyActiveCamera()
+    {
+        foreach (var kvp in playerSetUpObjects)
+        {
+            Debug.Log("Destroying active tracker for client " + kvp.Key);
+            ulong clientId = kvp.Key;
+            NetworkObject player = kvp.Value;
+            player.GetComponent<PlayerSpawner>().DestroyActiveTracker(clientId);
+
+        }
     }
     private void Start()
     {
         PanelManager.Instance.ShowLobbyOnClients();
     }
     //Called from PlayerSpawner
-    [ServerRpc(RequireOwnership = false)]
-    public void RegisterPlayerServerRpc(ServerRpcParams rpcParams = default)
-    {
-        ulong clientId = rpcParams.Receive.SenderClientId;
+    //[ServerRpc(RequireOwnership = false)]
+    //public void RegisterPlayerServerRpc(ServerRpcParams rpcParams = default)
+    //{
+    //    ulong clientId = rpcParams.Receive.SenderClientId;
 
-        if (gameStarted)
-        {
-            Debug.LogWarning($"[Server] Game already started. Rejecting new player {clientId}.");
-            return; // Prevent late joins
-        }
+    //    if (gameStarted)
+    //    {
+    //        Debug.LogWarning($"[Server] Game already started. Rejecting new player {clientId}.");
+    //        return; // Prevent late joins
+    //    }
 
-        if (!playerReadyStatus.ContainsKey(clientId))
-        {
-            Debug.Log($"[Server] Player {clientId} Registered");
-            playerReadyStatus[clientId] = false;
-        }
-        else
-        {
-            Debug.LogWarning($"[Server] Player {clientId} was already registered.");
-        }
-    }
+    //    if (!playerSetUpObjects.ContainsKey(clientId))
+    //    {
+    //        Debug.Log($"[Server] Player {clientId} Registered");
+    //        playerSetUpObjects(clientId).GetComponent<PlayerSpawner>.ready = false;
+    //    }
+    //    else
+    //    {
+    //        Debug.LogWarning($"[Server] Player {clientId} was already registered.");
+    //    }
+    //}
     //Called from PickEntrancePanelUI
     //Called from PickEntrancePanelUI
-    [ServerRpc(RequireOwnership = false)]
-    public void SetUpObsticalsServerRpc()
+    [ClientRpc]
+    public void SetUpObsticalsClientRpc()
     {
-        foreach (var kvp in cursors)
+        foreach (var kvp in playerSetUpObjects)
         {
             ulong clientId = kvp.Key;
             NetworkObject cursor = kvp.Value;
@@ -183,7 +264,7 @@ public class GameManager : NetworkBehaviour
 
             // Optionally call on the server too:
             //cursor.GetComponent<Cursor>().ObsticleTime();
-            bool found = cursors.TryGetValue(clientId, out NetworkObject cursorObj);
+            bool found = playerSetUpObjects.TryGetValue(clientId, out NetworkObject cursorObj);
 
             // Then tell the client to run it
             if (found)
@@ -199,55 +280,55 @@ public class GameManager : NetworkBehaviour
     }
     public void SetStartPoint(ulong clientId, Vector2 playerStart)
     {
-        SetStartPointClientRpc(clientId, playerStart);
-    }
-    [ClientRpc]
-    private void SetStartPointClientRpc(ulong clientId, Vector2 playerStart, ClientRpcParams clientRpcParams = default)
-    {
-        if (NetworkManager.Singleton.LocalClientId != clientId)
-            return;
-
+        SetStartPoint(clientId, playerStart);
         Debug.Log("Setting start position for client " + clientId + " to " + playerStart);
-        PlayerSpawner.Instance.SetStartPosition(playerStart);
+        playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().SetStartPosition(playerStart);
     }
 
- 
+
     [ClientRpc]
     public void TriggerObsticleTimeClientRpc(ulong clientId,NetworkObjectReference cursorRef, ClientRpcParams clientRpcParams = default)
     {
-        //Debug.Log("Triggering ObsticleTime for client " + clientId);
-        //Debug.Log("LocalClientId: " + NetworkManager.Singleton.LocalClientId);
-        //Debug.Log("Cursors count: " + cursors.Count);
-        if (NetworkManager.Singleton.LocalClientId == clientId)
+        Cursor[] cursors =GameObject.FindObjectsOfType<Cursor>();
+        foreach (Cursor cursor in cursors)
         {
-            //Debug.Log("This is the local client, calling ObsticleTime directly.");
-            //bool found = cursors.TryGetValue(clientId, out NetworkObject cursorObj);
-            //Debug.Log(found + " and we got " + cursorObj);
-            if (cursorRef.TryGet(out NetworkObject cursorObj))
-            {
-                Debug.LogError($"Cursor object for client {clientId} not found or not spawned.");
+            Debug.Log("Cursor found: " + cursor.name);
+            cursor.ObsticleTime();
+        }
+        
+        ////Debug.Log("Triggering ObsticleTime for client " + clientId);
+        ////Debug.Log("LocalClientId: " + NetworkManager.Singleton.LocalClientId);
+        ////Debug.Log("Cursors count: " + playerSetUpObjects.Count);
+        //if (NetworkManager.Singleton.LocalClientId == clientId)
+        //{
+        //    //Debug.Log("This is the local client, calling ObsticleTime directly.");
+        //    //bool found = playerSetUpObjects.TryGetValue(clientId, out NetworkObject cursorObj);
+        //    //Debug.Log(found + " and we got " + cursorObj);
+        //    if (cursorRef.TryGet(out NetworkObject cursorObj))
+        //    {
+        //        Debug.LogError($"Cursor object for client {clientId} not found or not spawned.");
 
-                Debug.Log("Cursor Object found: " + cursorObj.name);
-                var cursorComponent = cursorObj.GetComponent<Cursor>();
-                if (cursorComponent != null)
-                {
-                    Debug.Log("Cursor component found, calling ObsticleTime()");
-                    cursorComponent.ObsticleTime();
-                }
-                else
-                {
-                    Debug.LogWarning("Cursor component NOT found on object: " + cursorObj.name);
-                }
-            }
-            else
-            {
-                Debug.LogError($"Cursor object for client {clientId} not found or not spawned.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"Client {clientId} does not have a cursor registered.");
-        }
+        //        Debug.Log("Cursor Object found: " + cursorObj.name);
+        //        var cursorComponent = cursorObj.GetComponent<Cursor>();
+        //        if (cursorComponent != null)
+        //        {
+        //            Debug.Log("Cursor component found, calling ObsticleTime()");
+        //            cursorComponent.ObsticleTime();
+        //        }
+        //        else
+        //        {
+        //            Debug.LogWarning("Cursor component NOT found on object: " + cursorObj.name);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError($"Cursor object for client {clientId} not found or not spawned.");
+        //    }
+        //}
+        //else
+        //{
+        //    Debug.LogWarning($"Client {clientId} does not have a cursor registered.");
+        //}
     }
 
 
@@ -256,13 +337,13 @@ public class GameManager : NetworkBehaviour
     {
         
         ulong clientId = rpcParams.Receive.SenderClientId;
-        if (!playerReadyStatus.ContainsKey(clientId))
+        if (!playerSetUpObjects.ContainsKey(clientId))
         {
             Debug.LogWarning($"Client {clientId} was not registered but attempted to mark done.");
             return;
         }
 
-        playerReadyStatus[clientId] = true;
+        playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().ready = true;
         Debug.Log($"Client {clientId} marked as done placing coins.");
         SendMsg.Instance.Ready(clientId);
         CheckIfAllPlayersAreDone(); // NEW: separate logic to advance phase
@@ -270,10 +351,10 @@ public class GameManager : NetworkBehaviour
 
     private void CheckIfAllPlayersAreDone()
     {
-        Debug.Log("Checking if all players are done...");
-        foreach (var kvp in playerReadyStatus)
+        Debug.Log("Checking if all playerSetUpObjects are done...");
+        foreach (var kvp in playerSetUpObjects)
         {
-            Debug.Log($"Player {kvp.Key}: ready = {kvp.Value}");
+            //Debug.Log($"Player {kvp.Key}: ready = {playerSetUpObjects[kvp].GetComponent<PlayerSpawner>().ready}");
         }
 
         //if (playersSpawned)
@@ -284,34 +365,36 @@ public class GameManager : NetworkBehaviour
 
         if (AllPlayersReady())
         {
-            Debug.Log("All players ready! Advancing phase.");
+            Debug.Log("All playerSetUpObjects ready! Advancing phase.");
             if(obsticlephase==false)
             {
+                
                 obsticlephase = true;
                 RevealCoinsToOtherPlayers();
                 foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
                 {
                     if(clientId !=0)
-                        playerReadyStatus[clientId]=false; // Reset player ready status for the next phase
+                        playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().ready=false; // Reset player ready status for the next phase
                 }
-                SetUpObsticalsServerRpc();
+                SetUpObsticalsClientRpc();
 
-               
+               SyncVariables();
 
             }
-            else { 
-                Debug.Log("All players ready! Spawning players.");
+            else {
+                
+                Debug.Log("All playerSetUpObjects ready! Spawning playerSetUpObjects.");
                 playersSpawned = true;
-                DespawnAllCursors();
+                DestroyActiveObject();
                 RevealCoinsToOtherPlayers();
-
                 SpawnAllPlayerB();
                 PanelManager.Instance.ShowPlayerPhaseOnClients();
+                SyncVariables();
             }
         }
         else
         {
-            Debug.Log("Not all players are ready yet.");
+            Debug.Log("Not all playerSetUpObjects are ready yet.");
         }
     }
     [ClientRpc]
@@ -321,7 +404,7 @@ public class GameManager : NetworkBehaviour
         {
             if (clientId == cId)
             {
-                PlayerSpawner.Instance.SetStartPosition(playerStart);
+                playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().StartHere=playerStart;
             }
         }
 
@@ -340,98 +423,34 @@ public class GameManager : NetworkBehaviour
     public void ResetGame()
     {
         Debug.Log("Reseting game");
-        DespawnAllPlayers();
-        DespawnTrackers();
+        DestroyActiveObject();
+        DestroyActiveCamera();
         DespawnCoins();
         PanelManager.Instance.ShowLobbyOnClients();
         AudioManager.Instance.StopPlaying();
         playersSpawned = false;
-        playerReadyStatus.Clear();
-        cursors.Clear();
-        players.Clear();
+        playerSetUpObjects.Clear();
         gameStarted = false;
         obsticlephase = false;
 }
 
     private bool AllPlayersReady()
     {
-        Debug.Log("There are "+playerReadyStatus.Count);
-        foreach (var ready in playerReadyStatus.Values)
+        Debug.Log("There are "+ playerSetUpObjects.Count);
+        foreach (var ready in playerSetUpObjects.Values)
         {
             
-            if (!ready)
+            if (!ready.GetComponent<PlayerSpawner>().ready)
                 return false;
         }
         return true;
     }
-    
-    private void SpawnAllPlayerB()
-    {
-        ulong localId = NetworkManager.Singleton.LocalClientId;
-        Debug.Log("Spawning Player B for local client " + localId);
-        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
-        {
-            if (clientId != NetworkManager.ServerClientId)
-            {
-                if (playerStartPositions.TryGetValue(clientId, out Vector2 startPos))
-                {
-                    PlayerSpawner.Instance.SpawnPlayerB(clientId, startPos);
-                    AudioManager.Instance.PlayPlaying();
-                    StartCoroutine(WaitAndAttachCamera(clientId));
-                }
-                else
-                {
-                    Debug.LogWarning($"No start position found for client {clientId}, using default.");
-                    PlayerSpawner.Instance.SpawnPlayerB(clientId, Vector2.zero);
-                }
-            }
-            else
-            {
-                Debug.Log("Skipping host client when spawning Player B.");
-            }
-        }
+    //Move this to PlayerSpawner
 
-    }
-    private IEnumerator WaitAndAttachCamera(ulong clientId)
-    {
-        float timeout = Time.time + 5f; // Timeout after 5 seconds
 
-        while (!(players.ContainsKey(clientId) && players[clientId] != null))
-        {
-            if (Time.time > timeout)
-            {
-                Debug.LogError($"Timeout waiting for player with clientId {clientId} to spawn.");
-                yield break;
-            }
 
-            Debug.Log($"Waiting for player {clientId}...");
-            yield return null;
-        }
 
-        GameObject playerObj = players[clientId].gameObject;
-        GameObject cameraObj = cameraTracker[clientId].gameObject;
-
-        NetworkObject cameraNetObj = cameraObj.GetComponent<NetworkObject>();
-        NetworkObject playerNetObj = playerObj.GetComponent<NetworkObject>();
-
-        SetUpFollowClientRpc(cameraNetObj, playerNetObj);
-
-    }
-    [ClientRpc]
-    void SetUpFollowClientRpc(NetworkObjectReference cameraRef, NetworkObjectReference playerRef, ClientRpcParams clientRpcParams = default)
-    {
-        if (cameraRef.TryGet(out NetworkObject cameraObj) && playerRef.TryGet(out NetworkObject playerObj))
-        {
-            var cameraMovement = cameraObj.GetComponent<CameraMovement>();
-            cameraMovement.FollowPlayer(playerObj.gameObject);
-            Debug.Log("CameraAttached");
-        }
-        else
-        {
-            Debug.LogError("Failed to resolve one or both NetworkObjectReferences.");
-        }
-    }
-
+    //To Here
     void RevealCoinsToOtherPlayers()
     {
         // Group coins by their original owner
@@ -448,10 +467,10 @@ public class GameManager : NetworkBehaviour
             coinsByOwner[coin.visibleToClientId].Add(coin);
         }
 
-        List<ulong> allClients = new List<ulong>(playerReadyStatus.Keys);
+        List<ulong> allClients = new List<ulong>(playerSetUpObjects.Keys);
         if (allClients.Count < 2)
         {
-            Debug.LogWarning("Not enough players to exchange coins.");
+            Debug.LogWarning("Not enough playerSetUpObjects to exchange coins.");
             return;
         }
 
@@ -530,7 +549,16 @@ public class GameManager : NetworkBehaviour
     public void SubmitStartPositionServerRpc(ulong clientId,Vector2 startPosition, ServerRpcParams rpcParams = default)
     {
         //ulong clientId = rpcParams.Receive.SenderClientId;
-        playerStartPositions[clientId] = startPosition;
+        playerSetUpObjects[clientId].GetComponent<PlayerSpawner>().StartHere = startPosition;
         Debug.Log($"Received start position {startPosition} from client {clientId}");
     }
+
+    //[ClientRpc]
+    //private void SyncPlayersClientRpc(NetworkObjectReference netObj)
+    //{
+    //    NetworkObject pSetUp = netObj.TryGet(out NetworkObject playerSetUpObject);
+    //    ulong clientId = NetworkManager.Singleton.LocalClientId;
+    //    NetworkObject Obj = GameObject.FindObjectOfType<PlayerSpawner>();
+
+    //}
 }
