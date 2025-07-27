@@ -11,11 +11,21 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private LayerMask obstacleMask;
     public bool isMoving;
     Rigidbody2D rb2d;
+    
     private void Awake()
     {
         Vector2Int gridPos = GridManager.Instance.WorldToGrid(this.transform.position);
         Vector3 snappedPosition = GridManager.Instance.GridToWorldCenter(gridPos);
         this.transform.position = snappedPosition;
+        GameObject cameraTracker = GameObject.Find("trackingObject(Clone)");
+        if (cameraTracker != null)
+        {
+            cameraTracker.GetComponent<CameraMovement>().FollowPlayer(this.gameObject);
+        }
+        else
+        {
+            Debug.LogError("Camera tracker not found in the scene.");
+        }
     }
     // Start is called before the first frame update
     void Start()

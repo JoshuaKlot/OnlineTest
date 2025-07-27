@@ -78,6 +78,7 @@ MonoBehaviour:
   Camera: {fileID: 4399081380443932434, guid: 3c899be58e968aa43808a8fec9e165e5, type: 3}
   SpawnPOint: {x: 3, y: 5, z: -0.1}
   followSpeed: 1
+  Player: {fileID: 0}
 --- !u!50 &4741774561752583977
 Rigidbody2D:
   serializedVersion: 5

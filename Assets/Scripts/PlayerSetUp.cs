@@ -167,19 +167,30 @@ public class PlayerSpawner : NetworkBehaviour
         Debug.Log("Player spawned on server for client: " + clientId);
         DeleteSelectionsClientRpc();
         Debug.Log("SPAWNING Da PLAYER for " + clientId + " on " + StartHere);
+        //GameObject cTracker = Instantiate(cameraTracker);
+        //activeCamera = cTracker;
+        //NetworkObject netObj2 = cTracker.GetComponent<NetworkObject>();
         GameObject newPlayer = Instantiate(player, StartHere, Quaternion.Euler(0, 0, 0));
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
         activeObject = newPlayer;
+
         netObj.CheckObjectVisibility = (targetClientId) =>
         {
             bool visible = targetClientId == clientId;
             Debug.Log($"[Server] Visibility check for {netObj.name} | TargetClientID: {targetClientId} | OwnerID: {clientId} => {visible}");
             return visible;
         };
-        activeCamera.GetComponent<CameraMovement>().GetPlayerClientRpc();
-        
+        //netObj2.CheckObjectVisibility = (targetClientId) =>
+        //{
+        //    bool visible = targetClientId == clientId;
+        //    Debug.Log($"[Server] Visibility check for {netObj2.name} | TargetClientID: {targetClientId} | OwnerID: {clientId} => {visible}");
+        //    return visible;
+        //};
+        activeCamera.GetComponent<CameraMovement>().FollowPlayer(newPlayer);
         newPlayer.SetActive(true);
+        //netObj2.SpawnWithOwnership(clientId, true);
         netObj.SpawnWithOwnership(clientId, true);
+        
         SpawnOnServerRpc(clientId);
     }
     //private IEnumerator WaitAndAttachCamera(ulong clientId)

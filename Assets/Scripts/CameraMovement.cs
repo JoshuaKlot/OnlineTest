@@ -95,25 +95,14 @@ public class CameraMovement : NetworkBehaviour
     
     public void FollowPlayer(GameObject player)
     {
-
-            Player = player;
-            playerPhase = true;
-            LerpToPlayer();
+        Debug.Log("Camera is now following player: " + player.name);
+        Player = player;
+        playerPhase = true;
+        LerpToPlayer();
 
 
     }
 
-    [ClientRpc]public void GetPlayerClientRpc()
-    {
-        if (Player == null)
-        {
-            Player = GameObject.FindGameObjectWithTag("Player");
-            Debug.Log("Player found: " + Player.name);
-        }
-        else
-        {
-            Debug.Log("Player already assigned: " + Player.name);
-        }
-    }
+
 
 }
