@@ -77,16 +77,16 @@ public class Cursor : NetworkBehaviour
             }
             if (ClickMap)
             {
-                //Collider2D hitSidewalk = Physics2D.OverlapPoint(snappedPosition, sidewalk);
-                //Collider2D hitGrass = Physics2D.OverlapPoint(snappedPosition, grass);
-                //Collider2D hitEntrance = Physics2D.OverlapPoint(snappedPosition, entrances);
-                //selectedPosition = snappedPosition;
-                //if (hitSidewalk != null)
-                //    Debug.Log("Tile Type: Sidewalk");
-                //if (hitGrass != null)
-                //    Debug.Log("Tile Type: Grass");
-                //if (hitEntrance != null)
-                //    Debug.Log("Tile Type: Entrance");
+                Collider2D hitSidewalk = Physics2D.OverlapPoint(snappedPosition, sidewalk);
+                Collider2D hitGrass = Physics2D.OverlapPoint(snappedPosition, grass);
+                Collider2D hitEntrance = Physics2D.OverlapPoint(snappedPosition, entrances);
+                selectedPosition = snappedPosition;
+                if (hitSidewalk != null)
+                    Debug.Log("Tile Type: Sidewalk");
+                if (hitGrass != null)
+                    Debug.Log("Tile Type: Grass");
+                if (hitEntrance != null)
+                    Debug.Log("Tile Type: Entrance");
                 ani.SetTrigger("Click");
                 if (!SetUpObsticles)
                 {

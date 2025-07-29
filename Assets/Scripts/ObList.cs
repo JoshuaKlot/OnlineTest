@@ -17,11 +17,16 @@ public class ObList : NetworkBehaviour
     }
 
     [SerializeField] private List<ObsticalList> MasterList;
-    [SerializeField] private MasterObstacleListSO masterObstacleListSO;
     [SerializeField] private LayerMask obsticles;
+    [SerializeField] private LayerMask sidewalk;
+    [SerializeField] private LayerMask grass;
+    [SerializeField] private LayerMask entrances;
+    [SerializeField] private LayerMask selectableLayer;
+    [SerializeField] private MasterObstacleListSO masterObstacleListSO;
+    [SerializeField] private bool ClickMap;
 
     public List<GameObject> MasterObstacleList => masterObstacleListSO.MasterObstacleList;
-    void Update()
+    public void GetSelection(Vector2 snappedPosition)
     {
         if (Input.GetMouseButtonDown(0) && !IsPointerOverUI())
         {
@@ -36,24 +41,24 @@ public class ObList : NetworkBehaviour
                 if (selectable != null)
                 {
                     // Make the selectable spawn at the selection position
-                    PlaceObsticle(obList.Position, selectable.SetNum);
-                    obList.DeleteSelection();
+                    PlaceObsticle(Position, selectable.SetNum);
+                    DeleteSelection();
                     return; // Don't process map click
                 }
             }
             if (ClickMap)
             {
-                //Collider2D hitSidewalk = Physics2D.OverlapPoint(snappedPosition, sidewalk);
-                //Collider2D hitGrass = Physics2D.OverlapPoint(snappedPosition, grass);
-                //Collider2D hitEntrance = Physics2D.OverlapPoint(snappedPosition, entrances);
-                //selectedPosition = snappedPosition;
-                //if (hitSidewalk != null)
-                //    Debug.Log("Tile Type: Sidewalk");
-                //if (hitGrass != null)
-                //    Debug.Log("Tile Type: Grass");
-                //if (hitEntrance != null)
-                //    Debug.Log("Tile Type: Entrance");
-                ani.SetTrigger("Click");
+                Collider2D hitSidewalk = Physics2D.OverlapPoint(snappedPosition, sidewalk);
+                Collider2D hitGrass = Physics2D.OverlapPoint(snappedPosition, grass);
+                Collider2D hitEntrance = Physics2D.OverlapPoint(snappedPosition, entrances);
+                selectedPosition = snappedPosition;
+                if (hitSidewalk != null)
+                    Debug.Log("Tile Type: Sidewalk");
+                if (hitGrass != null)
+                    Debug.Log("Tile Type: Grass");
+                if (hitEntrance != null)
+                    Debug.Log("Tile Type: Entrance");
+                
                 if (!SetUpObsticles)
                 {
                     if (hitEntrance == null)
@@ -62,8 +67,8 @@ public class ObList : NetworkBehaviour
                     }
                     else
                     {
-                        obList.SpawnSelection(snappedPosition);
-                        obList.Signals(ObList.ObsticalType.Entrances);
+                        SpawnSelection(snappedPosition);
+                        Signals(ObList.ObsticalType.Entrances);
                         ClickMap = false;
 
                     }
@@ -81,15 +86,15 @@ public class ObList : NetworkBehaviour
                         }
                     }
 
-                    obList.SpawnSelection(snappedPosition);
+                    SpawnSelection(snappedPosition);
                     if (hitSidewalk != null)
                     {
-                        obList.Signals(ObList.ObsticalType.Sidewalk);
+                        Signals(ObList.ObsticalType.Sidewalk);
                     }
 
                     if (hitGrass != null)
                     {
-                        obList.Signals(ObList.ObsticalType.Grass);
+                        Signals(ObList.ObsticalType.Grass);
                     }
 
                 }
@@ -144,7 +149,7 @@ public class ObList : NetworkBehaviour
             if (hitEntrance != null)
                 Debug.Log("Tile Type: Entrance");
 
-            ani.SetTrigger("Click");
+     
             if (!SetUpObsticles)
             {
                 if (hitEntrance == null)
@@ -275,5 +280,29 @@ public class ObList : NetworkBehaviour
             Debug.Log("No active selection to add obstacles to.");
         }
         activeSelection.GetComponent<Selection>().AddList(obList);
+    }
+
+    private bool IsPointerOverUI()
+    {
+        if (EventSystem.current == null)
+            return false;
+
+        PointerEventData pointerData = new PointerEventData(EventSystem.current)
+        {
+            position = Input.mousePosition
+        };
+
+        var raycastResults = new System.Collections.Generic.List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, raycastResults);
+
+        foreach (var result in raycastResults)
+        {
+            if (result.gameObject.GetComponent<UnityEngine.UI.Button>() != null)
+            {
+                return true; // Pointer is over a button
+            }
+        }
+
+        return false; // Pointer is not over any interactive UI
     }
 }
