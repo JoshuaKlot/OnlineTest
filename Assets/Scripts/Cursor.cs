@@ -154,44 +154,44 @@ public class Cursor : NetworkBehaviour
         currentSelection = Selection;
     }
 
-    [ServerRpc]
-    private void SpawnCoinServerRpc(Vector3 spawnPosition, ServerRpcParams rpcParams = default)
-    {
+    //[ServerRpc]
+    //private void SpawnCoinServerRpc(Vector3 spawnPosition, ServerRpcParams rpcParams = default)
+    //{
 
-        GameObject placedCoin = Instantiate(coins, spawnPosition, Quaternion.identity);
+    //    GameObject placedCoin = Instantiate(coins, spawnPosition, Quaternion.identity);
 
-        Coin coinComponent = placedCoin.GetComponent<Coin>();
-        coinComponent.visibleToClientId = rpcParams.Receive.SenderClientId;
+    //    Coin coinComponent = placedCoin.GetComponent<Coin>();
+    //    coinComponent.visibleToClientId = rpcParams.Receive.SenderClientId;
 
-        NetworkObject netObj = placedCoin.GetComponent<NetworkObject>();
-        netObj.CheckObjectVisibility = coinComponent.CheckVisibility;
+    //    NetworkObject netObj = placedCoin.GetComponent<NetworkObject>();
+    //    netObj.CheckObjectVisibility = coinComponent.CheckVisibility;
 
-        netObj.Spawn();
-    }
+    //    netObj.Spawn();
+    //}
 
-    [ServerRpc]
-    private void TryDeleteCoinServerRpc(Vector2Int gridPos)
-    {
-        Vector3 worldCenter = GridManager.Instance.GridToWorldCenter(gridPos);
-        Vector3 start = new Vector3(worldCenter.x, worldCenter.y, 5);
-        Vector3 direction = new Vector3(0, 0, -10);
+    //[ServerRpc]
+    //private void TryDeleteCoinServerRpc(Vector2Int gridPos)
+    //{
+    //    Vector3 worldCenter = GridManager.Instance.GridToWorldCenter(gridPos);
+    //    Vector3 start = new Vector3(worldCenter.x, worldCenter.y, 5);
+    //    Vector3 direction = new Vector3(0, 0, -10);
 
 
-        // Check for coin at the position
-        Collider2D hit = Physics2D.OverlapCircle(worldCenter, 0.1f, obsticles);
-        Debug.Log(hit);
-        if (hit != null)
-        {
-            OwnerOnlyVisibility coin = hit.GetComponent<OwnerOnlyVisibility>();
-            if (coin != null && coin.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
-            {
+    //    // Check for coin at the position
+    //    Collider2D hit = Physics2D.OverlapCircle(worldCenter, 0.1f, obsticles);
+    //    Debug.Log(hit);
+    //    if (hit != null)
+    //    {
+    //        OwnerOnlyVisibility coin = hit.GetComponent<OwnerOnlyVisibility>();
+    //        if (coin != null && coin.visibleToClientId == NetworkManager.Singleton.ConnectedClients[OwnerClientId].ClientId)
+    //        {
           
                 
-                coin.NetworkObject.Despawn();
-            }
-        }
+    //            coin.NetworkObject.Despawn();
+    //        }
+    //    }
 
-    }
+    //}
 
 
     private bool IsPointerOverUI()

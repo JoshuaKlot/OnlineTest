@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2596081574391714238}
   - component: {fileID: 5190692954985676338}
+  - component: {fileID: 5522925621147620338}
   m_Layer: 14
   m_Name: Selection
   m_TagString: Untagged
@@ -50,3 +51,16 @@ MonoBehaviour:
   deleteObject: {fileID: 7802018892431730895, guid: 14b25145779256c4183d68a0d87e7283, type: 3}
   cursor: {fileID: 0}
   position: {x: 5, y: 3, z: 0}
+--- !u!114 &5522925621147620338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7956447155177447120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7129f1fae76636d4bbb4676aadfd7982, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StayHere: {x: 130, y: 20}
