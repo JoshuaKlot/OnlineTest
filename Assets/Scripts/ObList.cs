@@ -1,6 +1,10 @@
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.EventSystems;
+using System.Collections.Specialized;
+using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class ObList : NetworkBehaviour
 {
@@ -23,84 +27,10 @@ public class ObList : NetworkBehaviour
     [SerializeField] private LayerMask entrances;
     [SerializeField] private LayerMask selectableLayer;
     [SerializeField] private MasterObstacleListSO masterObstacleListSO;
-    [SerializeField] private bool ClickMap;
+    [SerializeField] private bool ClickMap=true;
 
     public List<GameObject> MasterObstacleList => masterObstacleListSO.MasterObstacleList;
-    public void GetSelection(Vector2 snappedPosition)
-    {
-        if (Input.GetMouseButtonDown(0) && !IsPointerOverUI())
-        {
-            //Place this inside of this statement inside of a different function, prefeable in oblist
-            // Only check for selectable objects using the layer mask
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, selectableLayer);
-            Debug.Log("Clicked on:" + hit.collider?.name);
-            if (hit.collider != null)
-            {
-                var selectable = hit.collider.GetComponent<SelectableObject>();
-                if (selectable != null)
-                {
-                    // Make the selectable spawn at the selection position
-                    PlaceObsticle(Position, selectable.SetNum);
-                    DeleteSelection();
-                    return; // Don't process map click
-                }
-            }
-            if (ClickMap)
-            {
-                Collider2D hitSidewalk = Physics2D.OverlapPoint(snappedPosition, sidewalk);
-                Collider2D hitGrass = Physics2D.OverlapPoint(snappedPosition, grass);
-                Collider2D hitEntrance = Physics2D.OverlapPoint(snappedPosition, entrances);
-                selectedPosition = snappedPosition;
-                if (hitSidewalk != null)
-                    Debug.Log("Tile Type: Sidewalk");
-                if (hitGrass != null)
-                    Debug.Log("Tile Type: Grass");
-                if (hitEntrance != null)
-                    Debug.Log("Tile Type: Entrance");
-                
-                if (!SetUpObsticles)
-                {
-                    if (hitEntrance == null)
-                    {
-                        NetworkLogger.Instance.AddLog("Please click on an entrance.");
-                    }
-                    else
-                    {
-                        SpawnSelection(snappedPosition);
-                        Signals(ObList.ObsticalType.Entrances);
-                        ClickMap = false;
-
-                    }
-                }
-                else
-                {
-                    //Make sure the obsticle is deleted if it exists
-                    Collider2D hitStart = Physics2D.OverlapCircle(snappedPosition, 0.1f, obsticles);
-                    if (hitStart != null)
-                    {
-                        if (hitStart.gameObject.tag == "Unmovable")
-                        {
-                            NetworkLogger.Instance.AddLog("Please do not place obsticles over entrances and exits");
-                            return;
-                        }
-                    }
-
-                    SpawnSelection(snappedPosition);
-                    if (hitSidewalk != null)
-                    {
-                        Signals(ObList.ObsticalType.Sidewalk);
-                    }
-
-                    if (hitGrass != null)
-                    {
-                        Signals(ObList.ObsticalType.Grass);
-                    }
-
-                }
-            }
-        }
-    }
+   
     [SerializeField] private Cursor cursor;
     public void SpawnSelection(Vector3 spawnPosition)
     {
@@ -141,7 +71,6 @@ public class ObList : NetworkBehaviour
             Collider2D hitSidewalk = Physics2D.OverlapPoint(PlaceHere, sidewalk);
             Collider2D hitGrass = Physics2D.OverlapPoint(PlaceHere, grass);
             Collider2D hitEntrance = Physics2D.OverlapPoint(PlaceHere, entrances);
-            selectedPosition = PlaceHere;
             if (hitSidewalk != null)
                 Debug.Log("Tile Type: Sidewalk");
             if (hitGrass != null)
@@ -150,7 +79,7 @@ public class ObList : NetworkBehaviour
                 Debug.Log("Tile Type: Entrance");
 
      
-            if (!SetUpObsticles)
+            if (!cursor.SetUpObsticles)
             {
                 if (hitEntrance == null)
                 {
@@ -227,7 +156,7 @@ public class ObList : NetworkBehaviour
                 coin.NetworkObject.Despawn();
             }
         }
-        if (selNum < 0 || selNum >= currentSelection.Count)
+        if (selNum < 0 || selNum >= cursor.currentSelection.Count)
         {
             return;
         }

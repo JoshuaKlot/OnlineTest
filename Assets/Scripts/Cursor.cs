@@ -10,7 +10,7 @@ public class Cursor : NetworkBehaviour
 {
     [SerializeField] private GameObject SpawnHere;
     [SerializeField] private GameObject Highlight;
-    [SerializeField] private List<GameObject> currentSelection;
+    [SerializeField] public List<GameObject> currentSelection;
     [SerializeField] private Animator ani;
     [SerializeField] private GameObject coins;
 
@@ -59,22 +59,23 @@ public class Cursor : NetworkBehaviour
 
         if (Input.GetMouseButtonDown(0) && !IsPointerOverUI())
         {
+            obList.GetObsticle(snappedPosition);
             //Place this inside of this statement inside of a different function, prefeable in oblist
             // Only check for selectable objects using the layer mask
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, selectableLayer);
             Debug.Log("Clicked on:" + hit.collider?.name);
-            if (hit.collider != null)
-            {
-                var selectable = hit.collider.GetComponent<SelectableObject>();
-                if (selectable != null)
-                {
-                    // Make the selectable spawn at the selection position
-                    PlaceObsticle(obList.Position, selectable.SetNum);
-                    obList.DeleteSelection();
-                    return; // Don't process map click
-                }
-            }
+            //    if (hit.collider != null)
+            //    {
+            //        var selectable = hit.collider.GetComponent<SelectableObject>();
+            //        if (selectable != null)
+            //        {
+            //            // Make the selectable spawn at the selection position
+            //            PlaceObsticle(obList.Position, selectable.SetNum);
+            //            obList.DeleteSelection();
+            //            return; // Don't process map click
+            //        }
+            //    }
             if (ClickMap)
             {
                 Collider2D hitSidewalk = Physics2D.OverlapPoint(snappedPosition, sidewalk);
@@ -87,49 +88,50 @@ public class Cursor : NetworkBehaviour
                     Debug.Log("Tile Type: Grass");
                 if (hitEntrance != null)
                     Debug.Log("Tile Type: Entrance");
-                ani.SetTrigger("Click");
-                if (!SetUpObsticles)
-                {
-                    if (hitEntrance == null)
-                    {
-                        NetworkLogger.Instance.AddLog("Please click on an entrance.");
-                    }
-                    else
-                    {
-                        obList.SpawnSelection(snappedPosition);
-                        obList.Signals(ObList.ObsticalType.Entrances);
-                        ClickMap = false;
+            }
+                //        ani.SetTrigger("Click");
+                //        if (!SetUpObsticles)
+                //        {
+                //            if (hitEntrance == null)
+                //            {
+                //                NetworkLogger.Instance.AddLog("Please click on an entrance.");
+                //            }
+                //            else
+                //            {
+                //                obList.SpawnSelection(snappedPosition);
+                //                obList.Signals(ObList.ObsticalType.Entrances);
+                //                ClickMap = false;
 
-                    }
-                }
-                else
-                {
-                    //Make sure the obsticle is deleted if it exists
-                    Collider2D hitStart = Physics2D.OverlapCircle(snappedPosition, 0.1f, obsticles);
-                    if (hitStart != null)
-                    {
-                        if (hitStart.gameObject.tag == "Unmovable")
-                        {
-                            NetworkLogger.Instance.AddLog("Please do not place obsticles over entrances and exits");
-                            return;
-                        }
-                    }
+                //            }
+                //        }
+                //        else
+                //        {
+                //            //Make sure the obsticle is deleted if it exists
+                //            Collider2D hitStart = Physics2D.OverlapCircle(snappedPosition, 0.1f, obsticles);
+                //            if (hitStart != null)
+                //            {
+                //                if (hitStart.gameObject.tag == "Unmovable")
+                //                {
+                //                    NetworkLogger.Instance.AddLog("Please do not place obsticles over entrances and exits");
+                //                    return;
+                //                }
+                //            }
 
-                    obList.SpawnSelection(snappedPosition);
-                    if (hitSidewalk != null)
-                    {
-                        obList.Signals(ObList.ObsticalType.Sidewalk);
-                    }
+                //            obList.SpawnSelection(snappedPosition);
+                //            if (hitSidewalk != null)
+                //            {
+                //                obList.Signals(ObList.ObsticalType.Sidewalk);
+                //            }
 
-                    if (hitGrass != null)
-                    {
-                        obList.Signals(ObList.ObsticalType.Grass);
-                    }
-                    
-                }
+                //            if (hitGrass != null)
+                //            {
+                //                obList.Signals(ObList.ObsticalType.Grass);
+                //            }
+
+                //        }
+                //    }
             }
         }
-    }
 
     public void ObsticleTime()
     {

@@ -353,6 +353,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   SelectionPrefab: {fileID: 7956447155177447120, guid: 89ea1f56574001440ad3fb85bd2a762a, type: 3}
+  activeSelection: {fileID: 7956447155177447120, guid: 89ea1f56574001440ad3fb85bd2a762a, type: 3}
   Position: {x: 0, y: 0, z: 0}
   MasterList:
   - Type: 0
@@ -365,10 +366,23 @@ MonoBehaviour:
   - Type: 2
     Obsticles:
     - {fileID: 1033767421492550346, guid: 3c4c6d2e8886dda4ab1080aaf89575f0, type: 3}
-  masterObstacleListSO: {fileID: 0}
   obsticles:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
+  sidewalk:
+    serializedVersion: 2
+    m_Bits: 2048
+  grass:
+    serializedVersion: 2
+    m_Bits: 64
+  entrances:
+    serializedVersion: 2
+    m_Bits: 4096
+  selectableLayer:
+    serializedVersion: 2
+    m_Bits: 16384
+  masterObstacleListSO: {fileID: 11400000, guid: 4d93bb1b492d91e4d83926489a092e5e, type: 2}
+  ClickMap: 0
   cursor: {fileID: 2859508423935749765}
 --- !u!95 &7502669371968789598
 Animator:
