@@ -30,7 +30,10 @@ public class ObList : NetworkBehaviour
     [SerializeField] private bool ClickMap=true;
 
     public List<GameObject> MasterObstacleList => masterObstacleListSO.MasterObstacleList;
-   
+    private void Awake()
+    {
+        ClickMap = true;
+    }
     [SerializeField] private Cursor cursor;
     public void SpawnSelection(Vector3 spawnPosition)
     {
