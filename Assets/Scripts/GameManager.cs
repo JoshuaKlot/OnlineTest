@@ -25,7 +25,8 @@ public class GameManager : NetworkBehaviour
     //private Dictionary<ulong, Vector2> playerStartPositions = new Dictionary<ulong, Vector2>();
 
     //Called From NetworkUI
-    public void StartGame()
+    [ServerRpc(RequireOwnership = false)]
+    public void StartGameServerRpc()
     {
         if (!IsServer) return;
         if (NetworkManager.Singleton.ConnectedClientsList.Count < 2)
