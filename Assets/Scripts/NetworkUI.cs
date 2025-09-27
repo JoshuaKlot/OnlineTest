@@ -79,7 +79,15 @@ public class NetworkUI : NetworkBehaviour
         // In editor, launch a new process of the game with command line arguments
         var editorPath = UnityEngine.Application.dataPath;
         var exePath = editorPath.Substring(0, editorPath.Length - 7) + "/Builds/HeadlessServer/Server.exe";
-        
+        if (exePath != null)
+        {
+            Debug.Log($"[Host Player] Attempting to launch headless server at path: {exePath}");
+        }
+        else
+        {
+            Debug.LogError("[Host Player] Could not determine path to headless server executable!");
+            return;
+        }
         try
         {
             var processInfo = new ProcessStartInfo
